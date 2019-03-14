@@ -47,7 +47,7 @@ tests also provide you working examples for every library function.
 implemented.]
 
 For a complete and self-contained example program, see
-[examples.js](./blob/master/test/intg/examples.test.js), which is included in
+[examples.test.js](./test/intg/examples.test.js), which is included in
 the integration tests. It's a JavaScript implementation of the [Reactor
 Postman]( https://github.com/Adobe-Marketing-Cloud/reactor-postman) query set.
 
