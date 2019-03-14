@@ -3,7 +3,7 @@
 A Library for accessing the Adobe Experience Platform
 [Launch API][Launch API doc].
 
-# &#x26a0; Alpha State &#x26a0;
+# &#x26a0; Alpha State
 **These APIs are currently in an** *‘alpha’* **state and are likely to change
 over time. Please do not use them in a production setting!**
 
