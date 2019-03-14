@@ -75,7 +75,7 @@ environment variables before running the tests:
 $ export ACCESS_TOKEN=${REACTOR_API_TOKEN}
 $ export COMPANY_ID=${REACTOR_TEST_COMPANY_ID}
 $ export REACTOR_URL=https://launch.adobe.com:9011
-$ TODO: figure out a reasonable REACTOR_URL for non-Adobe-internal testers
+$ # TODO: figure out a reasonable REACTOR_URL for non-Adobe-internal testers
 $ npm run integration   # run the integration tests in test/intg/**
 $ # Currently known to pass in MacOS Chrome Version 72.0.3626.121.
 ```
