@@ -1,0 +1,21 @@
+{
+  "comment_spec_dir": "// Spec directory path relative to the current working dir when jasmine is executed.",
+  "spec_dir": "intg",
+
+  "comment_spec_files": "// Array of filepaths (and globs) relative to spec_dir to include and exclude",
+  "spec_files": [
+    "**/*.test.js",
+    "!**/*nospec.js"
+  ],
+
+  "comment_helpers": "// Array of filepaths (and globs) relative to spec_dir to include before jasmine specs",
+  "helpers": [
+    "helpers/**/*.js"
+  ],
+
+  "comment_stop": "// Stop execution of a spec after the first expectation failure in it",
+  "stopSpecOnExpectationFailure": false,
+
+  "comment_random": "// Run specs in semi-random order",
+  "random": true
+}

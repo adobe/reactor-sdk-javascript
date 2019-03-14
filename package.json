@@ -1,0 +1,59 @@
+{
+  "engines": {
+    "node": "11.6.0"
+  },
+  "name": "@adobe/reactor-sdk-node",
+  "version": "0.0.1",
+  "description": "JavaScript SDK for the Reactor API",
+  "repository": {
+    "type": "git",
+    "url": "git@git.corp.adobe.com:reactor/reactor-sdk-node.git"
+  },
+  "author": {
+    "name": "Adobe Systems",
+    "url": "http://adobe.com",
+    "email": "reactor@adobe.com"
+  },
+  "main": "./lib/reactor.js",
+  "browserslist": [
+    "last 2 chrome versions",
+    "last 2 firefox versions",
+    "last 2 safari versions"
+  ],
+  "devDependencies": {
+    "babel-core": "6.26.3",
+    "babel-preset-env": "1.7.0",
+    "eslint": "5.15.1",
+    "eslint-config-prettier": "4.1.0",
+    "eslint-plugin-prettier": "3.0.1",
+    "jasmine": "3.3.1",
+    "nock": "10.0.6",
+    "nodemon": "1.18.10",
+    "parcel-bundler": "1.12.0",
+    "prettier": "1.16.4"
+  },
+  "scripts": {
+    "lint": "eslint --fix --parser-options=ecmaVersion:8 '{lib,test/spec}/**/*.js'",
+    "test:build": "rm -rf ./dist && node_modules/.bin/parcel build --no-minify test/spec/main.js --target node",
+    "prod:build": "rm -rf ./dist && node_modules/.bin/parcel build lib/main.js --target node",
+    "test": "npm run lint && npm run test:build && node_modules/.bin/jasmine dist/main.js",
+    "clear-test": "clear; npm test",
+    "watch": "./node_modules/nodemon/bin/nodemon.js -w test/spec/ -w lib/ --exec npm run clear-test",
+    "integration:lint": "node_modules/.bin/eslint --fix --parser-options=ecmaVersion:8 --ignore-pattern='test/intg/lib/jasmine*/**' 'test/intg/**/*.js'",
+    "integration:build:environment": "ACCESS_TOKEN=${REACTOR_API_TOKEN} COMPANY_ID=${REACTOR_TEST_COMPANY_ID} REACTOR_URL=https://localhost:9011 node test/intg/write-reactor-environment.js",
+    "integration:build": "rm -f ./dist/intg-tests-browser.js && npm run integration:build:environment && ./node_modules/.bin/parcel build --no-minify -o dist/intg-tests-browser.js test/intg/allTestsForBrowser.js",
+    "integration:test": "open test/intg/SpecRunner.html",
+    "integration": "npm run integration:lint && npm run integration:build && npm run integration:test",
+    "integration:watch": "npm run integration:build:environment && node_modules/.bin/nodemon --watch test/intg/ --watch lib/ --exec 'npm run integration'"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "test/intg/globalsForBrowser.js"
+    ]
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "js-logger": "1.6.0",
+    "node-fetch": "2.3.0"
+  }
+}

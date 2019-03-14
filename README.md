@@ -42,11 +42,9 @@ of the ["Fetch a Profile"][FetchProfile doc] documentation is at
 
 Every SDK function [has an integration test](./blob/master/test/intg) that
 demonstrates its correctness. (Well, correct for at least *one* use).  These
-tests also provide you working examples for every library function.  [Actually,
-over here in reality, the claim that *all* functions have integration tests is
-not actually exactly, well, you know... **true**. &lt;sigh&gt; Let's call that
-claim "***aspirational***"? `:-)` &lt;/sigh&gt; We're almost there, but a few
-remain to be implemented -- hopefully, soon.]
+tests also provide you working examples for every library function.
+[This isn't quite true yet.  We're almost there, but a few remain to be
+implemented.]
 
 For a complete and self-contained example program, see
 [examples.js](./blob/master/test/intg/examples.test.js), which is included in
