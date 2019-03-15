@@ -28,10 +28,6 @@ describe('Property API', function() {
     }
   });
 
-  afterAll(async function() {
-    await helpers.cleanUpTestProperties();
-  });
-
   beforeEach(function() {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;

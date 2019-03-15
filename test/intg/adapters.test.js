@@ -37,12 +37,6 @@ describe('Adapter API', function() {
     }
   });
 
-  afterAll(async function() {
-    if (theProperty && theProperty.id) {
-      await reactor.deleteProperty(theProperty.id);
-    }
-  });
-
   //  var originalTimeout;
   //
   //  beforeEach(function() {

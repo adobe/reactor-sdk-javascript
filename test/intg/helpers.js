@@ -317,7 +317,7 @@ const helpers = {
   // `[object Object] thrown`, which is not very helpful.
   //
   // helpers.it() also puts the name of the spec into helpers.specName, which
-  // can make console.log()'ed debug messages easier to locate in the source.
+  // can make error messages easier to locate in the source.
   it(description, testFn) {
     var spec = it(description, async function() {
       try {

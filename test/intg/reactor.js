@@ -16,7 +16,6 @@ var globals = jasmine.getEnv().reactorIntegrationTestGlobals;
 
 var reactor = globals.reactor;
 if (!reactor) {
-  console.log('building Reactor');
   reactor = new Reactor(globals.ACCESS_TOKEN, {
     reactorUrl: globals.REACTOR_URL,
     logger: new ConsoleLogger(globals.LOG_LEVEL || 'error')
@@ -25,7 +24,6 @@ if (!reactor) {
   reactor.reactorUrl = globals.REACTOR_URL;
   reactor.myCompanyId = globals.COMPANY_ID;
   globals.reactor = reactor;
-  console.log('storing Reactor in globals.reactor');
 }
 
 export { reactor as default };

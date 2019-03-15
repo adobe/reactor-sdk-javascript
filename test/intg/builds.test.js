@@ -30,10 +30,6 @@ describe('Build API', function() {
     }
   });
 
-  afterAll(async function() {
-    await reactor.deleteProperty(theProperty.id);
-  });
-
   // Create a Build
   // https://developer.adobelaunch.com/api/builds/create/
   helpers.xit('creates a new Build', function() {

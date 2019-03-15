@@ -19,33 +19,27 @@ describe('AuditEvent API', function() {
   var theProperty;
   var theAdapter;
 
-  // beforeAll(async function() {
-  //   try {
-  //     theProperty = await helpers.createTestProperty('AuditEvent-Testing Base');
-  //     if (!theProperty) fail('could not create test property');
+  beforeAll(async function() {
+    try {
+      theProperty = await helpers.createTestProperty('AuditEvent-Testing Base');
+      if (!theProperty) fail('could not create test property');
 
-  //     // create an AuditEvent trail by doing some operations on the property
-  //     theAdapter = await helpers.createTestAdapter(theProperty.id, 'temp');
-  //     if (!theProperty) fail('could not create test adapter');
-  //     await reactor.deleteAdapter(theAdapter.id);
-  //     const response = await reactor.updateProperty({
-  //       attributes: {
-  //         name: theProperty.attributes.name.replace('Base', 'Updated'),
-  //       },
-  //       id: theProperty.id,
-  //       type: 'properties',
-  //     });
-  //   } catch (error) {
-  //     helpers.specName = 'AuditEvent beforeAll';
-  //     helpers.reportError(error);
-  //   }
-  // });
-
-  // afterAll(async function() {
-  //   if (theProperty && theProperty.id) {
-  //     await reactor.deleteProperty(theProperty.id);
-  //   }
-  // });
+      //     // create an AuditEvent trail by doing some operations on the property
+      //     theAdapter = await helpers.createTestAdapter(theProperty.id, 'temp');
+      //     if (!theProperty) fail('could not create test adapter');
+      //     await reactor.deleteAdapter(theAdapter.id);
+      //     const response = await reactor.updateProperty({
+      //       attributes: {
+      //         name: theProperty.attributes.name.replace('Base', 'Updated'),
+      //       },
+      //       id: theProperty.id,
+      //       type: 'properties',
+      //     });
+    } catch (error) {
+      helpers.specName = 'AuditEvent beforeAll';
+      helpers.reportError(error);
+    }
+  });
 
   // get all the AuditEvents for the identified Property
   async function auditEventsForProperty(propertyId) {

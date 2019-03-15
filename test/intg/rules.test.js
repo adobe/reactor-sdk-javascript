@@ -64,11 +64,6 @@ describe('Rule API', function() {
     }
   });
 
-  afterAll(async function() {
-    await reactor.deleteProperty(theProperty.id);
-    theProperty = null;
-  });
-
   var originalTimeout;
   beforeEach(function() {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;

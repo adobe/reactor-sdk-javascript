@@ -38,11 +38,6 @@ describe('RuleComponent API', function() {
     }
   });
 
-  afterAll(async function() {
-    await reactor.deleteProperty(theProperty.id);
-    theProperty = null;
-  });
-
   // Create a RuleComponent
   // https://developer.adobelaunch.com/api/rule_components/create/
   helpers.it('creates a new RuleComponent', async function() {

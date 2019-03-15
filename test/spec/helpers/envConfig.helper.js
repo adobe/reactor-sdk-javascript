@@ -19,7 +19,7 @@ function getEnv(varName, defaultValue) {
   return process.env[varName] || defaultValue;
 }
 
-const accessToken = 'Dummy-Access-Token';
+const accessToken = 'No real token needed here because Launch calls are mocked';
 const reactorUrl = 'https://reactor.sample.com';
 const reqheaders = reactorHeaders(accessToken);
 const loggerLevel = getEnv('JASMINE_DEBUG_LEVEL', 'error');

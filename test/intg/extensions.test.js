@@ -22,11 +22,6 @@ describe('Extension API', function() {
     theProperty = await helpers.createTestProperty('Extension-Testing Base');
   });
 
-  afterAll(async function() {
-    await reactor.deleteProperty(theProperty.id);
-    theProperty = null;
-  });
-
   // Create an Extension
   // https://developer.adobelaunch.com/api/extensions/create/
   helpers.it('creates a new Extension', async function() {

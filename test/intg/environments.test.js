@@ -37,11 +37,6 @@ describe('Environment API', function() {
     setupFailed = false;
   });
 
-  afterAll(async function() {
-    console.log('Environment: cleaning up test properties');
-    await helpers.cleanUpTestProperties();
-  });
-
   // Create an Environment
   // https://developer.adobelaunch.com/api/environments/create/
   helpers.it('creates a new Environment', async function() {

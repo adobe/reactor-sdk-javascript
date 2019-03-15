@@ -10,6 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+// Clean up any cobwebs from the last run of the integration tests
+import helpers from './helpers';
+helpers.cleanUpTestProperties();
+
 // Metadata
 import './heartbeat.test.js';
 import './profile.test.js';

@@ -22,11 +22,6 @@ describe('Callback API', function() {
     theProperty = await helpers.createTestProperty('Callback-Testing Base');
   });
 
-  afterAll(async function() {
-    await reactor.deleteProperty(theProperty.id);
-    theProperty = null;
-  });
-
   // Creates and returns a Callback associated with `theProperty`.
   async function createTestCallback(
     url = 'https://example.com/rule_change',

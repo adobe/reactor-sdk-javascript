@@ -45,7 +45,7 @@ if (!process.env.ACCESS_TOKEN) {
 if (!process.env.REACTOR_URL) {
   errors++;
   console.log('$REACTOR_URL must be defined');
-  console.log('  for example: export REACTOR_URL=https://localhost:9011');
+  console.log('  for example: export REACTOR_URL=https://reactor.adobe.io');
 }
 if (!process.env.COMPANY_ID) {
   errors++;
@@ -86,6 +86,8 @@ function toLocalISOString(date) {
   );
 }
 
+const env = process.env;
+const error = 'error';
 const envJs = `/*
 Copyright 2019 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -112,11 +114,11 @@ environment variables into jasmine.getEnv().reactorIntegrationTestGlobals.
 jasmine.getEnv().reactorIntegrationTestGlobals = jasmine.getEnv()
   .reactorIntegrationTestGlobals || {
   /* eslint-disable */
-  ACCESS_TOKEN: '${process.env.ACCESS_TOKEN}',
+  ACCESS_TOKEN: '${env.ACCESS_TOKEN}',
   /* eslint-enable */
-  COMPANY_ID: '${process.env.COMPANY_ID}',
-  REACTOR_URL: '${process.env.REACTOR_URL}',
-  LOG_LEVEL: '${process.env.JASMINE_DEBUG_LEVEL || 'error'}',
+  COMPANY_ID: '${env.COMPANY_ID}',
+  REACTOR_URL: '${env.REACTOR_URL}',
+  LOG_LEVEL: '${env.JASMINE_DEBUG_LEVEL || env.LOG_LEVEL || error}',
 };
 const globals = jasmine.getEnv().reactorIntegrationTestGlobals;
 export { globals as default };

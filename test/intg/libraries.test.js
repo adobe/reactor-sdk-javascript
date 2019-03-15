@@ -33,11 +33,6 @@ describe('Library API', function() {
     }
   });
 
-  afterAll(async function() {
-    await reactor.deleteProperty(theProperty.id);
-    await helpers.cleanUpTestProperties();
-  });
-
   var originalTimeout;
   beforeEach(function() {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -114,7 +109,6 @@ describe('Library API', function() {
   helpers.it("gets a Library's upstream Library", async function() {
     const lib = libAaron;
     const upstreamResponse = await reactor.getUpstreamLibraryForLibrary(lib.id);
-    console.log('getUpstreamLibraryForLibrary', upstreamResponse);
     expect(upstreamResponse.data).toBeNull();
     //TODO: transition the library a couple of times and THEN test upstreams
   });
@@ -288,12 +282,10 @@ describe('Library API', function() {
       id: libChuck.id,
       type: 'libraries'
     });
-    console.log('updateResponse=', updateResponse);
     expect(updateResponse.data.id).toBe(libChuck.id);
     expect(updateResponse.data.attributes.name).toMatch(/chuck updated/i);
 
     const getResponse = await reactor.getLibrary(libChuck.id);
-    console.log('getResponse=', getResponse);
     expect(getResponse.data.attributes.name).toMatch(/chuck updated/i);
   });
 

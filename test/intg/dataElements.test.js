@@ -27,10 +27,6 @@ describe('DataElement API', function() {
     theProperty = await helpers.createTestProperty('DataElement-Testing');
   });
 
-  afterAll(async function() {
-    await reactor.deleteProperty(theProperty.id);
-  });
-
   var originalTimeout;
   beforeEach(function() {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
