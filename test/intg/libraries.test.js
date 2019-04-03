@@ -15,7 +15,7 @@ import helpers from './helpers';
 
 // Libraries
 // https://developer.adobelaunch.com/api/libraries
-describe('Library API', function() {
+helpers.describe('Library API', function() {
   var theProperty;
   var libAaron;
   var libBrian;
@@ -36,7 +36,7 @@ describe('Library API', function() {
   var originalTimeout;
   beforeEach(function() {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 35000;
   });
 
   afterEach(function() {
@@ -47,7 +47,7 @@ describe('Library API', function() {
   // https://developer.adobelaunch.com/api/libraries/add_resources/
   helpers.it('adds resource relationships to a Library', async function() {
     // All the expectations are in makeResourcesAndAddToLibrary().
-    await makeResourcesAndAddToLibrary(libAaron, ['ann', 'bob']);
+    await makeResourcesAndAddToLibrary(theProperty, libAaron, ['ann', 'bob']);
   });
 
   // Create a Library
@@ -139,36 +139,53 @@ describe('Library API', function() {
   // https://developer.adobelaunch.com/api/libraries/list_resource_relationships/
   helpers.it("lists a Library's resource relationships", async function() {
     // All the expectations are in makeResourcesAndAddToLibrary().
-    await makeResourcesAndAddToLibrary(libBrian, ['cyd', 'don']);
+    await makeResourcesAndAddToLibrary(theProperty, libBrian, ['cyd', 'don']);
   });
 
   // List resources
   // https://developer.adobelaunch.com/api/libraries/resources/
   helpers.it("lists a Library's resources", async function() {
     const names = ['eve', 'flo', 'gus'];
-    const dataElements = await makeResourcesAndAddToLibrary(libChuck, names);
+    const dataElements = await makeResourcesAndAddToLibrary(
+      theProperty,
+      libChuck,
+      names
+    );
 
     const listResponse = await reactor.listResourcesForLibrary(libChuck.id);
-    const allIds = listResponse.data.map(resource => resource.id);
-    dataElements.forEach(de => expect(allIds).toContain(de.id));
-    // Check that these are resources, not just resource relationships. The
-    // relationship will not have an `attributes` field, but the resource will.
-    // And `attributes` will have a `name` (among other values).
+    const allIds = listResponse.data.map(r => r.id);
     const allNames = listResponse.data.map(r => r.attributes.name);
-    dataElements.forEach(de => expect(allNames).toContain(de.attributes.name));
+    for (const de of dataElements) {
+      expect(allIds).toContain(de.id);
+      // Check that these are resources, not just resource relationships. The
+      // relationship will not have an `attributes` field, but the resource will.
+      // And `attributes` will have a `name` (among other values).
+      expect(allNames).toContain(de.attributes.name);
+    }
   });
 
   // Publish a Library
   // https://developer.adobelaunch.com/api/libraries/publish/
   helpers.it('publishes a Library', async function() {
-    const resources = await reactor.listResourcesForLibrary(libChuck.id);
-    if (resources.data.length < 1) {
-      await makeResourcesAndAddToLibrary(libChuck, ['hal']);
-    }
-    await helpers.makeLibraryEnvironment(libChuck);
+    const aProperty = await helpers.createTestProperty('Publishing Base');
+    let lib = await helpers.createTestLibrary(aProperty.id, 'Hyrum');
+    await helpers.addCoreToLibrary(aProperty, lib);
+    await makeResourcesAndAddToLibrary(aProperty, lib, ['ian']);
+    await helpers.makeLibraryEnvironment(lib, 'Hyrum dev env', 'Akamai');
 
-    const response = await reactor.publishLibrary(libChuck.id);
-    expect(response.data.id).toMatch(helpers.idBL);
+    await helpers.buildLibrary(lib);
+    await helpers.transitionLibrary(lib, 'submit');
+
+    await helpers.makeLibraryEnvironment(lib, 'Hyrum stage env', 'Akamai');
+    await helpers.buildLibrary(lib);
+    await helpers.transitionLibrary(lib, 'approve');
+
+    await helpers.makeLibraryEnvironment(lib, 'Hyrum prod env', 'Akamai');
+    await helpers.buildLibrary(lib);
+    // transition to 'published' is automatic
+
+    lib = await reactor.getLibrary(lib.id);
+    expect(lib.data.attributes.state).toBe('published');
   });
 
   // Remove Environment relationship
@@ -188,7 +205,11 @@ describe('Library API', function() {
   // https://developer.adobelaunch.com/api/libraries/remove_resource_relationships/
   helpers.it("removes a Library's resources", async function() {
     const names = ['ian', 'jan', 'kip'];
-    const [ian, jan, kip] = await makeResourcesAndAddToLibrary(libAaron, names);
+    const [ian, jan, kip] = await makeResourcesAndAddToLibrary(
+      theProperty,
+      libAaron,
+      names
+    );
 
     const response = await reactor.removeResourceRelationshipsFromLibrary(
       libAaron.id,
@@ -210,12 +231,12 @@ describe('Library API', function() {
   // Replace resources
   // https://developer.adobelaunch.com/api/libraries/replace_resource_relationships/
   helpers.it("replaces a Library's resources", async function() {
-    const [liz, mac, nan] = await makeResourcesAndAddToLibrary(libAaron, [
-      'liz',
-      'mac',
-      'nan'
-    ]);
-    const [ole, pam] = await makeResources(['ole', 'pam']);
+    const [liz, mac, nan] = await makeResourcesAndAddToLibrary(
+      theProperty,
+      libAaron,
+      ['liz', 'mac', 'nan']
+    );
+    const [ole, pam] = await makeResources(theProperty, ['ole', 'pam']);
 
     const id = libAaron.id;
     const response = await reactor.replaceResourceRelationshipsForLibrary(id, [
@@ -241,37 +262,17 @@ describe('Library API', function() {
   // Transition a Library
   // https://developer.adobelaunch.com/api/libraries/transition/
   helpers.it('transitions a Library', async function() {
-    const lib = libBrian;
-    await helpers.makeLibraryEnvironment(lib, 'Garth');
-    await helpers.addCoreToLibrary(theProperty, lib);
-
-    const buildResponse = await reactor.createBuild(lib.id);
-    const buildId = buildResponse.data.id;
-    expect(buildId).toMatch(helpers.idBL);
-
-    // wait for build to complete
-    const totalWait = 6000; // in milliseconds
-    const pollInterval = 2000; // in milliseconds
-    for (var i = 0; i < totalWait; i += pollInterval) {
-      await helpers.sleep(pollInterval);
-      var getBuildResponse = await reactor.getBuild(buildId);
-      reactor.logger.always(
-        `after ${i + pollInterval} milliseconds, ${buildId} is ${
-          getBuildResponse.data.attributes.status
-        }`
-      );
-      if (getBuildResponse.data.attributes.status !== 'pending') break;
-    }
-    const status = getBuildResponse.data.attributes.status;
-    expect(status).toBe('succeeded');
-    if (status !== 'succeeded') return;
+    const aProperty = await helpers.createTestProperty(
+      'Library Transition-Testing Base'
+    );
+    const lib = await helpers.createTestLibrary(aProperty.id, 'Irwin');
+    await helpers.makeLibraryEnvironment(lib, 'Irwin dev env', 'Akamai');
+    await helpers.addCoreToLibrary(aProperty, lib);
+    await helpers.buildLibrary(lib);
 
     // transition
-    const transitionResponse = await reactor.transitionLibrary(
-      lib.id,
-      'submit'
-    );
-    expect(transitionResponse.data.attributes.state).toBe('submitted');
+    const response = await reactor.transitionLibrary(lib.id, 'submit');
+    expect(response.data.attributes.state).toBe('submitted');
   });
 
   // Update a Library
@@ -291,11 +292,12 @@ describe('Library API', function() {
 
   // Make a DataElement with each name, revise each, and return a list
   // containing the revised DataElements.
-  async function makeResources(names) {
+  async function makeResources(targetProperty, names) {
     // Create a DataElement for each name
     const heads = await Promise.all(
-      names.map(name => helpers.createTestDataElement(theProperty, name))
+      names.map(name => helpers.createTestDataElement(targetProperty, name))
     );
+    console.debug('makeResources: heads =', heads.map(r => r.id));
 
     // Revise each DataElement
     const revisions = await Promise.all(
@@ -309,14 +311,19 @@ describe('Library API', function() {
         return revised;
       })
     );
+    console.debug('makeResources: revisions =', revisions.map(r => r.id));
     return revisions;
   }
 
   // Make a DataElement with each name, revise each, and add the revisions to
   // lib.  Return a list containing the revised DataElements.
-  async function makeResourcesAndAddToLibrary(lib, names = ['ann', 'bob']) {
+  async function makeResourcesAndAddToLibrary(
+    prop,
+    lib,
+    names = ['ann', 'bob']
+  ) {
     // Get new (and revised) DataElements
-    const revisions = await makeResources(names);
+    const revisions = await makeResources(prop, names);
 
     // Add all the revised DataElements to lib
     const revisionIds = revisions.map(resource => resource.id);
@@ -325,14 +332,18 @@ describe('Library API', function() {
       revisionIds.map(id => ({ id: id, type: 'data_elements' }))
     );
     const addedIds = addResponse.data.map(resource => resource.id).sort();
-    revisionIds.forEach(id => expect(addedIds).toContain(id));
+    for (const id of revisionIds) {
+      expect(addedIds).toContain(id);
+    }
 
     // Check whether they all show up when resources are listed
     const listResponse = await reactor.listResourceRelationshipsForLibrary(
       lib.id
     );
     const listedIds = listResponse.data.map(resource => resource.id);
-    revisionIds.forEach(id => expect(listedIds).toContain(id));
+    for (const id of revisionIds) {
+      expect(listedIds).toContain(id);
+    }
 
     return revisions;
   }

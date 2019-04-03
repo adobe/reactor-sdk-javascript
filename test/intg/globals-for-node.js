@@ -23,8 +23,7 @@ if (!globals) {
     ORG_ID: process.env.ORG_ID,
     ACCESS_TOKEN: process.env.ACCESS_TOKEN,
     REACTOR_URL: process.env.REACTOR_URL,
-    COMPANY_ID: process.env.COMPANY_ID,
-    LOG_LEVEL: process.env.JASMINE_DEBUG_LEVEL || 'error'
+    COMPANY_ID: process.env.COMPANY_ID
   };
   jasmine.getEnv().reactorIntegrationTestGlobals = globals;
 }

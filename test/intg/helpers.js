@@ -23,6 +23,7 @@ function expectWithContext(value, context) {
 }
 
 const helpers = {
+  reactor: reactor,
   companyId: globals.COMPANY_ID,
 
   idAD: /^AD[0-9a-f]{32}$/i,
@@ -88,7 +89,7 @@ const helpers = {
   },
 
   reportError(error) {
-    console.log(`[${helpers.specName}]`, error, { details: error });
+    console.error(`[${helpers.specName}]`, error, { details: error });
     fail(error);
   },
 
@@ -115,7 +116,8 @@ const helpers = {
   async createTestLibrary(propertyId, baseName) {
     const ctx = `while creating "${baseName}" test Library:`;
     try {
-      if (!propertyId) propertyId = helpers.createTestProperty(baseName).id;
+      if (!propertyId)
+        propertyId = await helpers.createTestProperty(baseName).id;
       if (!propertyId) return false;
       const response = await reactor.createLibrary(propertyId, {
         attributes: {
@@ -155,7 +157,7 @@ const helpers = {
     return revId;
   },
 
-  async createTestAdapter(propertyId, baseName) {
+  async createTestSftpAdapter(propertyId, baseName) {
     const ctx = `while creating "${baseName}" test Adapter:`;
     try {
       /*eslint-disable camelcase*/
@@ -196,26 +198,75 @@ const helpers = {
     }
   },
 
+  async createTestAkamaiAdapter(propertyId, baseName) {
+    const ctx = `while creating "${baseName}" test Adapter:`;
+    try {
+      /*eslint-disable camelcase*/
+      const response = await reactor.createAdapter(propertyId, {
+        attributes: {
+          name: makeNameForTestObject('Adapter', baseName),
+          type_of: 'akamai'
+        },
+        type: 'adapters'
+      });
+      /*eslint-enable camelcase*/
+      expectWithContext(response.data.id, ctx).toMatch(helpers.idAD);
+      return response.data;
+    } catch (error) {
+      helpers.specName = ctx;
+      helpers.reportError(error);
+      return false;
+    }
+  },
+
+  // Create an Environment using the identified Adapter.
+  //
+  // If adapterId is non-null and contains an Adapter ID, then that adapter
+  // will be used on the new Environment.
+  // If adapterId is non-null and contains the word Akamai (case-insensitive),
+  // then a new Akamai adapter will be created for the new Environment.
+  // Otherwise, a new SFTP adapter will be created for the new Environment.
+  //
+  // The returned environment object will have an 'associatedAdapterId' field
+  // identifying the Adapter assigned to the environment.
+  //
+  // Creates a production Environment if baseName =~ /\bprod(uction)?\b/i.
+  // Creates a staging Environment if baseName =~ /\bstag(e|ing)\b/i.
+  // Otherwise, creates a development Environment.
   async createTestEnvironment(propertyId, baseName, adapterId = null) {
     let ctx = `while creating "${baseName}" test Environment`;
     ctx += ` on ${propertyId} ${adapterId}:`;
     try {
-      if (adapterId === null) {
-        const adapter = await helpers.createTestAdapter(propertyId, baseName);
+      const kind = determineAdapterKind(adapterId);
+      if (kind === 'sftp') {
+        const adapter = await helpers.createTestSftpAdapter(
+          propertyId,
+          baseName
+        );
         adapterId = adapter.id;
+      } else if (kind === 'akamai') {
+        const adapter = await helpers.createTestAkamaiAdapter(
+          propertyId,
+          baseName
+        );
+        adapterId = adapter.id;
+      }
+      const attributes = {
+        name: makeNameForTestObject('Environment', baseName),
+        stage: determineEnvironmentStage(baseName)
+      };
+      if (kind !== 'akamai') {
+        attributes.path = 'https://example.com/';
       }
       const response = await reactor.createEnvironment(propertyId, {
         type: 'environments',
-        attributes: {
-          name: makeNameForTestObject('Environment', baseName),
-          path: 'https:///example.com/',
-          stage: 'development'
-        },
+        attributes: attributes,
         relationships: {
           adapter: { data: { type: 'adapters', id: adapterId } }
         }
       });
       expectWithContext(response.data.id, ctx).toMatch(helpers.idEN);
+      response.data.associatedAdapterId = adapterId;
       return response.data;
     } catch (error) {
       helpers.specName = ctx;
@@ -272,10 +323,10 @@ const helpers = {
   },
 
   // create a new Environment and add it to the library
-  async makeLibraryEnvironment(library, name = 'env') {
+  async makeLibraryEnvironment(library, name = 'env', adapterId = null) {
     const lId = library.id;
     const pId = library.relationships.property.data.id;
-    const e = await helpers.createTestEnvironment(pId, name);
+    const e = await helpers.createTestEnvironment(pId, name, adapterId);
     const r = await reactor.setEnvironmentRelationshipForLibrary(lId, e.id);
     expect(r.data.id).toBe(e.id);
     expect(r.links.related).toContain(`/${lId}/`);
@@ -283,20 +334,66 @@ const helpers = {
     return e;
   },
 
+  async buildLibrary(lib) {
+    const buildResponse = await reactor.createBuild(lib.id);
+    const buildId = buildResponse.data.id;
+    expect(buildId).toMatch(helpers.idBL);
+
+    // wait for build to complete
+    const totalWait = 30000; // in milliseconds
+    const pollInterval = 1000; // in milliseconds
+    for (var i = 0; i < totalWait; i += pollInterval) {
+      await helpers.sleep(pollInterval);
+      var getBuildResponse = await reactor.getBuild(buildId);
+      console.info(
+        `after ${i + pollInterval} milliseconds, ${buildId} is ${
+          getBuildResponse.data.attributes.status
+        }`
+      );
+      if (getBuildResponse.data.attributes.status !== 'pending') break;
+    }
+    const status = getBuildResponse.data.attributes.status;
+    expect(status).toBe('succeeded');
+    return buildId;
+  },
+
+  async transitionLibrary(lib, action) {
+    const response = await reactor.transitionLibrary(lib.id, action);
+    let expectedState = 'unknown (action was "' + action + '")';
+    if (action === 'submit') expectedState = 'submitted';
+    if (action === 'approve') expectedState = 'approved';
+    if (action === 'reject') expectedState = 'rejected';
+    if (action === 'develop') expectedState = 'development';
+    expect(response.data.attributes.state).toBe(expectedState);
+    return response.data;
+  },
+
   async cleanUpTestProperties() {
-    const response = await reactor.listProperties(reactor.myCompanyId);
-    const properties = response.data;
-    expect(properties).toBeDefined();
-    properties.forEach(async function(property) {
-      expect(property.id).toMatch(helpers.idPR);
-      const propName = property.attributes.name;
-      if (nameMatcherForTestProperties.test(propName)) {
-        console.log(`cleanup: deleting ${property.id} "${propName}"`);
-        await reactor.deleteProperty(property.id);
-      } else {
-        console.log(`cleanup: leaving ${property.id} "${propName}"`);
+    const groupName = 'Clean up Properties from earlier integration tests';
+    helpers.specName = groupName;
+    console.groupCollapsed(groupName);
+    try {
+      // TODO: handle multi-page Property results
+      const response = await reactor.listPropertiesForCompany(
+        reactor.myCompanyId
+      );
+      const properties = response.data;
+      expect(properties).toBeDefined();
+      for (const property of properties) {
+        expect(property.id).toMatch(helpers.idPR);
+        const propName = property.attributes.name;
+        if (nameMatcherForTestProperties.test(propName)) {
+          console.debug(`cleanup: deleting ${property.id} "${propName}"`);
+          await reactor.deleteProperty(property.id);
+          console.debug(`cleanup: deleted ${property.id} "${propName}"`);
+        } else {
+          console.debug(`cleanup: not deleting ${property.id} "${propName}"`);
+        }
       }
-    });
+    } catch (error) {
+      helpers.reportError(error);
+    }
+    console.groupEnd(groupName);
   },
 
   async createTestRule(property, ruleName) {
@@ -312,32 +409,59 @@ const helpers = {
     );
   },
 
+  describe(description, suiteDefinition) {
+    describe(description, function() {
+      beforeAll(() => console.groupCollapsed(description));
+      afterAll(() => console.groupEnd(description));
+      suiteDefinition.apply(this);
+    });
+  },
+  fdescribe(description, suiteDefinition) {
+    fdescribe(description, function() {
+      beforeAll(() => console.groupCollapsed(description));
+      afterAll(() => console.groupEnd(description));
+      suiteDefinition.apply(this);
+    });
+  },
+
   // Wraps the test in a try/catch that prints much more useful information
   // when an error is thrown. The default Jasmine report usually just says
   // `[object Object] thrown`, which is not very helpful.
   //
   // helpers.it() also puts the name of the spec into helpers.specName, which
   // can make error messages easier to locate in the source.
-  it(description, testFn) {
-    var spec = it(description, async function() {
-      try {
-        helpers.specName = spec.getFullName();
-        await testFn.apply(this, arguments);
-      } catch (error) {
-        helpers.reportError(error);
-      }
-    });
+  it(description, testFn, timeout) {
+    var spec = it(
+      description,
+      async function() {
+        console.groupCollapsed(description);
+        try {
+          helpers.specName = spec.getFullName();
+          await testFn.apply(this, arguments);
+        } catch (error) {
+          helpers.reportError(error);
+        }
+        console.groupEnd(description);
+      },
+      timeout
+    );
     return spec;
   },
-  fit(description, testFn) {
-    var spec = fit(description, async function() {
-      try {
-        helpers.specName = spec.getFullName();
-        await testFn.apply(this, arguments);
-      } catch (error) {
-        helpers.reportError(error);
-      }
-    });
+  fit(description, testFn, timeout) {
+    var spec = fit(
+      description,
+      async function() {
+        console.group(description);
+        try {
+          helpers.specName = spec.getFullName();
+          await testFn.apply(this, arguments);
+        } catch (error) {
+          helpers.reportError(error);
+        }
+        console.groupEnd(description);
+      },
+      timeout
+    );
     return spec;
   },
   xit(description, testFn) {
@@ -590,6 +714,21 @@ async function makeTestRuleComponent(
   expect(ruleComponent.relationships.rule.data.id).toBe(rule.id);
   expect(ruleComponent.relationships.extension.data.id).toBe(coreEx.id);
   return ruleComponent;
+}
+
+function determineAdapterKind(adapterId) {
+  const kind = adapterId;
+  if (adapterId === null) return 'sftp';
+  if (adapterId.match(helpers.idEN)) return adapterId;
+  if (adapterId.match(/\bakamai\b/i)) return 'akamai';
+  return 'sftp';
+}
+
+function determineEnvironmentStage(environmentBaseName) {
+  if (environmentBaseName === null) return 'development';
+  if (environmentBaseName.match(/\bprod(uction)?\b/i)) return 'production';
+  if (environmentBaseName.match(/\bstag(e|ing)\b/i)) return 'staging';
+  return 'development';
 }
 
 export { helpers as default };

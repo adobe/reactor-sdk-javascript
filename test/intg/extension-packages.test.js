@@ -15,7 +15,7 @@ import helpers from './helpers';
 
 // ExtensionPackages
 // https://developer.adobelaunch.com/api/extension_packages:
-describe('ExtensionPackage API', function() {
+helpers.describe('ExtensionPackage API', function() {
   var corePackage;
 
   beforeAll(async function() {
@@ -68,11 +68,29 @@ describe('ExtensionPackage API', function() {
     expect(response.data.type).toBe('extension_packages');
   });
 
+  async function getAllExtensionPackageIds() {
+    /*eslint-disable camelcase*/
+    const thePackageIds = [];
+    let pagination = { next_page: 1 };
+    do {
+      const listResponse = await reactor.listExtensionPackages({
+        'page[number]': pagination.next_page,
+        'page[size]': 100
+      });
+      expect(typeof listResponse.data).not.toBeNull();
+      for (const thePackage of listResponse.data) {
+        thePackageIds.push(thePackage.id);
+      }
+      pagination = listResponse.meta && listResponse.meta.pagination;
+    } while (pagination.next_page);
+    return thePackageIds;
+    /*eslint-enable camelcase*/
+  }
+
   // List all the available ExtensionPackages
   // https://developer.adobelaunch.com/api/extension_packages/list/
   helpers.it('lists all ExtensionPackages', async function() {
-    const listResponse = await reactor.listExtensionPackages();
-    expect(typeof listResponse.data).not.toBeNull();
+    const allIds = await getAllExtensionPackageIds();
 
     const fb = await helpers.findNamedExtensionPackage('facebook-pixel');
     const aa = await helpers.findNamedExtensionPackage('adobe-analytics');
@@ -80,7 +98,6 @@ describe('ExtensionPackage API', function() {
     const fbId = fb.id;
     const aaId = aa.id;
 
-    const allIds = listResponse.data.map(resource => resource.id);
     expect(allIds).toContain(rcId);
     expect(allIds).toContain(fbId);
     expect(allIds).toContain(aaId);

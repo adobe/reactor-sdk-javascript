@@ -4,4 +4,4 @@
 node_modules
 .cache
 dist
-test/intg/globalsForBrowser.js
+test/intg/globals-for-browser.js

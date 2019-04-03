@@ -12,7 +12,17 @@ governing permissions and limitations under the License.
 
 // Clean up any cobwebs from the last run of the integration tests
 import helpers from './helpers';
-helpers.cleanUpTestProperties();
+
+// runs before all suites
+beforeAll(async function() {
+  console.group('Reactor JavaScript SDK Integration Tests');
+  await helpers.cleanUpTestProperties();
+});
+
+// runs after all suites
+afterAll(function() {
+  console.groupEnd('Reactor JavaScript SDK Integration Tests');
+});
 
 // Metadata
 import './heartbeat.test.js';
@@ -20,18 +30,17 @@ import './profile.test.js';
 
 // Launch Types
 import './adapters.test.js';
-import './auditEvents.test.js';
+import './audit-events.test.js';
 import './builds.test.js';
 import './callbacks.test.js';
 import './companies.test.js';
-import './consoleLogger.js';
-import './dataElements.test.js';
+import './data-elements.test.js';
 import './environments.test.js';
-import './extensionPackages.test.js';
+import './extension-packages.test.js';
 import './extensions.test.js';
 import './libraries.test.js';
 import './properties.test.js';
-import './ruleComponents.test.js';
+import './rule-components.test.js';
 import './rules.test.js';
 
 // [Reactor Postman](https://github.com/Adobe-Marketing-Cloud/reactor-postman),

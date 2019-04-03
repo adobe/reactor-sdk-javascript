@@ -36,17 +36,17 @@ describe('Property:', function() {
     });
   });
 
-  describe('listProperties', function() {
+  describe('listPropertiesForCompany', function() {
     it('runs an http GET', async function() {
       context.expectRequest('get', `/companies/${companyId}/properties`);
-      await reactor.listProperties(companyId);
+      await reactor.listPropertiesForCompany(companyId);
     });
     it('runs an http GET with query parameters', async function() {
       context.expectRequest(
         'get',
         `/companies/${companyId}/properties?filter%5Bname%5D=EQ+Delta%2CEQ+Bravo&sort=-name`
       );
-      await reactor.listProperties(companyId, {
+      await reactor.listPropertiesForCompany(companyId, {
         'filter[name]': 'EQ Delta,EQ Bravo',
         sort: '-name'
       });

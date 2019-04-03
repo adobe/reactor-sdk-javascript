@@ -14,6 +14,8 @@ import Reactor from '../../lib/reactor.js';
 const globals = jasmine.getEnv().reactorIntegrationTestGlobals;
 describe('Reactor SDK Example', function() {
   if (!disableJasmineRandomStepOrder()) return;
+  beforeAll(() => console.group('Awesome Example'));
+  afterAll(() => console.groupEnd('Awesome Example'));
 
   // CREDIT: The actions of this script are inspired by
   // [Reactor Postman](https://github.com/Adobe-Marketing-Cloud/reactor-postman).
@@ -38,11 +40,13 @@ describe('Reactor SDK Example', function() {
 
 function runStep(description, asyncFunctionImplementingTheNextStep) {
   it(description, async function() {
+    console.groupCollapsed(description);
     try {
       await asyncFunctionImplementingTheNextStep();
     } catch (error) {
       expect(error).toBeNull();
     }
+    console.groupEnd(description);
   });
 }
 
@@ -107,9 +111,11 @@ function toLocalISOString(date) {
 //    - etc.
 // This sharing is implemented by the following global-ish variables.
 
-const reactor = new Reactor(globals.ACCESS_TOKEN, {
-  reactorUrl: globals.REACTOR_URL
-});
+const reactor =
+  globals.reactor ||
+  (globals.reactor = new Reactor(globals.ACCESS_TOKEN, {
+    reactorUrl: globals.REACTOR_URL
+  }));
 
 // Global variables holding object ID's. Variable names end in a two-letter code
 // indicating the referenced object's type (PR=Property, EX=Extension, etc).
@@ -162,35 +168,55 @@ async function makeNewAwesomePR() {
   expect(property.id).toMatch(/^PR[0-9A-F]{32}$/i);
 }
 
+// Returns a list containing the names and ids of all ExtensionPackages
+async function getAllExtensionPackages() {
+  /*eslint-disable camelcase*/
+  const ls = [];
+  let pagination = { next_page: 1 };
+  do {
+    const listResponse = await reactor.listExtensionPackages({
+      'filter[platform]': 'EQ web',
+      /*eslint-disable camelcase*/
+      max_availability: 'private',
+      /*eslint-enable camelcase*/
+      sort: '+name',
+      'page[number]': pagination.next_page,
+      'page[size]': 100
+    });
+    expect(typeof listResponse.data).not.toBeNull();
+    listResponse.data.forEach(p => {
+      ls.push({ name: p.attributes.name, id: p.id });
+    });
+    pagination = listResponse.meta && listResponse.meta.pagination;
+  } while (pagination.next_page);
+  return ls;
+  /*eslint-enable camelcase*/
+}
+
 async function findThreeEP() {
   // Get extension packages, selecting those for the web platform
-  const response = await reactor.listExtensionPackages({
-    'filter[platform]': 'EQ web',
-    /*eslint-disable camelcase*/
-    max_availability: 'private',
-    /*eslint-enable camelcase*/
-    sort: '+name'
-  });
-  const eps = response.data;
+  const eps = await getAllExtensionPackages();
   expect(eps.length).toBeGreaterThan(0);
 
   // Locate the three extension packages we'll be using.
-  // TODO: What if there are so many extension packages that they're paged
-  // by the API? In that case, `eps` will not have the whole list.
-  const rc = eps.find(ep => ep.attributes.name === 'core');
-  const aa = eps.find(ep => ep.attributes.name === 'adobe-analytics');
-  const fb = eps.find(ep => ep.attributes.name === 'facebook-pixel');
+  const rc = eps.find(ep => ep.name === 'core');
+  const aa = eps.find(ep => ep.name === 'adobe-analytics');
+  const fb = eps.find(ep => ep.name === 'facebook-pixel');
+
+  // Verify that we found what we needed.
+  expect(rc).not.toBeNull();
+  expect(aa).not.toBeNull();
+  expect(fb).not.toBeNull();
+  expect(rc.name).toBe('core');
+  expect(aa.name).toBe('adobe-analytics');
+  expect(fb.name).toBe('facebook-pixel');
+  expect(rc.id).toMatch(/^EP[0-9A-F]{32}$/i);
+  expect(aa.id).toMatch(/^EP[0-9A-F]{32}$/i);
+  expect(fb.id).toMatch(/^EP[0-9A-F]{32}$/i);
+
   coreEP = rc.id;
   adobeAnalyticsEP = aa.id;
   facebookPixelEP = fb.id;
-
-  // Verify that we found what we needed.
-  expect(rc.attributes.name).toBe('core');
-  expect(aa.attributes.name).toBe('adobe-analytics');
-  expect(fb.attributes.name).toBe('facebook-pixel');
-  expect(coreEP).toMatch(/^EP[0-9A-F]{32}$/i);
-  expect(adobeAnalyticsEP).toMatch(/^EP[0-9A-F]{32}$/i);
-  expect(facebookPixelEP).toMatch(/^EP[0-9A-F]{32}$/i);
 }
 
 async function findCoreEX() {

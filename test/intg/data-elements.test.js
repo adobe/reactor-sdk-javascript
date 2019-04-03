@@ -15,7 +15,7 @@ import helpers from './helpers';
 
 // DataElements
 // https://developer.adobelaunch.com/api/data_elements
-describe('DataElement API', function() {
+helpers.describe('DataElement API', function() {
   var theProperty;
 
   async function makeDataElement(baseName) {
@@ -198,8 +198,11 @@ describe('DataElement API', function() {
 
   // List revisions
   // https://developer.adobelaunch.com/api/data_elements/revisions/
-  // This endpoint is tested below, at the end of the 'revises a DataElement'
-  // test. It creates a DataElement and revises it twice.
+  helpers.it('lists revisions of a DataElement', async function() {
+    // This endpoint is tested below, at the end of the 'revises a DataElement'
+    // test. It creates a DataElement and revises it twice.
+    expect(null).toBeNull();
+  });
 
   // Revise
   // https://developer.adobelaunch.com/api/data_elements/revise/

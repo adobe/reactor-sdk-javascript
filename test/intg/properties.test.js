@@ -15,7 +15,7 @@ import helpers from './helpers';
 
 // Properties
 // https://developer.adobelaunch.com/api/properties
-describe('Property API', function() {
+helpers.describe('Property API', function() {
   var originalTimeout;
   var newProperty;
 
@@ -96,7 +96,9 @@ describe('Property API', function() {
     expect(detroit.attributes.name).toMatch(/^detroit/i);
 
     // Make sure all four show up in the list of Properties on the company
-    const listResponse = await reactor.listProperties(helpers.companyId);
+    const listResponse = await reactor.listPropertiesForCompany(
+      helpers.companyId
+    );
     const allIds = listResponse.data.map(resource => resource.id);
     expect(allIds).toContain(atlanta.id);
     expect(allIds).toContain(barstow.id);
@@ -111,9 +113,12 @@ describe('Property API', function() {
     await getPropertyByIdAndCheckName(detroit.id, 'Detroit');
 
     // Test filtering Properties by name
-    const filteredResponse = await reactor.listProperties(helpers.companyId, {
-      'filter[name]': 'LIKE Detroit,LIKE Barstow'
-    });
+    const filteredResponse = await reactor.listPropertiesForCompany(
+      helpers.companyId,
+      {
+        'filter[name]': 'LIKE Detroit,LIKE Barstow'
+      }
+    );
     const twoIds = filteredResponse.data.map(resource => resource.id);
     expect(twoIds).not.toContain(atlanta.id);
     expect(twoIds).toContain(barstow.id);

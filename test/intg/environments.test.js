@@ -15,7 +15,7 @@ import helpers from './helpers';
 
 // Environments
 // https://developer.adobelaunch.com/api/environments
-describe('Environment API', function() {
+helpers.describe('Environment API', function() {
   var theProperty;
   var theAdapter;
   var envSleepy;
@@ -27,7 +27,7 @@ describe('Environment API', function() {
     theProperty = await helpers.createTestProperty('Environment-Testing');
     if (!theProperty) return;
     const p = theProperty.id;
-    theAdapter = await helpers.createTestAdapter(p, 'Environment-Testing');
+    theAdapter = await helpers.createTestSftpAdapter(p, 'Environment-Testing');
     if (!theAdapter) return;
     const a = theAdapter.id;
     envSleepy = await helpers.createTestEnvironment(p, 'Sleepy', a);
@@ -35,6 +35,16 @@ describe('Environment API', function() {
     envGrumpy = await helpers.createTestEnvironment(p, 'Grumpy', a);
     if (!envSleepy || !envSneezy || !envGrumpy) return;
     setupFailed = false;
+  });
+
+  var originalTimeout;
+  beforeEach(function() {
+    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 35000;
+  });
+
+  afterEach(function() {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 
   // Create an Environment
@@ -78,21 +88,21 @@ describe('Environment API', function() {
   // https://developer.adobelaunch.com/api/environments/adapter/
   helpers.it("gets an Environment's Adapter", async function() {
     if (setupFailed) return;
-    const response = await reactor.getAdapterForEnvironment(envGrumpy.id);
+    const env = await helpers.createTestEnvironment(theProperty.id, 'Grady');
+    const response = await reactor.getAdapterForEnvironment(env.id);
     expect(response.data).not.toBeUndefined();
-    expect(response.data.id).toBe(theAdapter.id);
+    expect(response.data.id).toBe(env.associatedAdapterId);
     expect(response.data.type).toBe('adapters');
-    expect(response.data.attributes.name).toBe(theAdapter.attributes.name);
   });
 
   // Get the Adapter relationship
   // https://developer.adobelaunch.com/api/environments/adapter_relationship/
   helpers.it("gets an Environment's Adapter relationship", async function() {
     if (setupFailed) return;
-    const envId = envGrumpy.id;
-    const response = await reactor.getAdapterRelationshipForEnvironment(envId);
+    const env = await helpers.createTestEnvironment(theProperty.id, 'Kyrie');
+    const response = await reactor.getAdapterRelationshipForEnvironment(env.id);
     expect(response.data).not.toBeUndefined();
-    expect(response.data.id).toBe(theAdapter.id);
+    expect(response.data.id).toBe(env.associatedAdapterId);
     expect(response.data.type).toBe('adapters');
     expect(response.data.attributes).toBeUndefined();
   });
@@ -135,8 +145,18 @@ describe('Environment API', function() {
 
   // List Builds
   // https://developer.adobelaunch.com/api/environments/builds/
-  helpers.xit("lists an Environment's builds", async function() {
-    //TODO: test listBuildsForEnvironment
+  helpers.it("lists an Environment's builds", async function() {
+    // Create an library, adapter, environment
+    const lib = await helpers.createTestLibrary(theProperty.id, 'Jack');
+    const env = await helpers.makeLibraryEnvironment(lib, 'Jill', 'Akamai');
+    await helpers.addCoreToLibrary(theProperty, lib);
+    const buildId = await helpers.buildLibrary(lib);
+    if (buildId === null) return;
+
+    // test listBuildsForEnvironment
+    const response = await reactor.listBuildsForEnvironment(env.id);
+    const allIds = response.data.map(build => build.id);
+    expect(allIds).toContain(buildId);
   });
 
   // List Environments for a Property
@@ -166,4 +186,25 @@ describe('Environment API', function() {
 
   // Update an Environment
   // https://developer.adobelaunch.com/api/environments/update/
+  helpers.it('updates an Environment', async function() {
+    const theEnvironment = await helpers.createTestEnvironment(
+      theProperty.id,
+      'Blick',
+      theAdapter.id
+    );
+    let response = await reactor.updateEnvironment({
+      attributes: {
+        name: theEnvironment.attributes.name.replace('Blick', 'Blick Updated')
+      },
+      id: theEnvironment.id,
+      type: 'environments'
+    });
+    const updatedEnvironment = response.data;
+    expect(updatedEnvironment.id).toBe(theEnvironment.id);
+    expect(updatedEnvironment.attributes.name).toMatch(/Updated/);
+
+    response = await reactor.getEnvironment(theEnvironment.id);
+    const freshlyLoaded = response.data;
+    expect(freshlyLoaded.attributes.name).toMatch(/Updated/);
+  });
 });

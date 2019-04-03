@@ -15,10 +15,10 @@ import helpers from './helpers';
 
 // Companies
 // https://developer.adobelaunch.com/api/companies
-describe('Company API', function() {
+helpers.describe('Company API', function() {
   // Get a Company
   // https://developer.adobelaunch.com/api/companies/fetch/
-  it('gets a Company', async function() {
+  helpers.it('gets a Company', async function() {
     const response = await reactor.getCompany(helpers.companyId);
     const prop = response.data;
     expect(prop.id).toBe(helpers.companyId);
@@ -26,13 +26,34 @@ describe('Company API', function() {
 
   // List Companies
   // https://developer.adobelaunch.com/api/companies/list/
-  it('lists all Companies', async function() {
-    const response = await reactor.listCompanies();
-    const companies = response.data;
-    companies.forEach(company => {
-      expect(company.id).toMatch(helpers.idCO);
-    });
-    const companyIds = companies.map(resource => resource.id);
-    expect(companyIds).toContain(helpers.companyId);
-  });
+  helpers.it(
+    'lists all Companies',
+    async function() {
+      const companyIds = await getAllCompanyIds();
+      for (const companyId of companyIds) {
+        expect(companyId).toMatch(helpers.idCO);
+      }
+      expect(companyIds).toContain(helpers.companyId);
+    },
+    10000 /* async timeout, in msec */
+  );
 });
+
+async function getAllCompanyIds() {
+  /*eslint-disable camelcase*/
+  const theCompanyIds = [];
+  let pagination = { next_page: 1 };
+  do {
+    const listResponse = await reactor.listCompanies({
+      'page[number]': pagination.next_page,
+      'page[size]': 100
+    });
+    expect(typeof listResponse.data).not.toBeNull();
+    for (const aCompanyId of listResponse.data) {
+      theCompanyIds.push(aCompanyId.id);
+    }
+    pagination = listResponse.meta && listResponse.meta.pagination;
+  } while (pagination.next_page);
+  return theCompanyIds;
+  /*eslint-enable camelcase*/
+}

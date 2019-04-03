@@ -11,8 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import nock from 'nock';
-import reactorHeaders from '../../../lib/reactorHeaders';
-import jsLogger from 'js-logger';
+import reactorHeaders from '../../../lib/reactor-headers';
 import Reactor from '../../../lib/reactor';
 
 function getEnv(varName, defaultValue) {
@@ -22,17 +21,6 @@ function getEnv(varName, defaultValue) {
 const accessToken = 'No real token needed here because Launch calls are mocked';
 const reactorUrl = 'https://reactor.sample.com';
 const reqheaders = reactorHeaders(accessToken);
-const loggerLevel = getEnv('JASMINE_DEBUG_LEVEL', 'error');
-
-jsLogger.useDefaults();
-const logger = jsLogger.get('ReactorSDK');
-const jsLoggerLevels = {
-  error: jsLogger.ERROR,
-  info: jsLogger.INFO,
-  debug: jsLogger.DEBUG,
-  trace: jsLogger.TRACE
-};
-logger.setLevel(jsLoggerLevels[loggerLevel]);
 
 function expectRequest(method, path, body) {
   const initializedNock = nock(reactorUrl, {
@@ -52,7 +40,6 @@ jasmine.getEnv().reactorContext = {
   reqheaders: reqheaders,
   reactor: new Reactor(accessToken, {
     reactorUrl: reactorUrl,
-    logger: logger
   }),
   expectRequest: expectRequest
 };

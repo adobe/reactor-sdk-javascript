@@ -117,63 +117,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"OjAK":[function(require,module,exports) {
-module.exports = {
-  "engines": {
-    "node": ">10.15.1"
-  },
-  "name": "@adobe/reactor-sdk-node",
-  "version": "0.0.1",
-  "description": "JavaScript SDK for the Reactor API",
-  "repository": {
-    "type": "git",
-    "url": "git@git.corp.adobe.com:reactor/reactor-sdk-node.git"
-  },
-  "author": {
-    "name": "Adobe Systems",
-    "url": "http://adobe.com",
-    "email": "reactor@adobe.com"
-  },
-  "main": "./lib/reactor.js",
-  "browserslist": ["last 2 chrome versions", "last 2 firefox versions", "last 2 safari versions"],
-  "devDependencies": {
-    "babel-core": "6.26.3",
-    "babel-preset-env": "1.7.0",
-    "eslint": "5.15.1",
-    "eslint-config-prettier": "4.1.0",
-    "eslint-plugin-prettier": "3.0.1",
-    "jasmine": "3.3.1",
-    "nock": "10.0.6",
-    "nodemon": "1.18.10",
-    "parcel-bundler": "1.12.0",
-    "prettier": "1.16.4"
-  },
-  "scripts": {
-    "test:lint": "eslint --fix --parser-options=ecmaVersion:8 '{lib,test/spec}/**/*.js'",
-    "test:build": "node_modules/.bin/parcel build --no-minify -o dist/unit-test-main.js test/spec/main.js --target node",
-    "test:run": "node_modules/.bin/jasmine dist/unit-test-main.js",
-    "test:lint-build-run": "clear; npm run test:lint && npm run test:build && npm run test:run",
-    "test": "npm run test:run",
-    "watch": "./node_modules/nodemon/bin/nodemon.js -w test/spec/ -w lib/ --exec npm run test:lint-build-run",
-    "integration:lint": "node_modules/.bin/eslint --fix --parser-options=ecmaVersion:8 --ignore-pattern='test/intg/lib/jasmine*/**' '{lib,test/intg}/**/*.js'",
-    "integration:build:environment": "ACCESS_TOKEN=${REACTOR_API_TOKEN} COMPANY_ID=${REACTOR_TEST_COMPANY_ID} REACTOR_URL=${REACTOR_TEST_URL} node test/intg/write-reactor-environment.js",
-    "integration:build": "npm run integration:build:environment && ./node_modules/.bin/parcel build --no-minify -o dist/intg-tests-browser.js test/intg/allTestsForBrowser.js",
-    "integration:run": "open test/intg/SpecRunner.html",
-    "integration:lint-build-run": "npm run integration:lint && npm run integration:build && npm run integration:run",
-    "integration:test": "npm run integration:run",
-    "integration:watch": "node_modules/.bin/nodemon --watch test/intg/ --watch lib/ --exec 'npm run integration:lint-build-run'"
-  },
-  "nodemonConfig": {
-    "ignore": ["test/intg/globalsForBrowser.js"]
-  },
-  "license": "Apache-2.0",
-  "dependencies": {
-    "js-logger": "1.6.0",
-    "node-fetch": "2.3.0",
-    "url": "0.11.0"
-  }
-};
-},{}],"tq6f":[function(require,module,exports) {
+})({"tq6f":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -364,7 +308,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createBuild = createBuild;
 exports.getBuild = getBuild;
-exports.listBuilds = listBuilds;
+exports.getEnvironmentForBuild = getEnvironmentForBuild;
+exports.getLibraryForBuild = getLibraryForBuild;
+exports.getDataElementsForBuild = getDataElementsForBuild;
+exports.listBuildsForLibrary = listBuildsForLibrary;
+exports.listExtensionsForBuild = listExtensionsForBuild;
+exports.listRulesForBuild = listRulesForBuild;
 
 /***************************************************************************************
  * (c) 2018 Adobe. All rights reserved.
@@ -385,8 +334,28 @@ function getBuild(buildId) {
   return this.get(`/builds/${buildId}`);
 }
 
-function listBuilds(libraryId, queryParams) {
+function getEnvironmentForBuild(buildId) {
+  return this.get(`/builds/${buildId}/environment`);
+}
+
+function getLibraryForBuild(buildId) {
+  return this.get(`/builds/${buildId}/library`);
+}
+
+function getDataElementsForBuild(buildId) {
+  return this.get(`/builds/${buildId}/data_elements`);
+}
+
+function listBuildsForLibrary(libraryId, queryParams) {
   return this.get(`/libraries/${libraryId}/builds`, queryParams);
+}
+
+function listExtensionsForBuild(buildId, queryParams) {
+  return this.get(`/builds/${buildId}/extensions`, queryParams);
+}
+
+function listRulesForBuild(buildId, queryParams) {
+  return this.get(`/builds/${buildId}/rules`, queryParams);
 }
 },{}],"JGFn":[function(require,module,exports) {
 "use strict";
@@ -656,8 +625,8 @@ function getPropertyForEnvironment(environmentId) {
 // https://developer.adobelaunch.com/api/environments/builds/
 
 
-function listBuildsForEnvironment(propertyId, queryParams) {
-  return this.get(`/properties/${propertyId}/builds`, queryParams);
+function listBuildsForEnvironment(environmentId, queryParams) {
+  return this.get(`/environments/${environmentId}/builds`, queryParams);
 } // List Environments for a Property
 // https://developer.adobelaunch.com/api/environments/list/
 
@@ -790,7 +759,7 @@ function getExtension(extensionId) {
 
 function getExtensionPackageForExtension(extensionId) {
   return this.get(`/extensions/${extensionId}/extension_package`);
-} // Get Extension's Origin
+} // Get Extension's origin
 // https://developer.adobelaunch.com/api/reference/1.0/extensions/origin/
 
 
@@ -814,7 +783,7 @@ function listExtensionsForProperty(propertyId, queryParams) {
 
 function listLibrariesForExtension(extensionId) {
   return this.get(`/extensions/${extensionId}/libraries`);
-} // List Extension's Revisions
+} // List Extension's revisions
 // https://developer.adobelaunch.com/api/reference/1.0/extensions/revisions/
 
 
@@ -965,7 +934,10 @@ function listResourcesForLibrary(libraryId, queryParams) {
 
 
 function publishLibrary(libraryId) {
-  return this.post(`/libraries/${libraryId}/builds`);
+  // NOTE: The Library's Environment must be of type Production, and the build
+  // must succeed; otherwise, this will *not* generate a state transition to
+  // 'published'.
+  return this.createBuild(libraryId);
 } // Remove Environment relationship
 // https://developer.adobelaunch.com/api/libraries/delete_environment_relationship/
 
@@ -999,8 +971,6 @@ function replaceResourceRelationshipsForLibrary(libraryId, resources) {
 
 
 function setEnvironmentRelationshipForLibrary(libraryId, environmentId) {
-  checkLibraryId(libraryId);
-  checkEnvironmentId(environmentId);
   return this.patch(`/libraries/${libraryId}/relationships/environment`, {
     data: {
       id: environmentId,
@@ -1031,14 +1001,6 @@ function updateLibrary(libraryPatch) {
   return this.patch(`/libraries/${libraryPatch.id}`, {
     data: libraryPatch
   });
-}
-
-function checkLibraryId(id) {
-  if (!/^LB[0-9a-f]{32}$/.test(id)) throw `bad Library ID: ${id}`;
-}
-
-function checkEnvironmentId(id) {
-  if (!/^EN[0-9a-f]{32}$/.test(id)) throw `bad Environment ID: ${id}`;
 }
 },{}],"dcW0":[function(require,module,exports) {
 "use strict";
@@ -1071,7 +1033,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.createProperty = createProperty;
 exports.getProperty = getProperty;
 exports.getCompanyForProperty = getCompanyForProperty;
-exports.listProperties = listProperties;
+exports.listPropertiesForCompany = listPropertiesForCompany;
 exports.updateProperty = updateProperty;
 exports.deleteProperty = deleteProperty;
 
@@ -1100,7 +1062,7 @@ function getCompanyForProperty(propertyId) {
   return this.get(`/properties/${propertyId}/company`);
 }
 
-function listProperties(companyId, queryParams) {
+function listPropertiesForCompany(companyId, queryParams) {
   return this.get(`/companies/${companyId}/properties`, queryParams);
 }
 
@@ -1303,8 +1265,6 @@ exports.default = void 0;
 
 var _nodeFetch = _interopRequireDefault(require("node-fetch"));
 
-var _url = _interopRequireDefault(require("url"));
-
 var _bodyIsJson = _interopRequireDefault(require("./bodyIsJson"));
 
 var _reactorHeaders = _interopRequireDefault(require("./reactorHeaders"));
@@ -1357,6 +1317,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 class NullLogger {
+  always() {}
+
   fatal() {}
 
   error() {}
@@ -1378,6 +1340,7 @@ class Reactor {
     this.headers = (0, _reactorHeaders.default)(accessToken);
     this.logger = options.logger || new NullLogger();
     this.createReviseBody = _createReviseBody.default;
+    this.logger.info(`Using Reactor at ${this.baseUrl}`);
   }
 
   async request(method, url, requestData = null) {
@@ -1437,10 +1400,7 @@ class Reactor {
   }
 
   get(path, queryParams = {}) {
-    let U = URL;
-    if (typeof U !== 'function') U = _url.default.URL;
-    if (typeof U !== 'function') U = _url.default.Url;
-    const url = new U(this.baseUrl + path);
+    const url = new URL(this.baseUrl + path);
     Object.entries(queryParams).forEach(([key, val]) => url.searchParams.append(key, val));
     return this.request('GET', url);
   }
@@ -1689,11 +1649,11 @@ describe('Build:', function () {
   describe('listBuilds', function () {
     it('runs an http GET', async function () {
       context.expectRequest('get', `/libraries/${libraryId}/builds`);
-      await reactor.listBuilds(libraryId);
+      await reactor.listBuildsForLibrary(libraryId);
     });
     it('runs an http GET with query parameters', async function () {
       context.expectRequest('get', `/libraries/${libraryId}/builds?filter%5Bname%5D=EQ+Delta%2CEQ+Bravo&sort=-name`);
-      await reactor.listBuilds(libraryId, {
+      await reactor.listBuildsForLibrary(libraryId, {
         'filter[name]': 'EQ Delta,EQ Bravo',
         sort: '-name'
       });
@@ -2279,14 +2239,14 @@ describe('Property:', function () {
       await reactor.createProperty(companyId, property);
     });
   });
-  describe('listProperties', function () {
+  describe('listPropertiesForCompany', function () {
     it('runs an http GET', async function () {
       context.expectRequest('get', `/companies/${companyId}/properties`);
-      await reactor.listProperties(companyId);
+      await reactor.listPropertiesForCompany(companyId);
     });
     it('runs an http GET with query parameters', async function () {
       context.expectRequest('get', `/companies/${companyId}/properties?filter%5Bname%5D=EQ+Delta%2CEQ+Bravo&sort=-name`);
-      await reactor.listProperties(companyId, {
+      await reactor.listPropertiesForCompany(companyId, {
         'filter[name]': 'EQ Delta,EQ Bravo',
         sort: '-name'
       });
@@ -2476,10 +2436,6 @@ describe('RuleComponent:', function () {
 },{}],"epB2":[function(require,module,exports) {
 "use strict";
 
-var _semver = _interopRequireDefault(require("semver"));
-
-var _package = require("../../package");
-
 var Reactor = _interopRequireWildcard(require("./../.."));
 
 require("./helpers/envConfig.helper.js");
@@ -2515,15 +2471,5 @@ require("./rule.test.js");
 require("./ruleComponent.test.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const version = _package.engines.node;
-
-if (!_semver.default.satisfies(process.version, version)) {
-  console.log(`Reactor SDK requires node version ${version},
-which is not satisfied by your current version (${process.version}).`);
-  process.exit(1);
-}
-},{"../../package":"OjAK","./../..":"QZzC","./helpers/envConfig.helper.js":"B3zm","./adapter.test.js":"ouSA","./auditEvent.test.js":"hMA5","./build.test.js":"C+zT","./callback.test.js":"d2x8","./company.test.js":"yMxa","./dataElement.test.js":"vCJa","./environment.test.js":"vdQw","./extension.test.js":"qF1X","./extensionPackage.test.js":"MAT4","./heartbeat.test.js":"l8Qs","./library.test.js":"nO0v","./profile.test.js":"DmBY","./property.test.js":"xjTb","./rule.test.js":"ekgI","./ruleComponent.test.js":"ni0k"}]},{},["epB2"], null)
+},{"./../..":"QZzC","./helpers/envConfig.helper.js":"B3zm","./adapter.test.js":"ouSA","./auditEvent.test.js":"hMA5","./build.test.js":"C+zT","./callback.test.js":"d2x8","./company.test.js":"yMxa","./dataElement.test.js":"vCJa","./environment.test.js":"vdQw","./extension.test.js":"qF1X","./extensionPackage.test.js":"MAT4","./heartbeat.test.js":"l8Qs","./library.test.js":"nO0v","./profile.test.js":"DmBY","./property.test.js":"xjTb","./rule.test.js":"ekgI","./ruleComponent.test.js":"ni0k"}]},{},["epB2"], null)
 //# sourceMappingURL=/unit-test-main.js.map

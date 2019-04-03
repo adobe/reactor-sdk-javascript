@@ -26,15 +26,15 @@
     "eslint": "5.15.1",
     "eslint-config-prettier": "4.1.0",
     "eslint-plugin-prettier": "3.0.1",
+    "genversion": "2.1.1",
     "jasmine": "3.3.1",
     "nock": "10.0.6",
     "nodemon": "1.18.10",
-    "parcel-bundler": "1.12.0",
+    "parcel-bundler": "1.12.3",
     "prettier": "1.16.4"
   },
   "scripts": {
     "postinstall": "node ./check-version",
-
     "test:lint": "eslint --fix --parser-options=ecmaVersion:8 '{lib,test/spec}/**/*.js'",
     "test:build": "node_modules/.bin/parcel build --no-minify -o dist/unit-test-main.js test/spec/main.js --target node",
     "test:run": "node ./check-version && node_modules/.bin/jasmine dist/unit-test-main.js",
@@ -42,21 +42,20 @@
     "test": "npm run test:run",
     "watch": "./node_modules/nodemon/bin/nodemon.js -w test/spec/ -w lib/ --exec npm run test:lint-build-run",
     "integration:lint": "node_modules/.bin/eslint --fix --parser-options=ecmaVersion:8 --ignore-pattern='test/intg/lib/jasmine*/**' '{lib,test/intg}/**/*.js'",
-    "integration:build:environment": "ACCESS_TOKEN=${REACTOR_API_TOKEN} COMPANY_ID=${REACTOR_TEST_COMPANY_ID} REACTOR_URL=${REACTOR_TEST_URL} node test/intg/write-reactor-environment.js",
-    "integration:build": "npm run integration:build:environment && ./node_modules/.bin/parcel build --no-minify -o dist/intg-tests-browser.js test/intg/allTestsForBrowser.js",
-    "integration:run": "node ./check-version && open test/intg/SpecRunner.html",
+    "integration:build:environment": "node test/intg/write-reactor-environment.js",
+    "integration:build": "npm run integration:build:environment && ./node_modules/.bin/parcel build --no-minify -o dist/intg-tests-browser.js test/intg/all-tests-for-browser.js",
+    "integration:run": "node ./check-version && open test/intg/spec-runner.html",
     "integration:lint-build-run": "npm run integration:lint && npm run integration:build && npm run integration:run",
-    "integration:test": "npm run integration:run",
+    "integration:test": "npm run integration:lint-build-run",
     "integration:watch": "node_modules/.bin/nodemon --watch test/intg/ --watch lib/ --exec 'npm run integration:lint-build-run'"
   },
   "nodemonConfig": {
     "ignore": [
-      "test/intg/globalsForBrowser.js"
+      "test/intg/globals-for-browser.js"
     ]
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "js-logger": "1.6.0",
     "node-fetch": "2.3.0",
     "url": "0.11.0"
   }

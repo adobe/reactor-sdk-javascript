@@ -9,14 +9,5 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-export default function reactorHeaders(accessToken) {
-  return {
-    Accept: 'application/vnd.api+json;revision=1',
-    'Content-Type': 'application/vnd.api+json',
-    'Cache-control': 'no-cache',
-    Authorization: `Bearer ${accessToken}`,
-    'X-Api-Key': 'Activation-DTM',
-    'User-Agent': 'adobe-reactor-node'
-  };
-}
+import './globals-for-browser.js';
+import './all-tests.js';

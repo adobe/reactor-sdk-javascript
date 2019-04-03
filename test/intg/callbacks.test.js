@@ -15,7 +15,7 @@ import helpers from './helpers';
 
 // Callbacks
 // https://developer.adobelaunch.com/api/callbacks
-describe('Callback API', function() {
+helpers.describe('Callback API', function() {
   var theProperty;
 
   beforeAll(async function() {

@@ -15,7 +15,7 @@ import helpers from './helpers';
 
 // AuditEvents
 // https://developer.adobelaunch.com/api/audit_events/
-describe('AuditEvent API', function() {
+helpers.describe('AuditEvent API', function() {
   var theProperty;
   var theAdapter;
 
@@ -25,7 +25,7 @@ describe('AuditEvent API', function() {
       if (!theProperty) fail('could not create test property');
 
       //     // create an AuditEvent trail by doing some operations on the property
-      //     theAdapter = await helpers.createTestAdapter(theProperty.id, 'temp');
+      //     theAdapter = await helpers.createTestSftpAdapter(theProperty.id, 'temp');
       //     if (!theProperty) fail('could not create test adapter');
       //     await reactor.deleteAdapter(theAdapter.id);
       //     const response = await reactor.updateProperty({
@@ -53,7 +53,7 @@ describe('AuditEvent API', function() {
         'page[size]': 100
       });
       const auditEvents = page.data;
-      auditEvents.forEach(ae => {
+      for (const ae of auditEvents) {
         if (
           ae &&
           ae.relationships &&
@@ -64,7 +64,7 @@ describe('AuditEvent API', function() {
           ae.attributes.entity = JSON.parse(ae.attributes.entity);
           theAuditEvents.push(ae);
         }
-      });
+      }
       pagination = page && page.meta && page.meta.pagination;
     } while (pagination.next_page);
     return theAuditEvents;

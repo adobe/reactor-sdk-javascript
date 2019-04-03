@@ -15,7 +15,7 @@ import helpers from './helpers';
 
 // Rules
 // https://developer.adobelaunch.com/api/rules
-describe('Rule API', function() {
+helpers.describe('Rule API', function() {
   var theProperty;
 
   async function makeTestRule(baseName) {
@@ -120,11 +120,15 @@ describe('Rule API', function() {
   async function createVictoriaBuild() {
     await initializeInfrastructure();
     const [p, v] = [theProperty, victoria];
-    const e = await helpers.createTestEnvironment(p.id, 'SouthernCross');
+    const e = await helpers.createTestEnvironment(
+      p.id,
+      'SouthernCross',
+      'Akamai'
+    );
     const r = await reactor.setEnvironmentRelationshipForLibrary(v.id, e.id);
     expect(r.data.id).toBe(e.id);
     expect(r.links.related).toContain(`/${v.id}/`);
-    return (await reactor.createBuild(v.id)).data;
+    return await helpers.buildLibrary(victoria);
   }
 
   // Create a Rule
@@ -178,10 +182,11 @@ describe('Rule API', function() {
   // List Rules for Build
   // https://developer.adobelaunch.com/api/builds/rules/
   helpers.it('gets Rules for a Build', async function() {
-    const build = await createVictoriaBuild();
+    const buildId = await createVictoriaBuild();
+    if (buildId == null) return;
 
     // Make sure three revised Rules are in the Rules on the Build
-    let rules = await reactor.listRulesForBuild(build.id);
+    let rules = await reactor.listRulesForBuild(buildId);
     let ids = rules.data.map(resource => resource.id);
     expect(ids).toContain(snowy1.id);
     expect(ids).toContain(wyong1.id);
@@ -189,7 +194,7 @@ describe('Rule API', function() {
     expect(ids).not.toContain(tarra1.id);
 
     // Test a name filter on listRulesForBuild
-    rules = await reactor.listRulesForBuild(build.id, {
+    rules = await reactor.listRulesForBuild(buildId, {
       'filter[name]': 'LIKE snowy,LIKE wyong'
     });
     ids = rules.data.map(resource => resource.id);
@@ -207,9 +212,9 @@ describe('Rule API', function() {
     // Make sure all four unrevised rules are in Rules for the Property
     let rules = await reactor.listRulesForProperty(theProperty.id);
     let ids = rules.data.map(resource => resource.id);
-    [snowy, wyong, yango, tarra].forEach(async r =>
-      expect(ids).toContain(r.id)
-    );
+    for (const r of [snowy, wyong, yango, tarra]) {
+      expect(ids).toContain(r.id);
+    }
 
     // Test a name filter on listRulesForProperty
     rules = await reactor.listRulesForProperty(theProperty.id, {
@@ -251,7 +256,9 @@ describe('Rule API', function() {
     const o0 = await reactor.getOriginForRule(snowy.id);
     const o1 = await reactor.getOriginForRule(snowy1.id);
     const o2 = await reactor.getOriginForRule(snowy2.id);
-    [o0, o1, o2].forEach(r => expect(r.data.id).toBe(snowy.id));
+    for (const r of [o0, o1, o2]) {
+      expect(r.data.id).toBe(snowy.id);
+    }
   });
 
   // Update a Rule

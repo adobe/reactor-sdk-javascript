@@ -15,7 +15,7 @@ import helpers from './helpers';
 
 // RuleComponents
 // https://developer.adobelaunch.com/api/rule_components
-describe('RuleComponent API', function() {
+helpers.describe('RuleComponent API', function() {
   var theProperty;
   var theRule;
 

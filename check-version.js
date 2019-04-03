@@ -4,7 +4,7 @@ let pkg = require('./package');
 
 const version = pkg.engines && pkg.engines.node;
 if (!semver.satisfies(process.version, version)) {
-  console.log(
+  console.error(
     `Reactor SDK requires node version ${version},
 which is not satisfied by your current version (${process.version}).`
   );

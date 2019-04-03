@@ -17,7 +17,7 @@ import helpers from './helpers';
 
 // Builds
 // https://developer.adobelaunch.com/api/builds
-describe('Build API', function() {
+helpers.describe('Build API', function() {
   var theProperty;
 
   beforeAll(async function() {
@@ -62,13 +62,19 @@ describe('Build API', function() {
 
   // List DataElements
   // https://developer.adobelaunch.com/api/builds/data_elements/
-  helpers.xit("lists a Library's DataElements", async function() {
-    //TODO: test listDataElementsForLibrary
+  helpers.xit("lists a Build's DataElements", async function() {
+    //TODO: test listDataElementsForBuild
   });
 
   // List Extensions
   // https://developer.adobelaunch.com/api/builds/extensions/
-  helpers.xit("lists a Library's Extensions", async function() {
-    //TODO: test listDataElementsForLibrary
+  helpers.xit("lists a Build's Extensions", async function() {
+    //TODO: test listExtensionsForBuild
+  });
+
+  // List Rules
+  // https://developer.adobelaunch.com/api/builds/rules/
+  helpers.xit("lists a Build's Rules", async function() {
+    //TODO: test listRulesForBuild
   });
 });

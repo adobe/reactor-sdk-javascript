@@ -15,7 +15,7 @@ import helpers from './helpers';
 
 // Adapters
 // https://developer.adobelaunch.com/api/adapters/
-describe('Adapter API', function() {
+helpers.describe('Adapter API', function() {
   var theProperty;
   var diamond;
   var emerald;
@@ -26,11 +26,12 @@ describe('Adapter API', function() {
   beforeAll(async function() {
     try {
       theProperty = await helpers.createTestProperty('Adapter-Testing Base');
-      diamond = await helpers.createTestAdapter(theProperty.id, 'Diamond');
-      emerald = await helpers.createTestAdapter(theProperty.id, 'Emerald');
-      citrine = await helpers.createTestAdapter(theProperty.id, 'Citrine');
-      saphire = await helpers.createTestAdapter(theProperty.id, 'Saphire');
-      catseye = await helpers.createTestAdapter(theProperty.id, 'Catseye');
+      expect(theProperty).not.toBeNull();
+      diamond = await helpers.createTestSftpAdapter(theProperty.id, 'Diamond');
+      emerald = await helpers.createTestSftpAdapter(theProperty.id, 'Emerald');
+      citrine = await helpers.createTestSftpAdapter(theProperty.id, 'Citrine');
+      saphire = await helpers.createTestSftpAdapter(theProperty.id, 'Saphire');
+      catseye = await helpers.createTestSftpAdapter(theProperty.id, 'Catseye');
     } catch (error) {
       helpers.specName = 'Adapter beforeAll';
       helpers.reportError(error);
@@ -62,7 +63,10 @@ describe('Adapter API', function() {
   // Delete an Adapter
   // https://developer.adobelaunch.com/api/adapters/delete/
   helpers.it('deletes an Adapter', async function() {
-    const catseye = await helpers.createTestAdapter(theProperty.id, 'Catseye');
+    const catseye = await helpers.createTestSftpAdapter(
+      theProperty.id,
+      'Catseye'
+    );
     expect(catseye.attributes.name).toMatch(/catseye/i);
 
     const deleteResponse = await reactor.deleteAdapter(catseye.id);

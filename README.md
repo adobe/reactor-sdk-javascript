@@ -91,7 +91,6 @@ $ npm run integration:watch  # same, but for {lib,test/intg}/**/*.js
 ## Future Work
 
 * Implement integration tests for the handful of functions not yet covered.
-* Figure out a reasonable `REACTOR_URL` for non-Adobe-internal testers.
 * Include a section here on library function naming conventions.
 * Include a section here giving instructions on how to get an `ACCESS_TOKEN`.
 * Publish as an NPM package, then update this README.

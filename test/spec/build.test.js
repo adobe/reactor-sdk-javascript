@@ -26,7 +26,7 @@ describe('Build:', function() {
   describe('listBuilds', function() {
     it('runs an http GET', async function() {
       context.expectRequest('get', `/libraries/${libraryId}/builds`);
-      await reactor.listBuilds(libraryId);
+      await reactor.listBuildsForLibrary(libraryId);
     });
 
     it('runs an http GET with query parameters', async function() {
@@ -34,7 +34,7 @@ describe('Build:', function() {
         'get',
         `/libraries/${libraryId}/builds?filter%5Bname%5D=EQ+Delta%2CEQ+Bravo&sort=-name`
       );
-      await reactor.listBuilds(libraryId, {
+      await reactor.listBuildsForLibrary(libraryId, {
         'filter[name]': 'EQ Delta,EQ Bravo',
         sort: '-name'
       });

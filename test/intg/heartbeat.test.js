@@ -17,7 +17,7 @@ import helpers from './helpers';
 //// This one is kept as an example of how to write specs using
 //// .then/.catch instead.
 
-describe('Heartbeat', function() {
+helpers.describe('Heartbeat API', function() {
   const spec = it('returns OK with no body', function(done) {
     reactor
       .heartbeat()

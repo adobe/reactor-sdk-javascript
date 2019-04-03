@@ -15,7 +15,7 @@ import helpers from './helpers';
 
 // Extensions
 // https://developer.adobelaunch.com/api/extensions
-describe('Extension API', function() {
+helpers.describe('Extension API', function() {
   var theProperty;
 
   beforeAll(async function() {

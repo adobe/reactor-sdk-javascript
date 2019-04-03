@@ -10,16 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 import Reactor from '../../lib/reactor.js';
-import ConsoleLogger from './consoleLogger';
 
 var globals = jasmine.getEnv().reactorIntegrationTestGlobals;
 
 var reactor = globals.reactor;
 if (!reactor) {
-  reactor = new Reactor(globals.ACCESS_TOKEN, {
-    reactorUrl: globals.REACTOR_URL,
-    logger: new ConsoleLogger(globals.LOG_LEVEL || 'error')
-  });
+  const options = { reactorUrl: globals.REACTOR_URL };
+
+  reactor = new Reactor(globals.ACCESS_TOKEN, options);
   reactor.accessCode = globals.ACCESS_TOKEN;
   reactor.reactorUrl = globals.REACTOR_URL;
   reactor.myCompanyId = globals.COMPANY_ID;
