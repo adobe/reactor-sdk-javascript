@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import createReviseBody from '../../lib/create-revise-body';
+import createReviseBody from '../../src/create-revise-body';
 
 describe('DataElement:', function() {
   const context = jasmine.getEnv().reactorContext;

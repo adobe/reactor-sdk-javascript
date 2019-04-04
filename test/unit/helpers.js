@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import nock from 'nock';
-import reactorHeaders from '../../lib/reactor-headers';
-import Reactor from '../../lib/reactor';
+import reactorHeaders from '../../src/reactor-headers';
+import Reactor from '../../src/reactor';
 
 function getEnv(varName, defaultValue) {
   return process.env[varName] || defaultValue;
