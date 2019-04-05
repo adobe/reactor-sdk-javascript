@@ -40,7 +40,11 @@
     "integration:build:environment": "node test/integration/write-reactor-environment.js",
     "integration:build": "npm run integration:build:environment && ./node_modules/.bin/parcel build --no-minify -d testing -o integration-tests.js test/integration/all-tests-for-browser.js",
     "integration:run": "node ./check-version && open test/integration/integration-tests.html",
-    "integration:lint-build-run": "npm run integration:lint && npm run integration:build && npm run integration:run"
+    "integration:lint-build-run": "npm run integration:lint && npm run integration:build && npm run integration:run",
+
+    "release:lint": "eslint --fix --parser-options=ecmaVersion:8 'src/**/*.js'",
+    "release:build": "node_modules/.bin/parcel build --no-minify -d dist -o reactor-node.js src/reactor.js --target node && node_modules/.bin/parcel build --no-minify -d dist -o reactor-browser.js src/reactor.js --target browser",
+    "release": "npm run release:lint && npm run release:build"
   },
   "browserslist": [
     "last 2 chrome versions",
@@ -55,10 +59,7 @@
   "engines": {
     "node": ">=10.15.1"
   },
-  "files": [
-    "dist",
-    "lib"
-  ],
+  "files": [ "dist" ],
   "dependencies": {
     "node-fetch": "2.3.0"
   },
