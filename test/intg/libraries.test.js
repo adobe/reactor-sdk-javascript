@@ -297,7 +297,6 @@ helpers.describe('Library API', function() {
     const heads = await Promise.all(
       names.map(name => helpers.createTestDataElement(targetProperty, name))
     );
-    console.debug('makeResources: heads =', heads.map(r => r.id));
 
     // Revise each DataElement
     const revisions = await Promise.all(
@@ -311,7 +310,6 @@ helpers.describe('Library API', function() {
         return revised;
       })
     );
-    console.debug('makeResources: revisions =', revisions.map(r => r.id));
     return revisions;
   }
 

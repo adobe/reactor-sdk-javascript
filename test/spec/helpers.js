@@ -11,8 +11,8 @@ governing permissions and limitations under the License.
 */
 
 import nock from 'nock';
-import reactorHeaders from '../../../lib/reactor-headers';
-import Reactor from '../../../lib/reactor';
+import reactorHeaders from '../../lib/reactor-headers';
+import Reactor from '../../lib/reactor';
 
 function getEnv(varName, defaultValue) {
   return process.env[varName] || defaultValue;
@@ -34,12 +34,11 @@ function expectRequest(method, path, body) {
   initializedNock[method.toLowerCase()].apply(initializedNock, args).reply(200);
 }
 
+var reactor = new Reactor(accessToken, { reactorUrl: reactorUrl });
 jasmine.getEnv().reactorContext = {
   reactorUrl: reactorUrl,
   accessToken: accessToken,
   reqheaders: reqheaders,
-  reactor: new Reactor(accessToken, {
-    reactorUrl: reactorUrl,
-  }),
+  reactor: reactor,
   expectRequest: expectRequest
 };

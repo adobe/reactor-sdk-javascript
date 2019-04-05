@@ -15,7 +15,7 @@ var globals = jasmine.getEnv().reactorIntegrationTestGlobals;
 
 var reactor = globals.reactor;
 if (!reactor) {
-  const options = { reactorUrl: globals.REACTOR_URL };
+  const options = { reactorUrl: globals.REACTOR_URL, enableLogging: true };
 
   reactor = new Reactor(globals.ACCESS_TOKEN, options);
   reactor.accessCode = globals.ACCESS_TOKEN;
