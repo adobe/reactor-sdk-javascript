@@ -1,25 +1,68 @@
 {
-  "engines": {
-    "node": ">=10.15.1"
-  },
   "name": "@adobe/reactor-sdk-node",
   "version": "0.0.1",
   "description": "JavaScript SDK for the Reactor API",
-  "repository": {
-    "type": "git",
-    "url": "git@git.corp.adobe.com:reactor/reactor-sdk-node.git"
-  },
   "author": {
     "name": "Adobe Systems",
-    "url": "http://adobe.com",
+    "url": "https://www.adobe.com/experience-platform/launch.html",
     "email": "reactor@adobe.com"
   },
-  "main": "./lib/reactor.js",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Adobe-Marketing-Cloud/reactor-sdk-javascript/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https@github.com:Adobe-Marketing-Cloud/reactor-sdk-javascript.git"
+  },
+  "keywords": [
+    "Adobe",
+    "Launch",
+    "tag manager",
+    "SDK"
+  ],
+  "main": "./src/reactor.js",
+  "scripts": {
+    "postinstall": "node ./check-version",
+
+    "test": "npm run unit-tests && npm run integration-tests",
+
+    "unit-tests": "npm run unit:lint-build-run",
+    "unit-watch": "./node_modules/nodemon/bin/nodemon.js -w test/unit/ -w src/ --exec npm run unit:lint-build-run",
+    "unit:lint": "eslint --fix --parser-options=ecmaVersion:8 '{lib,test/unit}/**/*.js'",
+    "unit:build": "node_modules/.bin/parcel build --no-minify -d testing -o unit-tests.js test/unit/main.js --target node",
+    "unit:run": "node ./check-version && node_modules/.bin/jasmine testing/unit-tests.js",
+    "unit:lint-build-run": "clear; npm run unit:lint && npm run unit:build && npm run unit:run",
+
+    "integration-tests": "npm run integration:lint-build-run",
+    "integration-watch": "node_modules/.bin/nodemon --watch test/integration/ --watch src/ --exec 'npm run integration:lint-build-run'",
+    "integration:lint": "node_modules/.bin/eslint --fix --parser-options=ecmaVersion:8 '{lib,test/integration}/**/*.js'",
+    "integration:build:environment": "node test/integration/write-reactor-environment.js",
+    "integration:build": "npm run integration:build:environment && ./node_modules/.bin/parcel build --no-minify -d testing -o integration-tests.js test/integration/all-tests-for-browser.js",
+    "integration:run": "node ./check-version && open test/integration/integration-tests.html",
+    "integration:lint-build-run": "npm run integration:lint && npm run integration:build && npm run integration:run",
+
+    "release:lint": "eslint --fix --parser-options=ecmaVersion:8 'src/**/*.js'",
+    "release:build": "node_modules/.bin/parcel build --no-minify -d dist -o reactor-node.js src/reactor.js --target node && node_modules/.bin/parcel build --no-minify -d dist -o reactor-browser.js src/reactor.js --target browser",
+    "release": "npm run release:lint && npm run release:build"
+  },
   "browserslist": [
     "last 2 chrome versions",
     "last 2 firefox versions",
     "last 2 safari versions"
   ],
+  "nodemonConfig": {
+    "ignore": [
+      "test/integration/globals-for-browser.js"
+    ]
+  },
+  "engines": {
+    "node": ">=10.15.1"
+  },
+  "files": [ "dist" ],
+  "dependencies": {
+    "node-fetch": "2.3.0"
+  },
   "devDependencies": {
     "eslint": "5.16.0",
     "eslint-config-prettier": "4.1.0",
@@ -29,30 +72,5 @@
     "nodemon": "1.18.10",
     "parcel-bundler": "1.12.3",
     "prettier": "1.16.4"
-  },
-  "scripts": {
-    "postinstall": "node ./check-version",
-    "test:lint": "eslint --fix --parser-options=ecmaVersion:8 '{lib,test/spec}/**/*.js'",
-    "test:build": "node_modules/.bin/parcel build --no-minify -o dist/unit-test-main.js test/spec/main.js --target node",
-    "test:run": "node ./check-version && node_modules/.bin/jasmine dist/unit-test-main.js",
-    "test:lint-build-run": "clear; npm run test:lint && npm run test:build && npm run test:run",
-    "test": "npm run test:run",
-    "watch": "./node_modules/nodemon/bin/nodemon.js -w test/spec/ -w lib/ --exec npm run test:lint-build-run",
-    "integration:lint": "node_modules/.bin/eslint --fix --parser-options=ecmaVersion:8 --ignore-pattern='test/intg/lib/jasmine*/**' '{lib,test/intg}/**/*.js'",
-    "integration:build:environment": "node test/intg/write-reactor-environment.js",
-    "integration:build": "npm run integration:build:environment && ./node_modules/.bin/parcel build --no-minify -o dist/intg-tests-browser.js test/intg/all-tests-for-browser.js",
-    "integration:run": "node ./check-version && open test/intg/spec-runner.html",
-    "integration:lint-build-run": "npm run integration:lint && npm run integration:build && npm run integration:run",
-    "integration:test": "npm run integration:lint-build-run",
-    "integration:watch": "node_modules/.bin/nodemon --watch test/intg/ --watch lib/ --exec 'npm run integration:lint-build-run'"
-  },
-  "nodemonConfig": {
-    "ignore": [
-      "test/intg/globals-for-browser.js"
-    ]
-  },
-  "license": "Apache-2.0",
-  "dependencies": {
-    "node-fetch": "2.3.0"
   }
 }

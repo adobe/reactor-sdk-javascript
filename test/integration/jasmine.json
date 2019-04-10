@@ -1,6 +1,6 @@
 {
   "comment_spec_dir": "// Spec directory path relative to the current working dir when jasmine is executed.",
-  "spec_dir": "intg",
+  "spec_dir": "integration",
 
   "comment_spec_files": "// Array of filepaths (and globs) relative to spec_dir to include and exclude",
   "spec_files": [

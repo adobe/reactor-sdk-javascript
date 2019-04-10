@@ -40,14 +40,14 @@ of the ["Fetch a Profile"][FetchProfile doc] documentation is at
 [FetchProfile doc src]: https://github.com/Adobe-Marketing-Cloud/reactor-developer-docs/blob/master/api/reference/1.0/profiles/fetch.md 'Fetch a Profile'
 [ListCompanies doc]: https://developer.adobelaunch.com/api/reference/1.0/companies/list/ 'List Companies'
 
-Every SDK function [has an integration test](./blob/master/test/intg) that
+Every SDK function [has an integration test](./blob/master/test/integration) that
 demonstrates its correctness. (Well, correct for at least *one* use).  These
 tests also provide you working examples for every library function.
 [This isn't quite true yet.  We're almost there, but a few remain to be
 implemented.]
 
 For a complete and self-contained example program, see
-[examples.test.js](./test/intg/examples.test.js), which is included in
+[examples.test.js](./test/integration/examples.test.js), which is included in
 the integration tests. It's a JavaScript implementation of the [Reactor
 Postman]( https://github.com/Adobe-Marketing-Cloud/reactor-postman) query set.
 
@@ -62,7 +62,7 @@ $ npm install           # install the NPM dependencies
 
 Run the unit tests in Node.js:
 ```bash
-$ npm run test          # run the unit tests in test/spec/**
+$ npm run test          # run the unit tests in test/unit/**
 ```
 
 Run the integration tests in your default browser. You'll need access to a
@@ -74,18 +74,18 @@ $ export ACCESS_TOKEN=${REACTOR_API_TOKEN}
 $ export COMPANY_ID=${REACTOR_TEST_COMPANY_ID}
 $ export REACTOR_URL=https://launch.adobe.com:9011
 $ # TODO: figure out a reasonable REACTOR_URL for non-Adobe-internal testers
-$ npm run integration   # run the integration tests in test/intg/**
+$ npm run integration   # run the integration tests in test/integration/**
 $ # Currently known to pass in MacOS Chrome Version 72.0.3626.121.
 ```
 
 While developing, these are handy for auto-building your changes:
 
 ```bash
-# re-run {lint, prettier, build, and test} when {lib,test/spec}/**/*.js changes
+# re-run {lint, prettier, build, and test} when {lib,test/unit}/**/*.js changes
 $ npm run watch
 
-# re-run {lint, prettier, build, and test} when {lib,test/intg}/**/*.js changes
-$ npm run integration:watch  # same, but for {lib,test/intg}/**/*.js
+# re-run {lint, prettier, build, and test} when {lib,test/integration}/**/*.js changes
+$ npm run integration:watch  # same, but for {lib,test/integration}/**/*.js
 ```
 
 ## Future Work
