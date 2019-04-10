@@ -21,7 +21,7 @@
     "tag manager",
     "SDK"
   ],
-  "main": "./src/index.js",
+  "main": "./dist/reactor-node.js",
   "scripts": {
     "postinstall": "node ./check-version",
 
