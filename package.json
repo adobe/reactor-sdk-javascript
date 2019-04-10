@@ -21,7 +21,7 @@
     "tag manager",
     "SDK"
   ],
-  "main": "./src/reactor.js",
+  "main": "./src/index.js",
   "scripts": {
     "postinstall": "node ./check-version",
 
@@ -43,7 +43,7 @@
     "integration:lint-build-run": "npm run integration:lint && npm run integration:build && npm run integration:run",
 
     "release:lint": "eslint --fix --parser-options=ecmaVersion:8 'src/**/*.js'",
-    "release:build": "node_modules/.bin/parcel build --no-minify -d dist -o reactor-node.js src/reactor.js --target node && node_modules/.bin/parcel build --no-minify -d dist -o reactor-browser.js src/reactor.js --target browser",
+    "release:build": "node_modules/.bin/parcel build -d dist -o reactor-node.js src/index.js --target node && node_modules/.bin/parcel build -d dist -o reactor-browser.js src/index.js --target browser",
     "release": "npm run release:lint && npm run release:build"
   },
   "browserslist": [
