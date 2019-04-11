@@ -18,21 +18,10 @@ import helpers from './helpers';
 // Builds
 // https://developer.adobelaunch.com/api/builds
 helpers.describe('Build API', function() {
-  var theProperty;
-
-  beforeAll(async function() {
-    try {
-      theProperty = await helpers.createTestProperty('Build-Testing Base');
-      if (!theProperty) fail('could not create test property');
-    } catch (error) {
-      helpers.specName = 'Build beforeAll';
-      helpers.reportError(error);
-    }
-  });
-
   // Create a Build
   // https://developer.adobelaunch.com/api/builds/create/
-  helpers.xit('creates a new Build', function() {
+  helpers.xit('creates a new Build', async function() {
+    const theProperty = await helpers.findOrMakeTestingProperty('Build');
     //TODO: test createBuild
   });
 

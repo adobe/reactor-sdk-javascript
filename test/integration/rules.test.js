@@ -64,16 +64,6 @@ helpers.describe('Rule API', function() {
     }
   });
 
-  var originalTimeout;
-  beforeEach(function() {
-    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-  });
-
-  afterEach(function() {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-  });
-
   // Some tests need a lot of supporting infrastructure. Since it is expensive
   // to set up, they share that infrastructure. It is stored in these variables,
   // which are initialized by initializeInfrastructure().
@@ -181,28 +171,32 @@ helpers.describe('Rule API', function() {
 
   // List Rules for Build
   // https://developer.adobelaunch.com/api/builds/rules/
-  helpers.it('gets Rules for a Build', async function() {
-    const buildId = await createVictoriaBuild();
-    if (buildId == null) return;
+  helpers.it(
+    'gets Rules for a Build',
+    async function() {
+      const buildId = await createVictoriaBuild();
+      if (buildId == null) return;
 
-    // Make sure three revised Rules are in the Rules on the Build
-    let rules = await reactor.listRulesForBuild(buildId);
-    let ids = rules.data.map(resource => resource.id);
-    expect(ids).toContain(snowy1.id);
-    expect(ids).toContain(wyong1.id);
-    expect(ids).toContain(yango1.id);
-    expect(ids).not.toContain(tarra1.id);
+      // Make sure three revised Rules are in the Rules on the Build
+      let rules = await reactor.listRulesForBuild(buildId);
+      let ids = rules.data.map(resource => resource.id);
+      expect(ids).toContain(snowy1.id);
+      expect(ids).toContain(wyong1.id);
+      expect(ids).toContain(yango1.id);
+      expect(ids).not.toContain(tarra1.id);
 
-    // Test a name filter on listRulesForBuild
-    rules = await reactor.listRulesForBuild(buildId, {
-      'filter[name]': 'LIKE snowy,LIKE wyong'
-    });
-    ids = rules.data.map(resource => resource.id);
-    expect(ids).toContain(snowy1.id);
-    expect(ids).toContain(wyong1.id);
-    expect(ids).not.toContain(yango1.id);
-    expect(ids).not.toContain(tarra1.id);
-  });
+      // Test a name filter on listRulesForBuild
+      rules = await reactor.listRulesForBuild(buildId, {
+        'filter[name]': 'LIKE snowy,LIKE wyong'
+      });
+      ids = rules.data.map(resource => resource.id);
+      expect(ids).toContain(snowy1.id);
+      expect(ids).toContain(wyong1.id);
+      expect(ids).not.toContain(yango1.id);
+      expect(ids).not.toContain(tarra1.id);
+    }
+    //300000
+  );
 
   // List Rules for Property
   // https://developer.adobelaunch.com/api/rules/list/

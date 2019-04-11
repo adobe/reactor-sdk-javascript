@@ -26,17 +26,13 @@ helpers.describe('Company API', function() {
 
   // List Companies
   // https://developer.adobelaunch.com/api/companies/list/
-  helpers.it(
-    'lists all Companies',
-    async function() {
-      const companyIds = await getAllCompanyIds();
-      for (const companyId of companyIds) {
-        expect(companyId).toMatch(helpers.idCO);
-      }
-      expect(companyIds).toContain(helpers.companyId);
-    },
-    10000 /* async timeout, in msec */
-  );
+  helpers.it('lists all Companies', async function() {
+    const companyIds = await getAllCompanyIds();
+    for (const companyId of companyIds) {
+      expect(companyId).toMatch(helpers.idCO);
+    }
+    expect(companyIds).toContain(helpers.companyId);
+  });
 });
 
 async function getAllCompanyIds() {

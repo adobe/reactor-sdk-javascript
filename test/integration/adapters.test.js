@@ -16,64 +16,36 @@ import helpers from './helpers';
 // Adapters
 // https://developer.adobelaunch.com/api/adapters/
 helpers.describe('Adapter API', function() {
-  var theProperty;
-  var diamond;
-  var emerald;
-  var citrine;
-  var saphire;
-  var catseye;
-
-  beforeAll(async function() {
-    try {
-      theProperty = await helpers.createTestProperty('Adapter-Testing Base');
-      expect(theProperty).not.toBeNull();
-      diamond = await helpers.createTestSftpAdapter(theProperty.id, 'Diamond');
-      emerald = await helpers.createTestSftpAdapter(theProperty.id, 'Emerald');
-      citrine = await helpers.createTestSftpAdapter(theProperty.id, 'Citrine');
-      saphire = await helpers.createTestSftpAdapter(theProperty.id, 'Saphire');
-      catseye = await helpers.createTestSftpAdapter(theProperty.id, 'Catseye');
-    } catch (error) {
-      helpers.specName = 'Adapter beforeAll';
-      helpers.reportError(error);
+  var theTestProperty;
+  async function makeOrReuseTheTestProperty() {
+    if (!theTestProperty) {
+      theTestProperty = await helpers.createTestProperty(
+        'Adapter-Testing Base'
+      );
     }
-  });
+    return theTestProperty;
+  }
 
-  //  var originalTimeout;
-  //
-  //  beforeEach(function() {
-  //    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-  //    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-  //  });
-  //
-  //  afterEach(function() {
-  //    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-  //  });
+  async function newAdapter(adapterName) {
+    const theProperty = await makeOrReuseTheTestProperty();
+    return await helpers.createTestSftpAdapter(theProperty.id, adapterName);
+  }
 
   // Create an Adapter
   // https://developer.adobelaunch.com/api/adapters/create/
-  helpers.it('creates a new Adapter', function() {
-    // Five adapters should have been created in beforeAll().
-    expect(diamond.id).toMatch(helpers.idAD);
-    expect(emerald.id).toMatch(helpers.idAD);
-    expect(citrine.id).toMatch(helpers.idAD);
-    expect(saphire.id).toMatch(helpers.idAD);
-    expect(catseye.id).toMatch(helpers.idAD);
+  helpers.it('creates a new Adapter', async function() {
+    const adapter = await newAdapter('Diamond');
+    expect(adapter.id).toMatch(helpers.idAD);
   });
 
   // Delete an Adapter
   // https://developer.adobelaunch.com/api/adapters/delete/
   helpers.it('deletes an Adapter', async function() {
-    const catseye = await helpers.createTestSftpAdapter(
-      theProperty.id,
-      'Catseye'
-    );
-    expect(catseye.attributes.name).toMatch(/catseye/i);
-
-    const deleteResponse = await reactor.deleteAdapter(catseye.id);
+    const adapter = await newAdapter('Emerald');
+    const deleteResponse = await reactor.deleteAdapter(adapter.id); //then delete
     expect(deleteResponse).toBe(null);
-
     try {
-      await reactor.getAdapter(catseye.id);
+      await reactor.getAdapter(adapter.id);
       fail('getting a deleted adapter should fail');
     } catch (error) {
       expect(error.status).toBe(404);
@@ -83,29 +55,31 @@ helpers.describe('Adapter API', function() {
   // Get an Adapter
   // https://developer.adobelaunch.com/api/adapters/fetch/
   helpers.it('gets an Adapter', async function() {
-    const response = await reactor.getAdapter(emerald.id);
+    const adapter = await newAdapter('Citrine');
+    const response = await reactor.getAdapter(adapter.id);
     const found = response.data;
-    expect(found.attributes.name).toMatch(/emerald/i);
+    expect(found.attributes.name).toMatch(/citrine/i);
   });
 
   // Get the Property
   // https://developer.adobelaunch.com/api/adapters/property/
   helpers.it("gets an Adapter's Property", async function() {
-    const response = await reactor.getPropertyForAdapter(saphire.id);
+    const theProperty = await makeOrReuseTheTestProperty();
+    const adapter = await newAdapter('Saphire');
+    const response = await reactor.getPropertyForAdapter(adapter.id);
     expect(response.data.id).toBe(theProperty.id);
   });
 
   // List Adapters for a Property
   // https://developer.adobelaunch.com/api/adapters/list/
   helpers.it('lists all Adapters', async function() {
-    // Make sure all three adapters show up in the list of Adapters on Property
+    const theProperty = await makeOrReuseTheTestProperty();
+    const catseye = await newAdapter('Catseye');
+    const apatite = await newAdapter('Apatite');
     const listResponse = await reactor.listAdaptersForProperty(theProperty.id);
     const allIds = listResponse.data.map(resource => resource.id);
-    expect(allIds).toContain(diamond.id);
-    expect(allIds).toContain(emerald.id);
-    expect(allIds).toContain(citrine.id);
-    expect(allIds).toContain(saphire.id);
     expect(allIds).toContain(catseye.id);
+    expect(allIds).toContain(apatite.id);
   });
 
   // List Adapters for a Property, with filter and sort
@@ -113,44 +87,47 @@ helpers.describe('Adapter API', function() {
   // Filter: https://developer.adobelaunch.com/guides/api/filtering/
   // Sort:   https://developer.adobelaunch.com/guides/api/sorting/
   helpers.it('lists filtered Adapters', async function() {
+    const theProperty = await makeOrReuseTheTestProperty();
+    const larimar = await newAdapter('Larimar');
+    const peridot = await newAdapter('Peridot');
+    const kunzite = await newAdapter('Kunzite');
     var filteredResponse = await reactor.listAdaptersForProperty(
       theProperty.id,
       {
-        'filter[name]': 'LIKE mera,LIKE atse,LIKE itri,LIKE aphi',
+        'filter[name]': 'LIKE erido,LIKE nzite',
         sort: '-name'
       }
     );
     const adapterNames = filteredResponse.data.map(
       resource => resource.attributes.name
     );
-    expect(adapterNames.length).toBe(4);
+    expect(adapterNames.length).toBe(2);
     expect(adapterNames).toEqual([
-      saphire.attributes.name,
-      emerald.attributes.name,
-      citrine.attributes.name,
-      catseye.attributes.name
+      peridot.attributes.name,
+      kunzite.attributes.name
     ]);
   });
 
   // Update an Adapter
   // https://developer.adobelaunch.com/api/adapters/update/
   helpers.it('updates an Adapter', async function() {
+    const adapter = await newAdapter('Verdite');
     let response = await reactor.updateAdapter({
       attributes: {
-        name: diamond.attributes.name.replace('Diamond', 'Diamond Updated'),
-        username: 'Diamond Jim Brady'
+        name: adapter.attributes.name.replace('Verdite', 'Verdite Updated'),
+        username: 'John Hancock'
       },
-      id: diamond.id,
+      id: adapter.id,
       type: 'adapters'
     });
     const updatedAdapter = response.data;
-    expect(updatedAdapter.id).toBe(diamond.id);
-    expect(updatedAdapter.attributes.name).toMatch('Diamond Updated');
-    expect(updatedAdapter.attributes.username).toEqual('Diamond Jim Brady');
+    expect(updatedAdapter.id).toBe(adapter.id);
+    expect(updatedAdapter.attributes.name).toMatch('Verdite Updated');
+    expect(updatedAdapter.attributes.username).toEqual('John Hancock');
 
-    response = await reactor.getAdapter(diamond.id);
+    response = await reactor.getAdapter(adapter.id);
     const oldAdapter = response.data;
-    expect(oldAdapter.attributes.name).toMatch('Diamond Updated');
-    expect(oldAdapter.attributes.username).toEqual('Diamond Jim Brady');
+    expect(oldAdapter.attributes.name).toMatch('Verdite Updated');
+    expect(oldAdapter.attributes.username).toEqual('John Hancock');
   });
 });

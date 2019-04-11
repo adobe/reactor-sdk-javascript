@@ -27,16 +27,6 @@ helpers.describe('DataElement API', function() {
     theProperty = await helpers.createTestProperty('DataElement-Testing');
   });
 
-  var originalTimeout;
-  beforeEach(function() {
-    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-  });
-
-  afterEach(function() {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-  });
-
   // Create a DataElement
   // https://developer.adobelaunch.com/api/data_elements/create/
   helpers.it('creates a new DataElement', async function() {
@@ -185,7 +175,7 @@ helpers.describe('DataElement API', function() {
     // Filter: https://developer.adobelaunch.com/guides/api/filtering/
     // Sort:   https://developer.adobelaunch.com/guides/api/sorting/
     var filteredResponse = await reactor.listLibrariesForDataElement(jesse.id, {
-      'filter[name]': 'LIKE P',
+      'filter[name]': 'LIKE P%(',
       sort: '-name'
     });
     const libraryNames = filteredResponse.data.map(lib => lib.attributes.name);
@@ -206,90 +196,98 @@ helpers.describe('DataElement API', function() {
 
   // Revise
   // https://developer.adobelaunch.com/api/data_elements/revise/
-  helpers.it('revises a DataElement', async function() {
-    // The origin of a new DataElement is that DataElement itself
-    const theDataElement = await makeDataElement('revise');
-    expect(theDataElement.attributes.revision_number).toBe(0);
-    let response = await reactor.getOriginForDataElement(theDataElement.id);
-    const origin0 = response.data;
-    expect(origin0.id).toBe(theDataElement.id);
-    expect(origin0.attributes.revision_number).toBe(0);
+  helpers.it(
+    'revises a DataElement',
+    async function() {
+      // The origin of a new DataElement is that DataElement itself
+      const theDataElement = await makeDataElement('revise');
+      expect(theDataElement.attributes.revision_number).toBe(0);
+      let response = await reactor.getOriginForDataElement(theDataElement.id);
+      const origin0 = response.data;
+      expect(origin0.id).toBe(theDataElement.id);
+      expect(origin0.attributes.revision_number).toBe(0);
 
-    // Revise the DE. Produces a new DE whose origin is the original DE.
-    response = await reactor.reviseDataElement(theDataElement.id, {
-      meta: { action: 'revise' }
-    });
-    const revision1 = response.data;
-    expect(revision1.id).not.toBe(theDataElement.id);
-    expect(revision1.id).toMatch(helpers.idDE);
-    expect(revision1.attributes.revision_number).toBe(1);
-    response = await reactor.getOriginForDataElement(revision1.id);
-    const origin1 = response.data;
-    expect(origin1.id).toBe(theDataElement.id);
-    expect(origin1.attributes.revision_number).toBe(0);
+      // Revise the DE. Produces a new DE whose origin is the original DE.
+      response = await reactor.reviseDataElement(theDataElement.id, {
+        meta: { action: 'revise' }
+      });
+      const revision1 = response.data;
+      expect(revision1.id).not.toBe(theDataElement.id);
+      expect(revision1.id).toMatch(helpers.idDE);
+      expect(revision1.attributes.revision_number).toBe(1);
+      response = await reactor.getOriginForDataElement(revision1.id);
+      const origin1 = response.data;
+      expect(origin1.id).toBe(theDataElement.id);
+      expect(origin1.attributes.revision_number).toBe(0);
 
-    // Update the DE...
-    response = await reactor.updateDataElement({
-      attributes: {
-        name: theDataElement.attributes.name.replace('revise', 'revised')
-      },
-      id: theDataElement.id,
-      type: 'data_elements'
-    });
-    const updatedDataElement = response.data;
-    expect(updatedDataElement.id).toBe(theDataElement.id);
-    expect(updatedDataElement.attributes.name).toMatch(/revised/);
-    // ... and Revise again, ...
-    response = await reactor.reviseDataElement(theDataElement.id, {
-      meta: { action: 'revise' }
-    });
-    const revision2 = response.data;
-    // ... which produces a new DE whose origin is the original DE.
-    expect(revision2.id).not.toBe(theDataElement.id);
-    expect(revision2.id).not.toBe(revision1.id);
-    expect(revision2.id).toMatch(helpers.idDE);
-    expect(revision2.attributes.revision_number).toBe(2);
-    response = await reactor.getOriginForDataElement(revision2.id);
-    const origin2 = response.data;
-    expect(origin2.id).toBe(theDataElement.id);
-    expect(origin1.attributes.revision_number).toBe(0);
+      // Update the DE...
+      response = await reactor.updateDataElement({
+        attributes: {
+          name: theDataElement.attributes.name.replace('revise', 'revised')
+        },
+        id: theDataElement.id,
+        type: 'data_elements'
+      });
+      const updatedDataElement = response.data;
+      expect(updatedDataElement.id).toBe(theDataElement.id);
+      expect(updatedDataElement.attributes.name).toMatch(/revised/);
+      // ... and Revise again, ...
+      response = await reactor.reviseDataElement(theDataElement.id, {
+        meta: { action: 'revise' }
+      });
+      const revision2 = response.data;
+      // ... which produces a new DE whose origin is the original DE.
+      expect(revision2.id).not.toBe(theDataElement.id);
+      expect(revision2.id).not.toBe(revision1.id);
+      expect(revision2.id).toMatch(helpers.idDE);
+      expect(revision2.attributes.revision_number).toBe(2);
+      response = await reactor.getOriginForDataElement(revision2.id);
+      const origin2 = response.data;
+      expect(origin2.id).toBe(theDataElement.id);
+      expect(origin1.attributes.revision_number).toBe(0);
 
-    // The 1st revision still has as its origin the original DE.
-    response = await reactor.getOriginForDataElement(revision1.id);
-    const origin1again = response.data;
-    expect(origin1again.id).toBe(theDataElement.id);
-    expect(origin1again.attributes.revision_number).toBe(0);
+      // The 1st revision still has as its origin the original DE.
+      response = await reactor.getOriginForDataElement(revision1.id);
+      const origin1again = response.data;
+      expect(origin1again.id).toBe(theDataElement.id);
+      expect(origin1again.attributes.revision_number).toBe(0);
 
-    // The original DE is still has itself as origin and is revision 0.
-    response = await reactor.getOriginForDataElement(theDataElement.id);
-    const origin0again = response.data;
-    expect(origin0again.id).toBe(theDataElement.id);
-    expect(origin0again.attributes.revision_number).toBe(0);
+      // The original DE is still has itself as origin and is revision 0.
+      response = await reactor.getOriginForDataElement(theDataElement.id);
+      const origin0again = response.data;
+      expect(origin0again.id).toBe(theDataElement.id);
+      expect(origin0again.attributes.revision_number).toBe(0);
 
-    response = await reactor.listRevisionsForDataElement(theDataElement.id);
-    const revisionIds = response.data.map(rev => rev.id);
-    expect(revisionIds).toContain(theDataElement.id);
-    expect(revisionIds).toContain(revision1.id);
-    expect(revisionIds).toContain(revision2.id);
-  });
+      response = await reactor.listRevisionsForDataElement(theDataElement.id);
+      const revisionIds = response.data.map(rev => rev.id);
+      expect(revisionIds).toContain(theDataElement.id);
+      expect(revisionIds).toContain(revision1.id);
+      expect(revisionIds).toContain(revision2.id);
+    }
+    //30000
+  );
 
   // Update a DataElement
   // https://developer.adobelaunch.com/api/data_elements/update/
-  helpers.it('updates a DataElement', async function() {
-    const theDataElement = await makeDataElement('update');
-    let response = await reactor.updateDataElement({
-      attributes: {
-        name: theDataElement.attributes.name.replace('update', 'updated')
-      },
-      id: theDataElement.id,
-      type: 'data_elements'
-    });
-    const updatedDataElement = response.data;
-    expect(updatedDataElement.id).toBe(theDataElement.id);
-    expect(updatedDataElement.attributes.name).toMatch(/updated/);
+  helpers.it(
+    'updates a DataElement',
+    async function() {
+      const theDataElement = await makeDataElement('update');
+      let response = await reactor.updateDataElement({
+        attributes: {
+          name: theDataElement.attributes.name.replace('update', 'updated')
+        },
+        id: theDataElement.id,
+        type: 'data_elements'
+      });
+      const updatedDataElement = response.data;
+      expect(updatedDataElement.id).toBe(theDataElement.id);
+      expect(updatedDataElement.attributes.name).toMatch(/updated/);
 
-    response = await reactor.getDataElement(theDataElement.id);
-    const oldDataElement = response.data;
-    expect(oldDataElement.attributes.name).toMatch(/updated/);
-  });
+      response = await reactor.getDataElement(theDataElement.id);
+      const oldDataElement = response.data;
+      expect(oldDataElement.attributes.name).toMatch(/updated/);
+    }
+    //30000
+  );
 });

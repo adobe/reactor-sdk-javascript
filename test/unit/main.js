@@ -1,5 +1,3 @@
-import * as Reactor from './../..';
-
 import './helpers.js';
 import './adapter.test.js';
 import './audit-event.test.js';

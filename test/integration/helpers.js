@@ -340,7 +340,7 @@ const helpers = {
     expect(buildId).toMatch(helpers.idBL);
 
     // wait for build to complete
-    const totalWait = 30000; // in milliseconds
+    const totalWait = 300000; // in milliseconds
     const pollInterval = 1000; // in milliseconds
     for (var i = 0; i < totalWait; i += pollInterval) {
       await helpers.sleep(pollInterval);
@@ -373,27 +373,25 @@ const helpers = {
     helpers.specName = groupName;
     console.groupCollapsed(groupName);
     try {
-      // TODO: handle multi-page Property results
-      const response = await reactor.listPropertiesForCompany(
-        reactor.myCompanyId
+      await helpers.forEachEntityInList(
+        paging => reactor.listPropertiesForCompany(helpers.companyId, paging),
+        helpers.deleteTestProperty
       );
-      const properties = response.data;
-      expect(properties).toBeDefined();
-      for (const property of properties) {
-        expect(property.id).toMatch(helpers.idPR);
-        const propName = property.attributes.name;
-        if (nameMatcherForTestProperties.test(propName)) {
-          console.debug(`cleanup: deleting ${property.id} "${propName}"`);
-          await reactor.deleteProperty(property.id);
-          console.debug(`cleanup: deleted ${property.id} "${propName}"`);
-        } else {
-          console.debug(`cleanup: not deleting ${property.id} "${propName}"`);
-        }
-      }
     } catch (error) {
       helpers.reportError(error);
     }
     console.groupEnd(groupName);
+  },
+
+  async deleteTestProperty(property) {
+    expect(property.id).toMatch(helpers.idPR);
+    const propName = property.attributes.name;
+    if (nameMatcherForTestProperties.test(propName)) {
+      console.debug(`cleanup: deleting ${property.id} "${propName}"`);
+      await reactor.deleteProperty(property.id);
+    } else {
+      console.debug(`cleanup: not deleting ${property.id} "${propName}"`);
+    }
   },
 
   async createTestRule(property, ruleName) {
@@ -407,6 +405,59 @@ const helpers = {
       ruleComponentName,
       order
     );
+  },
+
+  // forEachEntityInList invokes `callback` on each entity listed in all the
+  // pages returned by
+  //  ```
+  //    listPageFn({ 'page[number]': <NEXT_PAGE_NUMBER>, 'page[size]': 100 });
+  // ```
+  // In other words, forEachEntity passes to listPageFn the query parameters
+  // that pertain to paging. Before calling the desired Reactor listFooForBar()
+  // method, listPageFn should merge those paging parameters with any query
+  // parameters it needs.
+  //
+  // listPageFn will be called for successive pages until the list is exhausted.
+  //
+  // The following is a usage example. Given a property ID and search string, it
+  // returns an Array containing the ID's of all Libraries on that Property for
+  // which the Library name contains the search string.
+  //
+  //   async function getIdsOfLibrariesWhoseNameContains(propertyId, searchString) {
+  //     const ids = [];
+  //     const query = { 'filter[name]': 'CONTAINS ' + searchString };
+  //     await helpers.forEachEntityInList(
+  //       // This function gets pages using a Reactor listFooForBar method:
+  //       function(paging) {
+  //         Object.assign(query, paging); // merge in the paging query parameters
+  //         return reactor.listLibrariesForProperty(propertyId, query);
+  //       },
+  //       // This function gets called on each individual Foo in the list of
+  //       // Foos for Bar. It may be called up to 100 times for each page
+  //       // produced by the listPageFn.
+  //       property => ids.push(property.id)
+  //     );
+  //   }
+  async forEachEntityInList(listPageFn, callback) {
+    try {
+      /*eslint-disable camelcase*/
+      let pagination = { next_page: 1 };
+      do {
+        const listResponse = await listPageFn({
+          'page[number]': pagination.next_page,
+          'page[size]': 100
+        });
+        const entities = listResponse.data;
+        expect(entities).toBeDefined();
+        for (const entity of entities) {
+          await callback(entity);
+        }
+        pagination = listResponse.meta && listResponse.meta.pagination;
+      } while (pagination.next_page);
+    } catch (error) {
+      helpers.reportError(error);
+    }
+    /*eslint-enable camelcase*/
   },
 
   describe(description, suiteDefinition) {
@@ -489,9 +540,6 @@ function toLocalISOString(date) {
     pad(date.getMinutes()) +
     ':' +
     pad(date.getSeconds()) +
-    '.' +
-    (date.getMilliseconds() < 100 ? '0' : '') +
-    pad(date.getMilliseconds()) +
     dif +
     pad(tzo / 60) +
     ':' +
@@ -501,7 +549,21 @@ function toLocalISOString(date) {
 
 function makeNameForTestObject(objectType, baseName) {
   const date = toLocalISOString(new Date());
-  return `${baseName} (Integration Testing ${objectType} / ${date})`;
+  const rand = window.crypto
+    .getRandomValues(new Uint32Array(1))[0]
+    .toString(16);
+  return `${baseName} (Integration Testing ${objectType} / ${date}) ${rand}`;
+}
+
+const testingProperties = new Map();
+
+async function findOrMakeTestingProperty(entityKind) {
+  if (!testingProperties.has(entityKind)) {
+    const basename = `${entityKind}-Testing Base`;
+    const property = await helpers.createTestProperty(basename);
+    testingProperties.set(entityKind, property);
+  }
+  return testingProperties.get(entityKind);
 }
 
 async function getExtensionPackageByName(epName, platform = 'web') {

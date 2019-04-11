@@ -33,16 +33,6 @@ helpers.describe('Library API', function() {
     }
   });
 
-  var originalTimeout;
-  beforeEach(function() {
-    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 35000;
-  });
-
-  afterEach(function() {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-  });
-
   // Add resource relationships to a Library
   // https://developer.adobelaunch.com/api/libraries/add_resources/
   helpers.it('adds resource relationships to a Library', async function() {

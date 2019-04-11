@@ -16,18 +16,14 @@ import helpers from './helpers';
 // ExtensionPackages
 // https://developer.adobelaunch.com/api/extension_packages:
 helpers.describe('ExtensionPackage API', function() {
-  var corePackage;
+  var theCachedCorePackage;
 
-  beforeAll(async function() {
-    corePackage = await helpers.coreExtensionPackage();
-    // thePackage = await createTestExtensionPackage(
-    //   './package-hello-world-1.0.0.zip',
-    // );
-  });
-
-  afterAll(async function() {
-    // await reactor.deleteExtensionPackage(corePackage.id);
-  });
+  async function makeOrGetCachedCorePackage() {
+    if (!theCachedCorePackage) {
+      theCachedCorePackage = await helpers.coreExtensionPackage();
+    }
+    return theCachedCorePackage;
+  }
 
   // Creates and returns an ExtensionPackage.
   // TODO: figure out how to upload a file. Tests requiring the ability to
@@ -61,8 +57,7 @@ helpers.describe('ExtensionPackage API', function() {
   // Get an ExtensionPackage
   // https://developer.adobelaunch.com/api/extension_packages/fetch/
   helpers.it('gets an ExtensionPackage', async function() {
-    // An ExtensionPackage is created in beforeAll().
-    if (!corePackage || !corePackage.id) return;
+    const corePackage = await makeOrGetCachedCorePackage();
     const response = await reactor.getExtensionPackage(corePackage.id);
     expect(response.data.id).toBe(corePackage.id);
     expect(response.data.type).toBe('extension_packages');
@@ -90,6 +85,7 @@ helpers.describe('ExtensionPackage API', function() {
   // List all the available ExtensionPackages
   // https://developer.adobelaunch.com/api/extension_packages/list/
   helpers.it('lists all ExtensionPackages', async function() {
+    const corePackage = await makeOrGetCachedCorePackage();
     const allIds = await getAllExtensionPackageIds();
 
     const fb = await helpers.findNamedExtensionPackage('facebook-pixel');

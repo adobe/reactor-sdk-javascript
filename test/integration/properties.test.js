@@ -28,15 +28,6 @@ helpers.describe('Property API', function() {
     }
   });
 
-  beforeEach(function() {
-    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-  });
-
-  afterEach(function() {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-  });
-
   // Create a Property
   // https://developer.adobelaunch.com/api/properties/create/
   helpers.it('creates a new Property', function() {
@@ -96,14 +87,16 @@ helpers.describe('Property API', function() {
     expect(detroit.attributes.name).toMatch(/^detroit/i);
 
     // Make sure all four show up in the list of Properties on the company
-    const listResponse = await reactor.listPropertiesForCompany(
-      helpers.companyId
+    const companyId = helpers.companyId;
+    const allIds = [];
+    await helpers.forEachEntityInList(
+      paging => reactor.listPropertiesForCompany(helpers.companyId, paging),
+      property => allIds.push(property.id)
     );
-    const allIds = listResponse.data.map(resource => resource.id);
-    expect(allIds).toContain(atlanta.id);
-    expect(allIds).toContain(barstow.id);
-    expect(allIds).toContain(chicago.id);
-    expect(allIds).toContain(detroit.id);
+    expect(allIds).toContain(atlanta.id, 'Atlanta is missing');
+    expect(allIds).toContain(barstow.id, 'Barstow is missing');
+    expect(allIds).toContain(chicago.id, 'Chicago is missing');
+    expect(allIds).toContain(detroit.id, 'Detroit is missing');
     expect(allIds).toContain(newProperty.id);
 
     // Make sure you can get each one of the Properties
@@ -113,18 +106,21 @@ helpers.describe('Property API', function() {
     await getPropertyByIdAndCheckName(detroit.id, 'Detroit');
 
     // Test filtering Properties by name
-    const filteredResponse = await reactor.listPropertiesForCompany(
-      helpers.companyId,
-      {
-        'filter[name]': 'LIKE Detroit,LIKE Barstow'
-      }
+    const idsForBarstowAndDetroit = [];
+    const query = { 'filter[name]': 'LIKE Detroit,LIKE Barstow' };
+    await helpers.forEachEntityInList(
+      paging =>
+        reactor.listPropertiesForCompany(
+          helpers.companyId,
+          Object.assign(query, paging)
+        ),
+      property => idsForBarstowAndDetroit.push(property.id)
     );
-    const twoIds = filteredResponse.data.map(resource => resource.id);
-    expect(twoIds).not.toContain(atlanta.id);
-    expect(twoIds).toContain(barstow.id);
-    expect(twoIds).not.toContain(chicago.id);
-    expect(twoIds).toContain(detroit.id);
-    expect(twoIds).not.toContain(newProperty.id);
+    expect(idsForBarstowAndDetroit).not.toContain(atlanta.id);
+    expect(idsForBarstowAndDetroit).toContain(barstow.id);
+    expect(idsForBarstowAndDetroit).not.toContain(chicago.id);
+    expect(idsForBarstowAndDetroit).toContain(detroit.id);
+    expect(idsForBarstowAndDetroit).not.toContain(newProperty.id);
   });
 
   // Update a Property
