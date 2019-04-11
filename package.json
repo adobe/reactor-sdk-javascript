@@ -25,26 +25,34 @@
   "scripts": {
     "postinstall": "node ./check-version",
 
-    "test": "npm run unit-tests && npm run integration-tests",
 
-    "unit-tests": "npm run unit:lint-build-run",
-    "unit-watch": "./node_modules/nodemon/bin/nodemon.js -w test/unit/ -w src/ --exec npm run unit:lint-build-run",
-    "unit:lint": "eslint --fix --parser-options=ecmaVersion:8 '{lib,test/unit}/**/*.js'",
-    "unit:build": "node_modules/.bin/parcel build --no-minify -d testing -o unit-tests.js test/unit/main.js --target node",
+    "build": "npm run src:lint-build",
+    "test": "npm run all:lint-build-test",
+
+    "src:lint": "eslint --fix --parser-options=ecmaVersion:8 'src/**/*.js'",
+    "src:build": "node_modules/.bin/parcel build -d dist -o reactor-node.js src/index.js --target node && node_modules/.bin/parcel build -d dist -o reactor-browser.js src/index.js --target browser",
+    "src:lint-build": "npm run src:lint && npm run src:build",
+    "all:lint-build-test": "npm run src:lint-build && npm run unit-tests && npm run integration-tests",
+    "all-tests": "npm run all:lint-build-test",
+
+    "unit:lint": "eslint --fix --parser-options=ecmaVersion:8 'test/unit/**/*.js'",
+    "unit:build": "node_modules/.bin/parcel build --no-minify -d testing -o unit-tests.js test/unit/index.js --target node",
     "unit:run": "node ./check-version && node_modules/.bin/jasmine testing/unit-tests.js",
-    "unit:lint-build-run": "clear; npm run unit:lint && npm run unit:build && npm run unit:run",
+    "unit:lint-build-run": "npm run unit:lint && npm run unit:build && npm run unit:run",
+    "unit-tests": "npm run unit:lint-build-run",
 
-    "integration-tests": "npm run integration:lint-build-run",
-    "integration-watch": "node_modules/.bin/nodemon --watch test/integration/ --watch src/ --exec 'npm run integration:lint-build-run'",
-    "integration:lint": "node_modules/.bin/eslint --fix --parser-options=ecmaVersion:8 '{lib,test/integration}/**/*.js'",
+    "integration:lint": "node_modules/.bin/eslint --fix --parser-options=ecmaVersion:8 'test/integration/**/*.js'",
     "integration:build:environment": "node test/integration/write-reactor-environment.js",
     "integration:build": "npm run integration:build:environment && ./node_modules/.bin/parcel build --no-minify -d testing -o integration-tests.js test/integration/all-tests-for-browser.js",
     "integration:run": "node ./check-version && open test/integration/integration-tests.html",
     "integration:lint-build-run": "npm run integration:lint && npm run integration:build && npm run integration:run",
+    "integration-tests": "npm run integration:lint-build-run",
 
-    "release:lint": "eslint --fix --parser-options=ecmaVersion:8 'src/**/*.js'",
-    "release:build": "node_modules/.bin/parcel build -d dist -o reactor-node.js src/index.js --target node && node_modules/.bin/parcel build -d dist -o reactor-browser.js src/index.js --target browser",
-    "release": "npm run release:lint && npm run release:build"
+
+    "src-watch": "./node_modules/nodemon/bin/nodemon.js -w src/ --exec npm run src:lint-build",
+    "unit-watch": "./node_modules/nodemon/bin/nodemon.js -w test/unit/ -w dist/reactor-node.js --exec npm run unit:lint-build-run",
+    "integration-watch": "node_modules/.bin/nodemon --watch test/integration/ --watch dist/reactor-browser.js --exec 'npm run integration:lint-build-run'",
+    "all-watch": "./node_modules/nodemon/bin/nodemon.js -w src/ -w test/ --exec npm run all:lint-build-test"
   },
   "browserslist": [
     "last 2 chrome versions",

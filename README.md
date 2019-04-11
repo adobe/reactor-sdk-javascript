@@ -57,42 +57,75 @@ Postman]( https://github.com/Adobe-Marketing-Cloud/reactor-postman) query set.
 ```bash
 $ git clone git@github.com:Adobe-Marketing-Cloud/reactor-sdk-javascript.git
 $ cd reactor-sdk-javascript
-$ npm install           # install the NPM dependencies
+$ npm install                 # install the NPM dependencies
+$ npm run build               # build the Reactor SDK library
 ```
 
-Run the unit tests in Node.js:
+Run unit tests in Node.js:
 ```bash
-$ npm run test          # run the unit tests in test/unit/**
+$ npm run unit-tests          # run the tests in test/unit/**
 ```
 
-Run the integration tests in your default browser. You'll need access to a
-provisioned Company in a functioning Launch service. Describe your setup through
-environment variables before running the tests:
+The integration tests violate the CORS policy, because they run in a page loaded
+with `file:` yet access `https://launch.adobe.com:9011` for the tests. For
+these tests to work, you'll have to disable your browser's web security. (For
+Google Chrome on macOS, you can do this by shutting down the browser and then
+restarting it from the commandline via `open -a "Google Chrome" --args
+--disable-web-security --user-data-dir`.)
 
+The integration tests also require a provisioned Company and current access
+token. Get those data into environment variables using the instructions below
+(_Determining Your Company ID_ and _Determining Your Access Token_).
+
+Once that's all set up, run the integration tests:
 ```bash
 $ export ACCESS_TOKEN=${REACTOR_API_TOKEN}
 $ export COMPANY_ID=${REACTOR_TEST_COMPANY_ID}
-$ export REACTOR_URL=https://launch.adobe.com:9011
-$ # TODO: figure out a reasonable REACTOR_URL for non-Adobe-internal testers
-$ npm run integration   # run the integration tests in test/integration/**
+$ export REACTOR_URL=https://reactor.adobe.io
+$ npm run integration-tests   # run the tests in test/integration/**
 $ # Currently known to pass in MacOS Chrome Version 72.0.3626.121.
 ```
 
-While developing, these are handy for auto-building your changes:
+**Don't forget to restart Chrome _with its normal security_ once the
+integration tests are done.**
+
+While developing the Reactor SDK, these are handy for auto-building when you
+change the source code:
 
 ```bash
-# re-run {lint, prettier, build, and test} when {lib,test/unit}/**/*.js changes
-$ npm run watch
+# re-run {lint, prettier, build} when src/**/*.js changes
+$ npm run src-watch
 
-# re-run {lint, prettier, build, and test} when {lib,test/integration}/**/*.js changes
-$ npm run integration:watch  # same, but for {lib,test/integration}/**/*.js
+# re-run {lint, prettier, build, and test} when {dist,test/unit}/**/*.js changes
+$ npm run unit-watch
+
+# re-run {lint, prettier, build, and test} when {dist,test/integration}/**/*.js changes
+$ npm run integration-watch
+
+# re-run {lint, prettier, build, and test} when {src,test}/**/*.js changes
+$ npm run all-watch
 ```
+
+## Determining Your Company ID
+* Log in to `https://launch.adobe.com/companies`
+* While looking at your Properties page, the address bar will show a URL like
+  `https://launch.adobe.com/companies/CO81f8cb0aca3a4ab8927ee1798c0d4f8a/properties`.
+* Your Company ID is the 'CO' followed by 32 hexadecimal digits (i.e., from "CO"
+  up to the following slash). Copy that company ID to an environment variable:
+    - $ `export COMPANY_ID=CO81f8cb0aca3a4ab8927ee1798c0d4f8a`
+
+## Determining your Access Token in Google Chrome
+* Log in to `https://launch.adobe.com/companies`
+* Open the developer console
+* Execute `copy(userData.imsAccessToken)`
+* The access token is now in your system clipboard. Paste it into an
+  environment variable definition:
+    - $ `export ACCESS_TOKEN='<paste>'`
 
 ## Future Work
 
 * Implement integration tests for the handful of functions not yet covered.
 * Include a section here on library function naming conventions.
-* Include a section here giving instructions on how to get an `ACCESS_TOKEN`.
 * Publish as an NPM package, then update this README.
 * Find or implement a JavaScript library for handling JWT token generation. The
   current mechanism requires you to generate an access token yourself. Such
