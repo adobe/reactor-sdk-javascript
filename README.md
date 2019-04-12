@@ -60,8 +60,11 @@ $ cd reactor-sdk-javascript
 $ npm install                 # install the NPM dependencies
 $ npm run build               # build the Reactor SDK library
 ```
+This generates two versions of the library:
+1.  `./lib/*.js`, which is intended for use by nodejs projects
+2.  `./dist/reactor-browser.min.js`, which is intended for in-browser use
 
-Run unit tests in Node.js:
+With the SDK built, you can run its nodejs unit tests:
 ```bash
 $ npm run unit-tests          # run the tests in test/unit/**
 ```
@@ -77,7 +80,7 @@ The integration tests also require a provisioned Company and current access
 token. Get those data into environment variables using the instructions below
 (_Determining Your Company ID_ and _Determining Your Access Token_).
 
-Once that's all set up, run the integration tests:
+Once that's all set up, you can run the integration tests:
 ```bash
 $ export ACCESS_TOKEN=${REACTOR_API_TOKEN}
 $ export COMPANY_ID=${REACTOR_TEST_COMPANY_ID}
