@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// Clean up any cobwebs from the last run of the integration tests
 import helpers from './helpers';
 
 // As soon as a test fails, log its details to the console.
@@ -53,7 +52,8 @@ function MsecsToHMS(totalMilliseconds) {
   return result;
 }
 
-// runs before all suites
+// Runs before all suites
+// Cleans up any cobwebs from previous runs of the integration tests
 var startTime;
 beforeAll(
   async function() {
@@ -66,7 +66,7 @@ beforeAll(
   300000 // 5 minutes is probably overkill, but cleaning up _can_ take a while
 );
 
-// runs after all suites
+// Runs after all suites
 afterAll(function() {
   console.groupEnd('Reactor JavaScript SDK Integration Tests');
   var endTime = new Date();
