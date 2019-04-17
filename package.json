@@ -21,36 +21,37 @@
     "tag manager",
     "SDK"
   ],
-  "main": "./dist/reactor-node.js",
+  "main": "./lib/node/index.js",
+  "browser": "./lib/browser/index.js",
   "scripts": {
     "postinstall": "node ./check-version",
-    "build": "npm run src:lint-build",
-    "test": "npm run all:lint-build-test",
+    "build": "npm run src:build",
+    "test": "npm run all-tests",
     "src:lint": "eslint --fix --parser-options=ecmaVersion:8 'src/**/*.js'",
-    "src:build": "babel src/ --out-dir lib/ --source-maps --presets latest-node && parcel build -d dist -o reactor-browser.min.js src/index.js --target browser",
-    "src:lint-build": "npm run src:lint && npm run src:build",
-    "all:lint-build-test": "npm run src:lint-build && npm run unit-tests && npm run integration-tests",
-    "all-tests": "npm run all:lint-build-test",
+    "src:build:node": "babel src/ --out-dir lib/node/ --source-maps --presets latest-node",
+    "src:build:browser": "babel src/ --out-dir lib/browser/ --source-maps --presets @babel/preset-env",
+    "src:build:browser.bundle": "npx parcel build -d dist -o reactor.min.js src/index.js --target browser",
+    "src:build": "npm-run-all --print-label --parallel 'src:build:*'",
     "unit:lint": "eslint --fix --parser-options=ecmaVersion:8 'test/unit/**/*.js'",
-    "unit:build": "babel test/unit --out-dir lib/test/unit --source-maps --presets latest-node",
-    "unit:run": "node ./check-version && jasmine lib/test/unit/index.js",
-    "unit:lint-build-run": "npm run unit:lint && npm run unit:build && npm run unit:run",
-    "unit-tests": "npm run unit:lint-build-run",
+    "unit:build": "babel test/unit --out-dir tmp.tests/unit/ --source-maps --presets latest-node",
+    "unit:run": "node ./check-version && jasmine tmp.tests/unit/index.js",
     "integration:lint": "eslint --fix --parser-options=ecmaVersion:8 'test/integration/**/*.js'",
     "integration:build:environment": "node test/integration/write-reactor-environment.js",
-    "integration:build": "npm run integration:build:environment && parcel build --no-minify --public-url=. -d dist/ -o integration-tests.html test/integration/integration-tests.html",
-    "integration:run": "node ./check-version && open dist/integration-tests.html",
-    "integration:lint-build-run": "npm run integration:lint && npm run integration:build && npm run integration:run",
-    "integration-tests": "npm run integration:lint-build-run",
-    "src-watch": "./node_modules/nodemon/bin/nodemon.js -w src/ --exec npm run src:lint-build",
-    "unit-watch": "./node_modules/nodemon/bin/nodemon.js -w test/unit/ -w dist/reactor-node.js --exec npm run unit:lint-build-run",
-    "integration-watch": "nodemon --watch test/integration/ --watch dist/reactor-browser.js --exec 'npm run integration:lint-build-run'",
-    "all-watch": "./node_modules/nodemon/bin/nodemon.js -w src/ -w test/ --exec npm run all:lint-build-test"
+    "integration:build": "npm run integration:build:environment && npx parcel build --no-minify --public-url=. -d tmp.tests/integration/ -o index.html test/integration/integration-tests.html",
+    "integration:run": "node ./check-version && open tmp.tests/integration/index.html",
+    "unit-tests": "npm-run-all unit:lint unit:build unit:run",
+    "integration-tests": "npm-run-all integration:lint integration:build integration:run",
+    "all-tests": "npm-run-all src:lint src:build --parallel unit-tests integration-tests",
+    "src-watch": "nodemon --watch src/ --watch package.json --exec npm-run-all src:lint src:build",
+    "unit-watch": "nodemon --watch lib/node --watch test/unit/ --exec npm run unit-tests",
+    "integration-watch": "nodemon --watch lib/browser --watch test/integration/ --exec npm run integration-tests",
+    "all-watch": "nodemon --watch package.json --watch src/ --watch test/ --exec npm run all-tests"
   },
   "browserslist": [
     "last 2 chrome versions",
     "last 2 firefox versions",
-    "last 2 safari versions"
+    "last 2 safari versions",
+    "last 2 edge versions"
   ],
   "nodemonConfig": {
     "ignore": [
@@ -61,7 +62,8 @@
     "node": ">=10.15.1"
   },
   "files": [
-    "dist"
+    "dist",
+    "lib"
   ],
   "dependencies": {
     "node-fetch": "2.3.0"
@@ -69,15 +71,15 @@
   "devDependencies": {
     "@babel/cli": "7.4.3",
     "@babel/core": "7.4.3",
+    "@babel/preset-env": "7.4.3",
     "babel-preset-latest-node": "3.1.1",
-    "babel-preset-minify": "0.5.0",
     "eslint": "5.16.0",
     "eslint-config-prettier": "4.1.0",
     "eslint-plugin-prettier": "3.0.1",
     "jasmine": "3.3.1",
     "nock": "10.0.6",
     "nodemon": "1.18.10",
-    "parcel-bundler": "1.12.3",
+    "npm-run-all": "4.1.5",
     "prettier": "1.16.4"
   }
 }

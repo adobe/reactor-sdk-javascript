@@ -61,9 +61,11 @@ $ npm install                 # install the NPM dependencies
 $ npm link "$(pwd)"           # make this package available to tests
 $ npm run build               # build the Reactor SDK library
 ```
-This generates two versions of the library:
-1.  `./lib/*.js`, which is intended for use by nodejs projects
-2.  `./dist/reactor-browser.min.js`, which is intended for in-browser use
+This generates three versions of the library:
+1.  `./lib/node/*.js`, which is intended for use by nodejs projects
+2.  `./lib/browser/*.js`, which is intended for use by bundlers in browser projects
+2.  `./dist/reactor.min.js`, which is intended for loading directly into an HTML
+    page (i.e., for non-bundled browser use)
 
 With the SDK built, you can run its nodejs unit tests:
 ```bash
