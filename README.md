@@ -58,6 +58,7 @@ Postman]( https://github.com/Adobe-Marketing-Cloud/reactor-postman) query set.
 $ git clone git@github.com:Adobe-Marketing-Cloud/reactor-sdk-javascript.git
 $ cd reactor-sdk-javascript
 $ npm install                 # install the NPM dependencies
+$ npm link "$(pwd)"           # make this package available to tests
 $ npm run build               # build the Reactor SDK library
 ```
 This generates two versions of the library:
