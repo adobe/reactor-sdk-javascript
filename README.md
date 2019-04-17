@@ -57,8 +57,7 @@ Postman]( https://github.com/Adobe-Marketing-Cloud/reactor-postman) query set.
 ```bash
 $ git clone git@github.com:Adobe-Marketing-Cloud/reactor-sdk-javascript.git
 $ cd reactor-sdk-javascript
-$ npm install                 # install the NPM dependencies
-$ npm link "$(pwd)"           # make this package available to tests
+$ npm ci                      # clean-install the NPM dependencies in package-lock.json
 $ npm run build               # build the Reactor SDK library
 ```
 This generates three versions of the library:
@@ -69,6 +68,7 @@ This generates three versions of the library:
 
 With the SDK built, you can run its nodejs unit tests:
 ```bash
+$ npm link "$(pwd)"           # make this SDK available to tests
 $ npm run unit-tests          # run the tests in test/unit/**
 ```
 
