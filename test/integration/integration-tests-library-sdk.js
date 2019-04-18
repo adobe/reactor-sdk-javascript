@@ -9,18 +9,12 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-var globals = jasmine.getEnv().reactorIntegrationTestGlobals;
-var Reactor = globals.Reactor;
 
-var reactor = globals.reactor;
-if (!reactor) {
-  const options = { reactorUrl: globals.REACTOR_URL, enableLogging: true };
+// Create and initialize jasmine.getEnv().reactorIntegrationTestGlobals
+import './globals-for-browser.js';
 
-  reactor = new Reactor(globals.ACCESS_TOKEN, options);
-  reactor.accessCode = globals.ACCESS_TOKEN;
-  reactor.reactorUrl = globals.REACTOR_URL;
-  reactor.myCompanyId = globals.COMPANY_ID;
-  globals.reactor = reactor;
-}
+// Initialize jasmine.getEnv().reactorIntegrationTestGlobals.Reactor
+import './reactor-class-library-sdk.js';
 
-export { reactor as default };
+// Run the tests
+import './all-tests.js';

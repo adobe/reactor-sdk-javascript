@@ -9,18 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+
+/*
+This package exports nothing. However, loading it has the side effect of loading
+the Reactor class into `jasmine.getEnv().reactorIntegrationTestGlobals.Reactor`.
+*/
+import Reactor from '@adobe/reactor-sdk-node';
 var globals = jasmine.getEnv().reactorIntegrationTestGlobals;
-var Reactor = globals.Reactor;
-
-var reactor = globals.reactor;
-if (!reactor) {
-  const options = { reactorUrl: globals.REACTOR_URL, enableLogging: true };
-
-  reactor = new Reactor(globals.ACCESS_TOKEN, options);
-  reactor.accessCode = globals.ACCESS_TOKEN;
-  reactor.reactorUrl = globals.REACTOR_URL;
-  reactor.myCompanyId = globals.COMPANY_ID;
-  globals.reactor = reactor;
-}
-
-export { reactor as default };
+globals.Reactor = Reactor;
