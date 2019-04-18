@@ -548,10 +548,15 @@ function toLocalISOString(date) {
 }
 
 function makeNameForTestObject(objectType, baseName) {
+  // We want to be able to generate {Property, Adapter, Library, ...} names that
+  // are different from one run to the next, so they don't collide.
+  //
+  // Adding the date helps, but multiple simultaneous runs of the integration
+  // tests sometimes cause collisions anyway.  So add a random hex string.
+  // But keep the date, because sometimes it's helpful to know when an entity
+  // was created.
   const date = toLocalISOString(new Date());
-  const rand = window.crypto
-    .getRandomValues(new Uint32Array(1))[0]
-    .toString(16);
+  const rand = (Number.MAX_SAFE_INTEGER * Math.random()).toString(16);
   return `${baseName} (Integration Testing ${objectType} / ${date}) ${rand}`;
 }
 
