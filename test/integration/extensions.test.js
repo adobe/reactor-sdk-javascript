@@ -26,7 +26,7 @@ helpers.describe('Extension API', function() {
   // https://developer.adobelaunch.com/api/extensions/create/
   helpers.it('creates a new Extension', async function() {
     let analyticsEx = await helpers.findAnalyticsExtension(theProperty);
-    if (analyticsEx) await helpers.killAnalyticsExtension(theProperty);
+    if (analyticsEx) await helpers.deleteAnalyticsExtension(theProperty);
     analyticsEx = await helpers.makeAnalyticsExtension(theProperty);
     expect(analyticsEx.id).toMatch(helpers.idEX);
   });

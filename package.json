@@ -23,7 +23,7 @@
   ],
   "main": "./lib/node/index.js",
   "browser": {
-     "./lib/node/index.js": "./lib/browser/index.js"
+    "./lib/node/index.js": "./lib/browser/index.js"
   },
   "scripts": {
     "postinstall": "node ./check-version",
@@ -44,8 +44,9 @@
     "integration:clean": "rm -rf tmp.tests/integration-{library,bundled}-sdk",
     "integration:build:library": "npx parcel build --no-minify --public-url=. -d tmp.tests/integration-library-sdk/ -o index.html test/integration/integration-tests-library-sdk.html --target browser",
     "integration:build:bundled": "npx parcel build --no-minify --public-url=. -d tmp.tests/integration-bundled-sdk/ -o index.html test/integration/integration-tests-bundled-sdk.html --target browser",
+    "integration:build:node": "npx parcel build --no-minify --public-url=. -d tmp.tests/integration-in-node/ -o index.js test/integration/integration-tests-library-sdk.js --target node",
     "integration:build": "npm-run-all integration:clean integration:build:environment --print-label --parallel integration:build:*",
-    "integration:run": "node ./check-version && open tmp.tests/integration-library-sdk/index.html",
+    "integration:run": "node ./check-version && open http://localhost:5000/integration-library-sdk/ && open http://localhost:5000/integration-bundled-sdk && npx jasmine tmp.tests/integration-in-node/index.js",
     "unit-tests": "npm-run-all unit:lint unit:build unit:run",
     "integration-tests": "npm-run-all integration:lint integration:build integration:run",
     "all-tests": "npm-run-all src:lint src:build --print-label --parallel unit-tests integration-tests",
@@ -80,13 +81,17 @@
     "@babel/core": "7.4.3",
     "@babel/preset-env": "7.4.3",
     "babel-preset-latest-node": "3.1.1",
+    "commander": "2.20.0",
+    "dateformat": "3.0.3",
     "eslint": "5.16.0",
     "eslint-config-prettier": "4.1.0",
     "eslint-plugin-prettier": "3.0.1",
+    "express": "4.16.4",
     "jasmine": "3.3.1",
     "nock": "10.0.6",
     "nodemon": "1.18.10",
     "npm-run-all": "4.1.5",
+    "path": "0.12.7",
     "prettier": "1.16.4"
   }
 }

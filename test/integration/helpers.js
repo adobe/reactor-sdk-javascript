@@ -369,18 +369,18 @@ const helpers = {
   },
 
   async cleanUpTestProperties() {
-    const groupName = 'Clean up Properties from earlier integration tests';
-    helpers.specName = groupName;
-    console.groupCollapsed(groupName);
-    try {
-      await helpers.forEachEntityInList(
-        paging => reactor.listPropertiesForCompany(helpers.companyId, paging),
-        helpers.deleteTestProperty
-      );
-    } catch (error) {
-      helpers.reportError(error);
-    }
-    console.groupEnd(groupName);
+    //const groupName = 'Clean up Properties from earlier integration tests';
+    //helpers.specName = groupName;
+    //console.groupCollapsed(groupName);
+    //try {
+    //  await helpers.forEachEntityInList(
+    //    paging => reactor.listPropertiesForCompany(helpers.companyId, paging),
+    //    helpers.deleteTestProperty
+    //  );
+    //} catch (error) {
+    //  helpers.reportError(error);
+    //}
+    //console.groupEnd(groupName);
   },
 
   async deleteTestProperty(property) {

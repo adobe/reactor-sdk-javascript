@@ -26,8 +26,8 @@ Since the correspondence between API endpoints and SDK functions is one-to-one,
 the [Launch API documentation][ListCompanies doc] is the primary source of
 semantic information.
 
-(In addition to the live API documentation, the source code of that
-documentation is also available. It's open-sourced at
+(In addition to the live API documentation, the code that builds that
+documentation is available under open source, at
 [`reactor-developer-docs`][Launch API doc repo].  For example, the source code
 of the ["Fetch a Profile"][FetchProfile doc] documentation is at
 [profiles/fetch.md][FetchProfile doc src].)
@@ -72,28 +72,26 @@ $ npm link "$(pwd)"           # make this SDK available to tests
 $ npm run unit-tests          # run the tests in test/unit/**
 ```
 
-The integration tests violate the CORS policy, because they run in a page loaded
-with `file:` yet access `https://launch.adobe.com:9011` for the tests. For
-these tests to work, you'll have to disable your browser's web security. (For
-Google Chrome on macOS, you can do this by shutting down the browser and then
-restarting it from the commandline via `open -a "Google Chrome" --args
---disable-web-security --user-data-dir`.)
+The integration tests require a provisioned Company and current access token,
+specified via the environment variables `ACCESS_TOKEN` and `COMPANY_ID`.
+Instructions for getting appropriate values are given below. See _Determining
+Your Company ID_ and _Determining Your Access Token_.
 
-The integration tests also require a provisioned Company and current access
-token. Get those data into environment variables using the instructions below
-(_Determining Your Company ID_ and _Determining Your Access Token_).
+The in-browser integration tests require a local static-file web server, because
+loading their HTML drivers using a `file://` URL is not effective: the browser
+rejects all the resulting Reactor requests because they violate CORS
+restrictions.  The necessary bare-bones web server is provided with this
+project, as `scripts/static-server.js`. 
 
-Once that's all set up, you can run the integration tests:
+Once you've collected the necessary values for your environment variables, you
+can run the integration tests:
 ```bash
 $ export ACCESS_TOKEN=${REACTOR_API_TOKEN}
 $ export COMPANY_ID=${REACTOR_TEST_COMPANY_ID}
-$ export REACTOR_URL=https://reactor.adobe.io
+$ scripts/static-serve.js --dir ./tmp.tests/ & # or run it in another window
 $ npm run integration-tests   # run the tests in test/integration/**
 $ # Currently known to pass in MacOS Chrome Version 72.0.3626.121.
 ```
-
-**Don't forget to restart Chrome _with its normal security_ once the
-integration tests are done.**
 
 While developing the Reactor SDK, these are handy for auto-building when you
 change the source code:
@@ -110,6 +108,9 @@ $ npm run integration-watch
 
 # re-run {lint, prettier, build, and test} when {src,test}/**/*.js changes
 $ npm run all-watch
+
+# Periodically, you'll want to remove the Properties created during integration tests
+$ script/delete-test-properties
 ```
 
 ## Determining Your Company ID
