@@ -14,6 +14,6 @@ governing permissions and limitations under the License.
 This package exports nothing. However, loading it has the side effect of loading
 the Reactor class into `jasmine.getEnv().reactorIntegrationTestGlobals.Reactor`.
 */
-import Reactor from '@adobe/reactor-sdk-node';
+import Reactor from '@adobe/reactor-sdk';
 var globals = jasmine.getEnv().reactorIntegrationTestGlobals;
 globals.Reactor = Reactor;

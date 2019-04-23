@@ -1,5 +1,5 @@
 {
-  "name": "@adobe/reactor-sdk-node",
+  "name": "@adobe/reactor-sdk",
   "version": "0.0.1",
   "description": "JavaScript SDK for the Reactor API",
   "author": {

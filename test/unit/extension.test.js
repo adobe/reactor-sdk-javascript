@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createReviseBody } from '@adobe/reactor-sdk-node';
+import { createReviseBody } from '@adobe/reactor-sdk';
 
 describe('Extension:', function() {
   const context = jasmine.getEnv().reactorContext;

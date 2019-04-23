@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { default: Reactor } = require('@adobe/reactor-sdk-node');
+const { default: Reactor } = require('@adobe/reactor-sdk');
 
 const datePattern = '\\d\\d\\d\\d-\\d\\d-\\d\\d';
 const integrationTestingPropertyNameMatcher = RegExp(
