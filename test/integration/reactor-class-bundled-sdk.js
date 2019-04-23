@@ -14,6 +14,7 @@ governing permissions and limitations under the License.
 This package exports nothing. However, loading it has the side effect of loading
 the Reactor class into `jasmine.getEnv().reactorIntegrationTestGlobals.Reactor`.
 */
-var ReactorExports = require('../../dist/reactor.min.js');
+//var ReactorExports = require('../../dist/reactor.min.js');
+var ReactorExports = require('@adobe/reactor-sdk/dist/reactor.min.js');
 var globals = jasmine.getEnv().reactorIntegrationTestGlobals;
 globals.Reactor = ReactorExports.default;
