@@ -19,6 +19,6 @@ export default function reactorHeaders(accessToken) {
     'Cache-control': 'no-cache',
     Authorization: `Bearer ${accessToken}`,
     'X-Api-Key': 'Activation-DTM',
-    'User-Agent': `adobe-reactor-node/${version}`
+    'User-Agent': `adobe/reactor-sdk/javascript/${version}`
   };
 }
