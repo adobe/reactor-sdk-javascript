@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import nock from 'nock';
-import Reactor, { reactorHeaders } from '../../';
+import Reactor, { reactorHeaders } from '@adobe/reactor-sdk';
 
 function getEnv(varName, defaultValue) {
   return process.env[varName] || defaultValue;

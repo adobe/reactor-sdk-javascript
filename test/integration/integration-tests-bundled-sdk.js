@@ -10,15 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { version } from './version';
+// Create and initialize jasmine.getEnv().reactorIntegrationTestGlobals
+import './globals-for-browser.js';
 
-export default function reactorHeaders(accessToken) {
-  return {
-    Accept: 'application/vnd.api+json;revision=1',
-    'Content-Type': 'application/vnd.api+json',
-    'Cache-control': 'no-cache',
-    Authorization: `Bearer ${accessToken}`,
-    'X-Api-Key': 'Activation-DTM',
-    'User-Agent': `adobe/reactor-sdk/javascript/${version}`
-  };
-}
+// Initialize jasmine.getEnv().reactorIntegrationTestGlobals.Reactor
+import './reactor-class-bundled-sdk.js';
+
+// Run the tests
+import './all-tests.js';

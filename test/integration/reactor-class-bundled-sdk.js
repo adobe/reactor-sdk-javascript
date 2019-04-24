@@ -10,15 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { version } from './version';
-
-export default function reactorHeaders(accessToken) {
-  return {
-    Accept: 'application/vnd.api+json;revision=1',
-    'Content-Type': 'application/vnd.api+json',
-    'Cache-control': 'no-cache',
-    Authorization: `Bearer ${accessToken}`,
-    'X-Api-Key': 'Activation-DTM',
-    'User-Agent': `adobe/reactor-sdk/javascript/${version}`
-  };
-}
+/*
+This package exports nothing. However, loading it has the side effect of loading
+the Reactor class into `jasmine.getEnv().reactorIntegrationTestGlobals.Reactor`.
+*/
+//var ReactorExports = require('../../dist/reactor.min.js');
+var ReactorExports = require('@adobe/reactor-sdk/dist/reactor.min.js');
+var globals = jasmine.getEnv().reactorIntegrationTestGlobals;
+globals.Reactor = ReactorExports.default;

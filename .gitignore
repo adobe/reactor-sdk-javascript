@@ -4,5 +4,6 @@
 node_modules
 .cache
 dist
-testing
+lib
+tmp.tests
 test/integration/globals-for-browser.js
