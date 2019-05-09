@@ -57,6 +57,7 @@ function env(varName, exampleValue) {
 }
 
 async function main() {
+  process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
   var errors = 0;
   var companyId = env('COMPANY_ID', 'CO1234567890abcdef1234567890abcdef');
   var accessToken = env('ACCESS_TOKEN', 'eyJiOi...(lots more here)....YiHkRLQ');

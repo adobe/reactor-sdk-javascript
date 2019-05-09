@@ -13,10 +13,11 @@ governing permissions and limitations under the License.
 describe('RuleComponent:', function() {
   const context = jasmine.getEnv().reactorContext;
   const reactor = context.reactor;
+  const propertyId = 'PR001';
   const ruleId = 'RL123';
   const ruleComponentId = 'RC123';
 
-  describe('createRuleComponent', function() {
+  describe('deprecatedCreateRuleComponent', function() {
     it('runs an http POST', async function() {
       const ruleComponent = {
         attributes: {
@@ -29,7 +30,24 @@ describe('RuleComponent:', function() {
         `/rules/${ruleId}/rule_components`,
         ruleComponent
       );
-      await reactor.createRuleComponent(ruleId, ruleComponent);
+      await reactor.deprecatedCreateRuleComponent(ruleId, ruleComponent);
+    });
+  });
+
+  describe('createRuleComponent', function() {
+    it('runs an http POST', async function() {
+      const ruleComponent = {
+        attributes: {
+          name: `RuleComponent ${new Date().getTime()}`
+        },
+        type: 'rule_components'
+      };
+      context.expectRequest(
+        'post',
+        `/properties/${propertyId}/rule_components`,
+        ruleComponent
+      );
+      await reactor.createRuleComponent(propertyId, ruleComponent);
     });
   });
 
@@ -72,6 +90,23 @@ describe('RuleComponent:', function() {
         'filter[name]': 'EQ Delta,EQ Bravo',
         sort: '-name'
       });
+    });
+  });
+
+  describe('listRulesForRuleComponent', function() {
+    it('runs an http GET', async function() {
+      context.expectRequest('get', `/rule_components/${ruleComponentId}/rules`);
+      await reactor.listRulesForRuleComponent(ruleComponentId);
+    });
+  });
+
+  describe('listRuleRelationshipsForRuleComponent', function() {
+    it('runs an http GET', async function() {
+      context.expectRequest(
+        'get',
+        `/rule_components/${ruleComponentId}/relationships/rule`
+      );
+      await reactor.listRuleRelationshipsForRuleComponent(ruleComponentId);
     });
   });
 

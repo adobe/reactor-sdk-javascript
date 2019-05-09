@@ -402,6 +402,14 @@ async function makeClickEventRC() {
           id: coreEX,
           type: 'extensions'
         }
+      },
+      rules: {
+        data: [
+          {
+            id: clickEventRL,
+            type: 'rules'
+          }
+        ]
       }
     },
     type: 'rule_components'
@@ -409,7 +417,7 @@ async function makeClickEventRC() {
   };
 
   // Create a click-event RuleComponent on the Rule
-  const response = await reactor.createRuleComponent(clickEventRL, data);
+  const response = await reactor.createRuleComponent(awesomePR, data);
   const ruleComponent = response.data;
 
   clickEventRC = ruleComponent.id;
@@ -417,7 +425,6 @@ async function makeClickEventRC() {
   // Verify that we built what we expected.
   expect(clickEventRC).toMatch(/^RC[0-9A-F]{32}$/i);
   expect(ruleComponent.attributes.name).toBe('click-event');
-  expect(ruleComponent.relationships.rule.data.id).toBe(clickEventRL);
   expect(ruleComponent.relationships.extension.data.id).toBe(coreEX);
 }
 
@@ -436,6 +443,14 @@ async function makeBrowserConditionRC() {
           id: coreEX,
           type: 'extensions'
         }
+      },
+      rules: {
+        data: [
+          {
+            id: clickEventRL,
+            type: 'rules'
+          }
+        ]
       }
     },
     type: 'rule_components'
@@ -443,7 +458,7 @@ async function makeBrowserConditionRC() {
   };
 
   // Create a browser-condition RuleComponent on the Rule
-  const response = await reactor.createRuleComponent(clickEventRL, data);
+  const response = await reactor.createRuleComponent(awesomePR, data);
   const ruleComponent = response.data;
 
   browserConditionRC = ruleComponent.id;
@@ -451,7 +466,6 @@ async function makeBrowserConditionRC() {
   // Verify that we built what we expected.
   expect(browserConditionRC).toMatch(/^RC[0-9A-F]{32}$/i);
   expect(ruleComponent.attributes.name).toBe('browser-condition');
-  expect(ruleComponent.relationships.rule.data.id).toBe(clickEventRL);
   expect(ruleComponent.relationships.extension.data.id).toBe(coreEX);
 }
 
@@ -479,13 +493,21 @@ async function makeSendBeaconRC() {
           id: adobeAnalyticsEX,
           type: 'extensions'
         }
+      },
+      rules: {
+        data: [
+          {
+            id: clickEventRL,
+            type: 'rules'
+          }
+        ]
       }
     }
     /*eslint-enable camelcase*/
   };
 
   // Create a send-beacon RuleComponent on the Rule
-  const response = await reactor.createRuleComponent(clickEventRL, data);
+  const response = await reactor.createRuleComponent(awesomePR, data);
   const ruleComponent = response.data;
 
   sendBeaconRC = ruleComponent.id;
@@ -493,7 +515,6 @@ async function makeSendBeaconRC() {
   // Verify that we built what we expected.
   expect(sendBeaconRC).toMatch(/^RC[0-9A-F]{32}$/i);
   expect(ruleComponent.attributes.name).toBe('analytics-action');
-  expect(ruleComponent.relationships.rule.data.id).toBe(clickEventRL);
   expect(ruleComponent.relationships.extension.data.id).toBe(adobeAnalyticsEX);
 }
 
@@ -546,14 +567,22 @@ async function makeAddToCartRC() {
           id: facebookPixelEX,
           type: 'extensions'
         }
+      },
+      rules: {
+        data: [
+          {
+            id: clickEventRL,
+            type: 'rules'
+          }
+        ]
       }
     },
     type: 'rule_components'
     /*eslint-enable camelcase*/
   };
 
-  // Create a send-beacon RuleComponent on the Rule
-  const response = await reactor.createRuleComponent(clickEventRL, data);
+  // Create an add-to-cart RuleComponent on the Rule
+  const response = await reactor.createRuleComponent(awesomePR, data);
   const ruleComponent = response.data;
 
   addToCartRC = ruleComponent.id;
@@ -561,7 +590,6 @@ async function makeAddToCartRC() {
   // Verify that we built what we expected.
   expect(addToCartRC).toMatch(/^RC[0-9A-F]{32}$/i);
   expect(ruleComponent.attributes.name).toBe('facebook-event');
-  expect(ruleComponent.relationships.rule.data.id).toBe(clickEventRL);
   expect(ruleComponent.relationships.extension.data.id).toBe(facebookPixelEX);
 }
 
@@ -677,13 +705,23 @@ async function makeBibliotecaLB() {
 
   // Because the library references _revisions_ of the resources, the resource
   // ID's the libary references will not match shoppingCartDE, productIdDE,
-  // clickEventRL, coreEX, adobeAnalyticsEX, and facebookPixelEX.  But we can at
-  // least check that its resources are exactly: two DataElements, three
-  // Extensions, and one Rule.
-  const resourceTypes = library.relationships.resources.data
-    .map(resource => resource.id.substring(0, 2))
-    .sort();
-  expect(resourceTypes).toEqual(['DE', 'DE', 'EX', 'EX', 'EX', 'RL']);
+  // clickEventRL, coreEX, adobeAnalyticsEX, and facebookPixelEX.  But we can
+  // check that the _origins_ of the resources on the library are the expected
+  // shoppingCartDE, productIdDE, etc.
+  const deOriginsExpected = [shoppingCartDE, productIdDE];
+  const deResponse = await reactor.listDataElementsForLibrary(bibliotecaLB);
+  const deOrigins = deResponse.data.map(de => de.relationships.origin.data.id);
+  expect(deOrigins.sort()).toEqual(deOriginsExpected.sort());
+
+  const rlOriginsExpected = [clickEventRL];
+  const rlResponse = await reactor.listRulesForLibrary(bibliotecaLB);
+  const rlOrigins = rlResponse.data.map(rl => rl.relationships.origin.data.id);
+  expect(rlOrigins.sort()).toEqual(rlOriginsExpected.sort());
+
+  const exOriginsExpected = [coreEX, adobeAnalyticsEX, facebookPixelEX];
+  const exResponse = await reactor.listExtensionsForLibrary(bibliotecaLB);
+  const exOrigins = exResponse.data.map(ex => ex.relationships.origin.data.id);
+  expect(exOrigins.sort()).toEqual(exOriginsExpected.sort());
 }
 
 // Post a Build to the Library.

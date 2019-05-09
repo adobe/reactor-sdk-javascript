@@ -88,7 +88,7 @@ can run the integration tests:
 ```bash
 $ export ACCESS_TOKEN=${REACTOR_API_TOKEN}
 $ export COMPANY_ID=${REACTOR_TEST_COMPANY_ID}
-$ scripts/static-serve.js --dir ./tmp.tests/ & # or run it in another window
+$ NODE_TLS_REJECT_UNAUTHORIZED=0 scripts/static-server.js --dir ./tmp.tests/ & # or, run it in another window
 $ npm run integration-tests   # run the tests in test/integration/**
 $ # Currently known to pass in MacOS Chrome Version 72.0.3626.121.
 ```

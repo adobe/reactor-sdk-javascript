@@ -61,12 +61,25 @@ const helpers = {
     return await getCoreExtensionId(property);
   },
 
+  async coreExtensionRevision(property) {
+    return await getCoreExtensionRevision(property);
+  },
+
   async coreExtensionRevisionId(property) {
     return await getCoreExtensionRevisionId(property);
   },
 
   async findAnalyticsExtension(property) {
     return await findAnalyticsExtension(property);
+  },
+
+  async analyticsExtensionRevision(property) {
+    return await getAnalyticsExtensionRevision(property);
+  },
+
+  async analyticsExtensionRevisionId(property) {
+    const revisedExtension = await getAnalyticsExtensionRevision();
+    return revisedExtension.id;
   },
 
   async makeAnalyticsExtension(property) {
@@ -152,7 +165,7 @@ const helpers = {
     const listedIds = listResponse.data.map(resource => resource.id);
     expect(listedIds).toContain(revId);
 
-    // property.coreExRevision is set by heleprs.coreExtensionRevisionId
+    // property.coreExRevision is set by helpers.coreExtensionRevisionId
     library.coreExRevision = property.coreExRevision;
     return revId;
   },
@@ -394,8 +407,13 @@ const helpers = {
     }
   },
 
-  async createTestRule(property, ruleName) {
-    return await makeTestRule(property, ruleName);
+  // Creates and returns a new Rule.
+  // If `theLibrary` is non-null, the behavior changes:
+  //   - The rule is revised
+  //   - The revised rule is added to `theLibrary`
+  //   - The returned rule is the _revised_ version of the rule
+  async createTestRule(property, ruleBaseName, theLibrary = null) {
+    return await makeTestRule(property, ruleBaseName, theLibrary);
   },
 
   async createTestRuleComponent(property, rule, ruleComponentName, order) {
@@ -629,14 +647,20 @@ async function getCoreExtensionId(property) {
 }
 
 // Caches core extension revision in property.coreExRevision
-async function getCoreExtensionRevisionId(property) {
-  if (property.coreExRevision) return property.coreExRevision.id;
+async function getCoreExtensionRevision(property) {
+  if (property.coreExRevision) return property.coreExRevision;
   const coreExId = await getCoreExtensionId(property);
   const coreExRevision = (await reactor.reviseExtension(coreExId)).data;
   const ctx = `revising core Extension for property ${property.id}`;
   expectWithContext(coreExRevision.id, ctx).toMatch(helpers.idEX);
   property.coreExRevision = coreExRevision;
-  return property.coreExRevision.id;
+  return coreExRevision;
+}
+
+// Caches core extension revision in property.coreExRevision
+async function getCoreExtensionRevisionId(property) {
+  const coreExtensionRevision = await getCoreExtensionRevision(property);
+  return coreExtensionRevision.id;
 }
 
 let analyticsEp = null; // Cache of analytics extension package
@@ -710,6 +734,18 @@ async function makeAnalyticsExtension(property) {
   return analyticsEx;
 }
 
+// Caches analytics extension revision in property.analyticsExRevision
+async function getAnalyticsExtensionRevision(property) {
+  if (property.analyticsExRevision) return property.analyticsExRevision;
+  const analyticsEx = await helpers.analyticsExtension(property);
+  const ctx = `revising analytics Extension for property ${property.id}`;
+  const reviseResponse = await reactor.reviseExtension(analyticsEx.id);
+  const analyticsExRevision = reviseResponse.data;
+  expectWithContext(analyticsExRevision.id, ctx).toMatch(helpers.idEX);
+  property.analyticsExRevision = analyticsExRevision;
+  return analyticsExRevision;
+}
+
 // Uncaches analytics extension from property.analyticsEx
 async function deleteAnalyticsExtension(property) {
   if (property.analyticsEx) {
@@ -718,7 +754,7 @@ async function deleteAnalyticsExtension(property) {
   }
 }
 
-async function makeTestRule(property, ruleBaseName) {
+async function makeTestRule(property, ruleBaseName, theLibrary = null) {
   const ruleName = makeNameForTestObject('Rule', ruleBaseName);
   const data = {
     attributes: { name: ruleName },
@@ -733,7 +769,22 @@ async function makeTestRule(property, ruleBaseName) {
   expect(rule.id).toMatch(helpers.idRL);
   expect(rule.attributes.name).toBe(ruleName);
   expect(rule.relationships.property.data.id).toBe(property.id);
-  return rule;
+
+  if (theLibrary == null) return rule;
+  const reviseResponse = await reactor.reviseRule(rule.id);
+  const revisedRule = reviseResponse.data;
+  expect(revisedRule).toBeDefined();
+  expect(revisedRule.id).toMatch(helpers.idRL);
+  expect(revisedRule.id).not.toBe(rule.id);
+  expect(revisedRule.attributes.name).toBe(rule.attributes.name);
+
+  const addResponse = await reactor.addRuleRelationshipsToLibrary(
+    theLibrary.id,
+    [{ id: revisedRule.id, type: 'rules' }]
+  );
+  const libRules = addResponse.data.map(rule => rule.id);
+  expect(libRules).toContain(revisedRule.id);
+  return revisedRule;
 }
 
 async function makeTestRuleComponent(
@@ -765,6 +816,14 @@ async function makeTestRuleComponent(
           id: coreEx.id,
           type: 'extensions'
         }
+      },
+      rules: {
+        data: [
+          {
+            id: rule.id,
+            type: 'rules'
+          }
+        ]
       }
     },
     type: 'rule_components'
@@ -772,13 +831,12 @@ async function makeTestRuleComponent(
   };
 
   // Create a RuleComponent on the Rule
-  const response = await reactor.createRuleComponent(rule.id, data);
+  const response = await reactor.createRuleComponent(property.id, data);
   const ruleComponent = response.data;
 
   // Verify that we built what we expected.
   expect(ruleComponent.id).toMatch(helpers.idRC);
   expect(ruleComponent.attributes.name).toBe(ruleComponentName);
-  expect(ruleComponent.relationships.rule.data.id).toBe(rule.id);
   expect(ruleComponent.relationships.extension.data.id).toBe(coreEx.id);
   return ruleComponent;
 }
