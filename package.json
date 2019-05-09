@@ -27,6 +27,7 @@
   },
   "scripts": {
     "postinstall": "node ./check-version",
+    "prepublish": "npm run build",
     "build": "npm run src:build",
     "test": "npm run all-tests",
     "src:lint": "eslint --fix --parser-options=ecmaVersion:8 'src/**/*.js'",
