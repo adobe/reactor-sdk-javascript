@@ -13,10 +13,18 @@ governing permissions and limitations under the License.
 // RuleComponents
 // https://developer.adobelaunch.com/api/rule_components
 
-//  Create a RuleComponent
+// Create a RuleComponent
 // https://developer.adobelaunch.com/api/rule_components/create/
-export function createRuleComponent(ruleId, ruleComponent) {
+export function deprecatedCreateRuleComponent(ruleId, ruleComponent) {
   return this.post(`/rules/${ruleId}/rule_components`, {
+    data: ruleComponent
+  });
+}
+
+// Create a RuleComponent
+// https://developer.adobelaunch.com/api/reference/1.0/rule_components/create/
+export function createRuleComponent(propertyId, ruleComponent) {
+  return this.post(`/properties/${propertyId}/rule_components`, {
     data: ruleComponent
   });
 }
@@ -39,10 +47,14 @@ export function getExtensionForRuleComponent(ruleComponentId) {
   return this.get(`/rule_components/${ruleComponentId}/extension`);
 }
 
-// Get the Rule
-// https://developer.adobelaunch.com/api/rule_components/rule/
-export function getRuleForRuleComponent(ruleComponentId) {
-  return this.get(`/rule_components/${ruleComponentId}/rule`);
+// List Rules for a RuleComponent
+export function listRulesForRuleComponent(ruleComponentId) {
+  return this.get(`/rule_components/${ruleComponentId}/rules`);
+}
+
+// List Rule relationships for a RuleComponent
+export function listRuleRelationshipsForRuleComponent(ruleComponentId) {
+  return this.get(`/rule_components/${ruleComponentId}/relationships/rule`);
 }
 
 // Get the origin

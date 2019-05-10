@@ -71,6 +71,194 @@ describe('Library:', function() {
     });
   });
 
+  describe('addExtensionRelationshipsToLibrary', function() {
+    const postBody = {
+      data: [
+        { id: 'EX1234567890123456789042', type: 'extensions' },
+        { id: 'EX1234567890123456789077', type: 'extensions' }
+      ]
+    };
+    it('runs an http POST', async function() {
+      context.expectRequest(
+        'post',
+        `/libraries/${libraryId}/relationships/extensions`
+      );
+      await reactor.addExtensionRelationshipsToLibrary(
+        libraryId,
+        postBody.data
+      );
+    });
+  });
+
+  describe('addRuleRelationshipsToLibrary', function() {
+    const postBody = {
+      data: [
+        { id: 'RL1234567890123456789042', type: 'rules' },
+        { id: 'RL1234567890123456789077', type: 'rules' }
+      ]
+    };
+    it('runs an http POST', async function() {
+      context.expectRequest(
+        'post',
+        `/libraries/${libraryId}/relationships/rules`
+      );
+      await reactor.addRuleRelationshipsToLibrary(libraryId, postBody.data);
+    });
+  });
+
+  describe('listExtensionRelationshipsForLibrary', function() {
+    it('runs an http GET', async function() {
+      context.expectRequest(
+        'get',
+        `/libraries/${libraryId}/relationships/extensions`
+      );
+      await reactor.listExtensionRelationshipsForLibrary(libraryId);
+    });
+    it('runs an http GET with query parameters', async function() {
+      context.expectRequest(
+        'get',
+        `/libraries/${libraryId}/relationships/extensions?filter%5Bname%5D=EQ+Dan`
+      );
+      await reactor.listExtensionRelationshipsForLibrary(libraryId, {
+        'filter[name]': 'EQ Dan'
+      });
+    });
+  });
+
+  describe('listExtensionsForLibrary', function() {
+    it('runs an http GET', async function() {
+      context.expectRequest('get', `/libraries/${libraryId}/extensions`);
+      await reactor.listExtensionsForLibrary(libraryId);
+    });
+    it('runs an http GET with query parameters', async function() {
+      context.expectRequest(
+        'get',
+        `/libraries/${libraryId}/extensions?filter%5Bname%5D=EQ+Fred&sort=name`
+      );
+      await reactor.listExtensionsForLibrary(libraryId, {
+        'filter[name]': 'EQ Fred',
+        sort: 'name'
+      });
+    });
+  });
+
+  describe('listRuleRelationshipsForLibrary', function() {
+    it('runs an http GET', async function() {
+      context.expectRequest(
+        'get',
+        `/libraries/${libraryId}/relationships/rules`
+      );
+      await reactor.listRuleRelationshipsForLibrary(libraryId);
+    });
+    it('runs an http GET with query parameters', async function() {
+      context.expectRequest(
+        'get',
+        `/libraries/${libraryId}/relationships/rules?filter%5Bname%5D=EQ+Joe&sort=-name`
+      );
+      await reactor.listRuleRelationshipsForLibrary(libraryId, {
+        'filter[name]': 'EQ Joe',
+        sort: '-name'
+      });
+    });
+  });
+
+  describe('listRulesForLibrary', function() {
+    it('runs an http GET', async function() {
+      context.expectRequest('get', `/libraries/${libraryId}/rules`);
+      await reactor.listRulesForLibrary(libraryId);
+    });
+    it('runs an http GET with query parameters', async function() {
+      context.expectRequest(
+        'get',
+        `/libraries/${libraryId}/rules?filter%5Bname%5D=EQ+Gus&sort=-name`
+      );
+      await reactor.listRulesForLibrary(libraryId, {
+        'filter[name]': 'EQ Gus',
+        sort: '-name'
+      });
+    });
+  });
+
+  describe('replaceExtensionRelationshipsForLibrary', function() {
+    const patchBody = {
+      data: [
+        { id: 'EX44444444555555556666666677777777', type: 'extensions' },
+        { id: 'EX00000000111111111111111188888888', type: 'extensions' }
+      ]
+    };
+    it('runs an http PATCH', async function() {
+      context.expectRequest(
+        'patch',
+        `/libraries/${libraryId}/relationships/extensions`,
+        patchBody
+      );
+      await reactor.replaceExtensionRelationshipsForLibrary(
+        libraryId,
+        patchBody.data
+      );
+    });
+  });
+
+  describe('replaceRuleRelationshipsForLibrary', function() {
+    const patchBody = {
+      data: [
+        { id: 'RL44444444555555556666666677777777', type: 'rules' },
+        { id: 'RL00000000111111111111111188888888', type: 'rules' }
+      ]
+    };
+    it('runs an http PATCH', async function() {
+      context.expectRequest(
+        'patch',
+        `/libraries/${libraryId}/relationships/rules`,
+        patchBody
+      );
+      await reactor.replaceRuleRelationshipsForLibrary(
+        libraryId,
+        patchBody.data
+      );
+    });
+  });
+
+  describe('removeExtensionRelationshipsFromLibrary', function() {
+    const deleteBody = {
+      data: [
+        { id: 'EX123', type: 'extensions' },
+        { id: 'EX456', type: 'extensions' }
+      ]
+    };
+    it('runs an http DELETE', async function() {
+      context.expectRequest(
+        'delete',
+        `/libraries/${libraryId}/relationships/extensions`,
+        deleteBody
+      );
+      await reactor.removeExtensionRelationshipsFromLibrary(
+        libraryId,
+        deleteBody.data
+      );
+    });
+  });
+
+  describe('removeRuleRelationshipsFromLibrary', function() {
+    const deleteBody = {
+      data: [
+        { id: 'RL99999999444444444444444412345657', type: 'rules' },
+        { id: 'RL55555555111111111111111188888888', type: 'rules' }
+      ]
+    };
+    it('runs an http DELETE', async function() {
+      context.expectRequest(
+        'delete',
+        `/libraries/${libraryId}/relationships/rules`,
+        deleteBody
+      );
+      await reactor.removeRuleRelationshipsFromLibrary(
+        libraryId,
+        deleteBody.data
+      );
+    });
+  });
+
   describe('deleteLibrary', function() {
     it('runs an http DELETE', async function() {
       context.expectRequest('delete', `/libraries/${libraryId}`);
