@@ -20,7 +20,7 @@ The Adobe Experience Platform Launch API is a RESTful
 
 Each Launch endpoint has a corresponding function in this library.  For example,
 the ["Fetch a Profile"][FetchProfile doc] endpoint is accessed via the
-[`fetchProfile()`][FetchProfile impl] SDK function.
+[`getProfile()`][FetchProfile impl] SDK function.
 
 Since the correspondence between API endpoints and SDK functions is one-to-one,
 the [Launch API documentation][ListCompanies doc] is the primary source of
@@ -36,11 +36,11 @@ of the ["Fetch a Profile"][FetchProfile doc] documentation is at
 [Launch API doc]: https://developer.adobelaunch.com/api/ 'Adobe Experience Platform Launch API'
 [Launch API doc repo]: https://github.com/Adobe-Marketing-Cloud/reactor-developer-docs 'Launch API documentation repository'
 [FetchProfile doc]: https://developer.adobelaunch.com/api/reference/1.0/profiles/fetch/ 'Fetch a Profile'
-[FetchProfile impl]: https://github.com/Adobe-Marketing-Cloud/reactor-sdk-javascript/blob/033db2e59a619141b9508feae50bbe39d5660fa5/lib/profiles.js#L13 'fetchProfile'
+[FetchProfile impl]: https://github.com/Adobe-Marketing-Cloud/reactor-sdk-javascript/blob/0d10436c31ab84772882ead2e4da6cc9d41fc7bc/src/profiles.js#L13
 [FetchProfile doc src]: https://github.com/Adobe-Marketing-Cloud/reactor-developer-docs/blob/master/api/reference/1.0/profiles/fetch.md 'Fetch a Profile'
 [ListCompanies doc]: https://developer.adobelaunch.com/api/reference/1.0/companies/list/ 'List Companies'
 
-Every SDK function [has an integration test](./blob/master/test/integration) that
+Every SDK function [has an integration test](./tree/master/test/integration) that
 demonstrates its correctness. (Well, correct for at least *one* use).  These
 tests also provide you working examples for every library function.
 [This isn't quite true yet.  We're almost there, but a few remain to be
@@ -57,8 +57,7 @@ Postman]( https://github.com/Adobe-Marketing-Cloud/reactor-postman) query set.
 ```bash
 $ git clone git@github.com:Adobe-Marketing-Cloud/reactor-sdk-javascript.git
 $ cd reactor-sdk-javascript
-$ npm ci                      # clean-install the NPM dependencies in package-lock.json
-$ npm run build               # build the Reactor SDK library
+$ npm clean-install           # install dependencies and build Reactor SDK library
 ```
 This generates three versions of the library:
 1.  `./lib/node/*.js`, which is intended for use by nodejs projects
