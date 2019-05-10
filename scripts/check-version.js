@@ -10,18 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-var globals = jasmine.getEnv().reactorIntegrationTestGlobals;
-var Reactor = globals.Reactor;
+// Enforce a hard requirement on the requested NodeJS version.
+let semver = require('semver');
+let pkg = require('../package');
 
-var reactor = globals.reactor;
-if (!reactor) {
-  const options = { reactorUrl: globals.REACTOR_URL, enableLogging: true };
-
-  reactor = new Reactor(globals.ACCESS_TOKEN, options);
-  reactor.accessCode = globals.ACCESS_TOKEN;
-  reactor.reactorUrl = globals.REACTOR_URL;
-  reactor.myCompanyId = globals.COMPANY_ID;
-  globals.reactor = reactor;
+const version = pkg.engines && pkg.engines.node;
+if (!semver.satisfies(process.version, version)) {
+  console.error(
+    `Reactor SDK requires node version ${version},
+which is not satisfied by your current version (${process.version}).`
+  );
+  process.exit(1);
 }
 
-export { reactor as default };

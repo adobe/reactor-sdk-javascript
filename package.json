@@ -1,6 +1,6 @@
 {
   "name": "@adobe/reactor-sdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "JavaScript SDK for the Reactor API",
   "author": {
     "name": "Adobe Systems",
@@ -26,8 +26,8 @@
     "./lib/node/index.js": "./lib/browser/index.js"
   },
   "scripts": {
-    "postinstall": "node ./check-version",
     "prepublish": "npm run build",
+    "postinstall": "node scripts/check-version.js",
     "build": "npm run src:build",
     "test": "npm run all-tests",
     "src:lint": "eslint --fix --parser-options=ecmaVersion:8 'src/**/*.js'",
@@ -39,7 +39,7 @@
     "unit:lint": "eslint --fix --parser-options=ecmaVersion:8 'test/unit/**/*.js'",
     "unit:clean": "rm -rf tmp.tests/unit",
     "unit:build": "npm run unit:clean && babel test/unit --out-dir tmp.tests/unit/ --source-maps --presets latest-node",
-    "unit:run": "node ./check-version && jasmine tmp.tests/unit/index.js",
+    "unit:run": "node scripts/check-version && jasmine tmp.tests/unit/index.js",
     "integration:lint": "eslint --fix --parser-options=ecmaVersion:8 'test/integration/**/*.js'",
     "integration:build:environment": "node test/integration/write-reactor-environment.js",
     "integration:clean": "rm -rf tmp.tests/integration-{library,bundled}-sdk",
@@ -47,7 +47,7 @@
     "integration:build:bundled": "npx parcel build --no-minify --public-url=. -d tmp.tests/integration-bundled-sdk/ -o index.html test/integration/integration-tests-bundled-sdk.html --target browser",
     "integration:build:node": "npx parcel build --no-minify --public-url=. -d tmp.tests/integration-in-node/ -o index.js test/integration/integration-tests-library-sdk.js --target node",
     "integration:build": "npm-run-all integration:clean integration:build:environment --print-label --parallel integration:build:*",
-    "integration:run": "node ./check-version && open http://localhost:5000/integration-library-sdk/ && open http://localhost:5000/integration-bundled-sdk && NODE_TLS_REJECT_UNAUTHORIZED=0 npx jasmine tmp.tests/integration-in-node/index.js",
+    "integration:run": "node scripts/check-version && open http://localhost:5000/integration-library-sdk/ && open http://localhost:5000/integration-bundled-sdk && NODE_TLS_REJECT_UNAUTHORIZED=0 npx jasmine tmp.tests/integration-in-node/index.js",
     "unit-tests": "npm-run-all unit:lint unit:build unit:run",
     "integration-tests": "npm-run-all integration:lint integration:build integration:run",
     "all-tests": "npm-run-all src:lint src:build --print-label --parallel unit-tests integration-tests",
@@ -72,7 +72,8 @@
   },
   "files": [
     "dist",
-    "lib"
+    "lib",
+    "scripts"
   ],
   "dependencies": {
     "node-fetch": "2.3.0",
