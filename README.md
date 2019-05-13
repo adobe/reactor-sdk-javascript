@@ -3,14 +3,10 @@
 A Library for accessing the Adobe Experience Platform
 [Launch API][Launch API doc].
 
-# &#x26a0; Alpha State
-**These APIs are currently in an** *‘alpha’* **state and are likely to change
-over time. Please do not use them in a production setting!**
-
-This is an early release. We wanted to make this code available to the community
-quickly in order to elicit criticism and contributions. The style of the API is
-intended to be comfortable to JavaScript developers. But that "comfortable
-style" was determined by a small group of people, so Your Mileage May Vary. We
+This API is fairly low-level.
+The Reactor methods are one-to-one with the RESTful API endpoints, and they
+provide very little help in constructing your payloads.
+This is intended meet the expectations of JavaScript developers, but we
 welcome your feedback.
 
 ## The SDK and the API
@@ -24,7 +20,7 @@ the ["Fetch a Profile"][FetchProfile doc] endpoint is accessed via the
 
 Since the correspondence between API endpoints and SDK functions is one-to-one,
 the [Launch API documentation][ListCompanies doc] is the primary source of
-semantic information.
+information.
 
 (In addition to the live API documentation, the code that builds that
 documentation is available under open source, at
