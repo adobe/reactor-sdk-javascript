@@ -296,7 +296,6 @@ helpers.describe('Library API', function() {
   // https://developer.adobelaunch.com/api/libraries/publish/
   helpers.it('publishes a Library', async function() {
     const aProperty = await helpers.createTestProperty('Publishing Base');
-    debugger;
     let lib = await helpers.createTestLibrary(aProperty.id, 'Hyrum');
     await helpers.addCoreToLibrary(aProperty, lib);
     await makeDataElementsAndAddToLibrary(aProperty, lib, ['ian']);

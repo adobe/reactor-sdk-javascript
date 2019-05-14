@@ -10,8 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import { createReviseBody } from '@adobe/reactor-sdk';
-
 describe('Extension:', function() {
   const context = jasmine.getEnv().reactorContext;
   const reactor = context.reactor;
@@ -51,7 +49,7 @@ describe('Extension:', function() {
 
   describe('reviseExtension', function() {
     it('runs an http PATCH', async function() {
-      const reviseBody = createReviseBody('extensions', extensionId);
+      const reviseBody = reactor.createReviseBody('extensions', extensionId);
       context.expectRequest('patch', `/extensions/${extensionId}`, reviseBody);
       await reactor.reviseExtension(extensionId);
     });

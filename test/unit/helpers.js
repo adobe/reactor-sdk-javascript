@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import nock from 'nock';
-import Reactor, { reactorHeaders } from '@adobe/reactor-sdk';
+import Reactor from '@adobe/reactor-sdk';
 
 function getEnv(varName, defaultValue) {
   return process.env[varName] || defaultValue;
@@ -19,7 +19,7 @@ function getEnv(varName, defaultValue) {
 
 const accessToken = 'No real token needed here because Launch calls are mocked';
 const reactorUrl = 'https://reactor.sample.com';
-const reqheaders = reactorHeaders(accessToken);
+const reqheaders = Reactor.prototype.reactorHeaders(accessToken);
 
 function expectRequest(method, path, body) {
   const initializedNock = nock(reactorUrl, {

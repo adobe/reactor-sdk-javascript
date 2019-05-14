@@ -12,10 +12,7 @@ governing permissions and limitations under the License.
 
 import fetch from 'node-fetch';
 
-import bodyIsJson from './body-is-json';
-import reactorHeaders from './reactor-headers';
-import createReviseBody from './create-revise-body';
-
+import { version } from './version';
 import * as adapters from './adapters';
 import * as auditEvents from './audit-events';
 import * as builds from './builds';
@@ -41,15 +38,43 @@ function removeTrailingSlash(str) {
   return str.endsWith('/') ? str.slice(0, -1) : str;
 }
 
-export { reactorHeaders, createReviseBody };
+function bodyIsJson(httpResponse) {
+  const jsonContentType = 'application/vnd.api+json';
+  const thisContentType = httpResponse.headers.get('content-type');
+  return thisContentType && thisContentType.includes(jsonContentType);
+}
+
 export default class Reactor {
   constructor(accessToken, userOptions = {}) {
     const options = Object.assign({}, defaultReactorOptions, userOptions);
     this.baseUrl = removeTrailingSlash(options.reactorUrl);
     this.enableLogging = options.enableLogging;
-    this.headers = reactorHeaders(accessToken);
-    this.createReviseBody = createReviseBody;
+    this.headers = this.reactorHeaders(accessToken);
     if (this.enableLogging) console.info(`Using Reactor at ${this.baseUrl}`);
+  }
+
+  reactorHeaders(accessToken) {
+    return {
+      Accept: 'application/vnd.api+json;revision=1',
+      'Content-Type': 'application/vnd.api+json',
+      'Cache-control': 'no-cache',
+      Authorization: `Bearer ${accessToken}`,
+      'X-Api-Key': 'Activation-DTM',
+      'User-Agent': `adobe/reactor-sdk/javascript/${version}`
+    };
+  }
+
+  createReviseBody(resourceType, resourceId) {
+    return {
+      data: {
+        attributes: {},
+        meta: {
+          action: 'revise'
+        },
+        id: resourceId,
+        type: resourceType
+      }
+    };
   }
 
   async requestAndLog(url, requestInfo, requestData) {
