@@ -189,3 +189,7 @@ Object.assign(
   ruleComponents,
   rules
 );
+
+if (typeof window !== 'undefined' && typeof window.document !== 'undefined') {
+  window.Reactor = Reactor;
+}
