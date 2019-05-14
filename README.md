@@ -1,13 +1,113 @@
+[![npm version](https://badge.fury.io/js/%40adobe%2Freactor-sdk.svg)](https://badge.fury.io/js/%40adobe%2Freactor-sdk)
+
 # JavaScript Reactor SDK
 
 A Library for accessing the Adobe Experience Platform
 [Launch API][Launch API doc].
 
-This API is fairly low-level.
-The Reactor methods are one-to-one with the RESTful API endpoints, and they
-provide very little help in constructing your payloads.
-This is intended meet the expectations of JavaScript developers, but we
-welcome your feedback.
+This API is fairly low-level.  The Reactor methods are one-to-one with the
+RESTful API endpoints, and they provide very little help in constructing your
+payloads.  This is intended meet the expectations of JavaScript developers, but
+we welcome your feedback.
+
+## Installation
+
+### Using npm
+
+You can use the Reactor SDK from npm with a bundler like
+[Webpack](https://webpack.github.io/), [Rollup](https://rollupjs.org), or
+[Parcel](https://parceljs.org/). If you use npm for client package management,
+you can install the SDK with:
+
+```bash
+npm install @adobe/reactor-sdk --save
+```
+
+### Using a CDN
+
+If you'd prefer not to use npm to manage your client packages, reactor-sdk
+also provides a UMD distribution in a `dist` folder which is hosted on a CDN:
+
+```html
+<script src="https://unpkg.com/@adobe/reactor-sdk/dist/reactor-sdk.min.js"></script>
+```
+
+The Reactor constructor will be installed as `window.Reactor`, so typical usage
+would go something like this:
+
+```html
+<script src="https://unpkg.com/@adobe/reactor-sdk/dist/reactor-sdk.min.js"></script>
+<script>
+  const tok = '<see instructions below for getting your access token>';
+  const url = 'https://reactor.adobe.io';
+  const reactor = new window.Reactor(tok, { reactorUrl: url });
+  const acme = await reactor.getCompany('CO0123456789012345678901');
+  ...
+</script>
+```
+
+## Usage
+
+The example below is a nodejs script that lists the ID's and names of all your
+Company's properties.
+
+
+Put this text in a file named `list-properties.js`:
+
+```javascript
+#!/usr/bin/env node
+const Reactor = require('@adobe/reactor-sdk').default;
+
+(async function() {
+
+  // Build a Reactor object with API methods
+  async function buildReactor() {
+    const accessToken = process.env['ACCESS_TOKEN'];
+    const reactorUrl = 'https://reactor.adobe.io';
+    return await new Reactor(accessToken, { reactorUrl: reactorUrl });
+  }
+
+  const reactor = await buildReactor();
+  // Example API call: list Companies for the authenticated organization
+  const companyList = await reactor.listCompanies();
+  for (var company of companyList.data) {
+    console.log("%j %j", company.id, company.attributes.name);
+    // Example API call: list Properties for the identified Company
+    const list = await reactor.listPropertiesForCompany(company.id);
+    for (var property of list.data) {
+      console.log('  %j %j', property.id, property.attributes.name);
+    }
+  }
+})().then(
+  function(result) { console.log('success') },
+  function(err) { console.log(err) }
+);
+```
+
+Run it...
+
+```bash
+export ACCESS_TOKEN=... # see instructions below
+chmod u+x ./list-properties.js
+./list-properties.js
+```
+
+...and you should get output similar to:
+
+```
+"COb711272b544e8359eab4492484893f77" "Fredigar and Bagginses"
+  "PR090c7b576f892bf7a7f5e783d0e9ab75" "Shire Real Estate Holdings, LLC"
+  "PR399e5b7dbcfc83db37051b43f5ac4d3b" "Mathom Recyclers, Ltd."
+success
+```
+
+A browser implementation of this functionality would differ in two ways:
+1. it would use the pre-initialized `window.Reactor` rather than
+   `const Reactor = require('@adobe/reactor-sdk')`
+2. providing your access token needs a different approach, since `process.env`
+   is not available in browsers.
+   Note: you _don't_ want to inline the text of your access token, unless you
+   are sure no adversary will have access to your page.
 
 ## The SDK and the API
 
@@ -76,7 +176,7 @@ The in-browser integration tests require a local static-file web server, because
 loading their HTML drivers using a `file://` URL is not effective: the browser
 rejects all the resulting Reactor requests because they violate CORS
 restrictions.  The necessary bare-bones web server is provided with this
-project, as `scripts/static-server.js`. 
+project, as `scripts/static-server.js`.
 
 Once you've collected the necessary values for your environment variables, you
 can run the integration tests:
@@ -109,7 +209,9 @@ $ npm run all-watch
 $ script/delete-test-properties
 ```
 
-## Determining Your Company ID
+## Determining Your Personal Information
+
+### Your Company ID
 * Log in to `https://launch.adobe.com/companies`
 * While looking at your Properties page, the address bar will show a URL like
   `https://launch.adobe.com/companies/CO81f8cb0aca3a4ab8927ee1798c0d4f8a/properties`.
@@ -117,8 +219,8 @@ $ script/delete-test-properties
   up to the following slash). Copy that company ID to an environment variable:
     - $ `export COMPANY_ID=CO81f8cb0aca3a4ab8927ee1798c0d4f8a`
 
-## Determining your Access Token in Google Chrome
-* Log in to `https://launch.adobe.com/companies`
+### Access Token
+* Using Google Chrome, log in to `https://launch.adobe.com/companies`
 * Open the developer console
 * Execute `copy(userData.imsAccessToken)`
 * The access token is now in your system clipboard. Paste it into an
