@@ -136,7 +136,7 @@ of the ["Fetch a Profile"][FetchProfile doc] documentation is at
 [FetchProfile doc src]: https://github.com/Adobe-Marketing-Cloud/reactor-developer-docs/blob/master/api/reference/1.0/profiles/fetch.md 'Fetch a Profile'
 [ListCompanies doc]: https://developer.adobelaunch.com/api/reference/1.0/companies/list/ 'List Companies'
 
-Every SDK function [has an integration test](tree/master/test/integration)
+Every SDK function [has an integration test](test/integration)
 that demonstrates its correctness. (Well, correct for at least *one* use).
 These tests also provide you working examples for every library function.  [This
 isn't quite true yet.  We're almost there, but a few remain to be implemented.]
@@ -148,7 +148,7 @@ Postman]( https://github.com/Adobe-Marketing-Cloud/reactor-postman) query set.
 
 ## Developer Setup
 
-If you want to contibute to development of this library,
+If you want to contribute to development of this library,
 
 ```bash
 $ git clone git@github.com:Adobe-Marketing-Cloud/reactor-sdk-javascript.git
