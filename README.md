@@ -7,8 +7,8 @@ A Library for accessing the Adobe Experience Platform
 
 This API is fairly low-level.  The Reactor methods are one-to-one with the
 RESTful API endpoints, and they provide very little help in constructing your
-payloads.  This is intended meet the expectations of JavaScript developers, but
-we welcome your feedback.
+payloads.  This is intended to meet the expectations of JavaScript developers,
+but we welcome your feedback.
 
 ## Installation
 
@@ -136,29 +136,30 @@ of the ["Fetch a Profile"][FetchProfile doc] documentation is at
 [FetchProfile doc src]: https://github.com/Adobe-Marketing-Cloud/reactor-developer-docs/blob/master/api/reference/1.0/profiles/fetch.md 'Fetch a Profile'
 [ListCompanies doc]: https://developer.adobelaunch.com/api/reference/1.0/companies/list/ 'List Companies'
 
-Every SDK function [has an integration test](./tree/master/test/integration) that
-demonstrates its correctness. (Well, correct for at least *one* use).  These
-tests also provide you working examples for every library function.
-[This isn't quite true yet.  We're almost there, but a few remain to be
-implemented.]
+Every SDK function [has an integration test](tree/master/test/integration)
+that demonstrates its correctness. (Well, correct for at least *one* use).
+These tests also provide you working examples for every library function.  [This
+isn't quite true yet.  We're almost there, but a few remain to be implemented.]
 
 For a complete and self-contained example program, see
 [examples.test.js](./test/integration/examples.test.js), which is included in
 the integration tests. It's a JavaScript implementation of the [Reactor
 Postman]( https://github.com/Adobe-Marketing-Cloud/reactor-postman) query set.
 
-## Setup
+## Developer Setup
 
-(An NPM package is forthcoming. For now, `git clone`.)
+If you want to contibute to development of this library,
+
 ```bash
 $ git clone git@github.com:Adobe-Marketing-Cloud/reactor-sdk-javascript.git
 $ cd reactor-sdk-javascript
 $ npm clean-install           # install dependencies and build Reactor SDK library
 ```
-This generates three versions of the library:
-1.  `./lib/node/*.js`, which is intended for use by nodejs projects
-2.  `./lib/browser/*.js`, which is intended for use by bundlers in browser projects
-2.  `./dist/reactor.min.js`, which is intended for loading directly into an HTML
+
+The clean install generates three versions of the library:
+1.  `./lib/node/*.js`, intended for use by nodejs projects
+2.  `./lib/browser/*.js`, intended for use by bundlers in browser projects
+2.  `./dist/reactor.min.js`, intended for loading directly into an HTML
     page (i.e., for non-bundled browser use)
 
 With the SDK built, you can run its nodejs unit tests:
@@ -167,13 +168,13 @@ $ npm link "$(pwd)"           # make this SDK available to tests
 $ npm run unit-tests          # run the tests in test/unit/**
 ```
 
-The integration tests require a provisioned Company and current access token,
-specified via the environment variables `ACCESS_TOKEN` and `COMPANY_ID`.
-Instructions for getting appropriate values are given below. See _Determining
-Your Company ID_ and _Determining Your Access Token_.
+The integration tests need a current access token, and a provisioned Company.
+You are expected to provide them to the tests via the environment variables
+`ACCESS_TOKEN` and `COMPANY_ID`.  Instructions for getting appropriate values
+are given below.  See _Your Company ID_ and _Your Access Token_.
 
 The in-browser integration tests require a local static-file web server, because
-loading their HTML drivers using a `file://` URL is not effective: the browser
+loading their HTML using a `file://` URL is not effective: the browser
 rejects all the resulting Reactor requests because they violate CORS
 restrictions.  The necessary bare-bones web server is provided with this
 project, as `scripts/static-server.js`.
@@ -181,10 +182,14 @@ project, as `scripts/static-server.js`.
 Once you've collected the necessary values for your environment variables, you
 can run the integration tests:
 ```bash
-$ export ACCESS_TOKEN=${REACTOR_API_TOKEN}
-$ export COMPANY_ID=${REACTOR_TEST_COMPANY_ID}
+$ export ACCESS_TOKEN="your_reactor_access_token"
+$ export COMPANY_ID="your_reactor_test_company_id" # "CO" followed by 32 hex digits
 $ NODE_TLS_REJECT_UNAUTHORIZED=0 scripts/static-server.js --dir ./tmp.tests/
-$ # switch to another terminal window, since you want the server to keep running
+```
+
+Switch to another terminal window, since you want that server to keep running.
+
+```bash
 $ npm run integration-tests   # run the tests in test/integration/**
 $ # Currently known to pass in MacOS Chrome Version 72.0.3626.121.
 ```
@@ -219,7 +224,7 @@ $ script/delete-test-properties
   up to the following slash). Copy that company ID to an environment variable:
     - $ `export COMPANY_ID=CO81f8cb0aca3a4ab8927ee1798c0d4f8a`
 
-### Access Token
+### Your Access Token
 * Using Google Chrome, log in to `https://launch.adobe.com/companies`
 * Open the developer console
 * Execute `copy(userData.imsAccessToken)`
@@ -231,7 +236,6 @@ $ script/delete-test-properties
 
 * Implement integration tests for the handful of functions not yet covered.
 * Include a section here on library function naming conventions.
-* Publish as an NPM package, then update this README.
 * Find or implement a JavaScript library for handling JWT token generation. The
   current mechanism requires you to generate an access token yourself. Such
   tokens time out after while, forcing you to generate a new one.
