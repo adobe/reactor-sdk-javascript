@@ -26,7 +26,6 @@ const helpers = {
   reactor: reactor,
   companyId: globals.COMPANY_ID,
 
-  idAD: /^AD[0-9a-f]{32}$/i,
   idAE: /^AE[0-9a-f]{32}$/i,
   idBL: /^BL[0-9a-f]{32}$/i,
   idCB: /^CB[0-9a-f]{32}$/i,
@@ -35,6 +34,7 @@ const helpers = {
   idEN: /^EN[0-9a-f]{32}$/i,
   idEP: /^EP[0-9A-F]{32}$/i,
   idEX: /^EX[0-9a-f]{32}$/i,
+  idHT: /^HT[0-9a-f]{32}$/i,
   idLB: /^LB[0-9a-f]{32}$/i,
   idPR: /^PR[0-9a-f]{32}$/i,
   idRC: /^RC[0-9a-f]{32}$/i,
@@ -170,13 +170,13 @@ const helpers = {
     return revId;
   },
 
-  async createTestSftpAdapter(propertyId, baseName) {
-    const ctx = `while creating "${baseName}" test Adapter:`;
+  async createTestSftpHost(propertyId, baseName) {
+    const ctx = `while creating "${baseName}" test Host:`;
     try {
       /*eslint-disable camelcase*/
-      const response = await reactor.createAdapter(propertyId, {
+      const response = await reactor.createHost(propertyId, {
         attributes: {
-          name: makeNameForTestObject('Adapter', baseName),
+          name: makeNameForTestObject('Host', baseName),
           type_of: 'sftp',
           username: 'John Doe',
           encrypted_private_key:
@@ -195,14 +195,14 @@ const helpers = {
             'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTssssssssssssssssssssssssssssssss\n' +
             'LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL//////////==\n=oRpa\n' +
             '-----END PGP MESSAGE-----\n',
-          host: 'example.com',
+          server: 'example.com',
           path: 'assets',
           port: 22
         },
-        type: 'adapters'
+        type: 'hosts'
       });
       /*eslint-enable camelcase*/
-      expectWithContext(response.data.id, ctx).toMatch(helpers.idAD);
+      expectWithContext(response.data.id, ctx).toMatch(helpers.idHT);
       return response.data;
     } catch (error) {
       helpers.specName = ctx;
@@ -211,19 +211,19 @@ const helpers = {
     }
   },
 
-  async createTestAkamaiAdapter(propertyId, baseName) {
-    const ctx = `while creating "${baseName}" test Adapter:`;
+  async createTestAkamaiHost(propertyId, baseName) {
+    const ctx = `while creating "${baseName}" test Host:`;
     try {
       /*eslint-disable camelcase*/
-      const response = await reactor.createAdapter(propertyId, {
+      const response = await reactor.createHost(propertyId, {
         attributes: {
-          name: makeNameForTestObject('Adapter', baseName),
+          name: makeNameForTestObject('Host', baseName),
           type_of: 'akamai'
         },
-        type: 'adapters'
+        type: 'hosts'
       });
       /*eslint-enable camelcase*/
-      expectWithContext(response.data.id, ctx).toMatch(helpers.idAD);
+      expectWithContext(response.data.id, ctx).toMatch(helpers.idHT);
       return response.data;
     } catch (error) {
       helpers.specName = ctx;
@@ -232,37 +232,31 @@ const helpers = {
     }
   },
 
-  // Create an Environment using the identified Adapter.
+  // Create an Environment using the identified Host.
   //
-  // If adapterId is non-null and contains an Adapter ID, then that adapter
+  // If hostId is non-null and contains a Host ID, then that Host
   // will be used on the new Environment.
-  // If adapterId is non-null and contains the word Akamai (case-insensitive),
-  // then a new Akamai adapter will be created for the new Environment.
-  // Otherwise, a new SFTP adapter will be created for the new Environment.
+  // If hostId is non-null and contains the word Akamai (case-insensitive),
+  // then a new Akamai Host will be created for the new Environment.
+  // Otherwise, a new SFTP Host will be created for the new Environment.
   //
-  // The returned environment object will have an 'associatedAdapterId' field
-  // identifying the Adapter assigned to the environment.
+  // The returned environment object will have an 'associatedHostId' field
+  // identifying the Host assigned to the environment.
   //
   // Creates a production Environment if baseName =~ /\bprod(uction)?\b/i.
   // Creates a staging Environment if baseName =~ /\bstag(e|ing)\b/i.
   // Otherwise, creates a development Environment.
-  async createTestEnvironment(propertyId, baseName, adapterId = null) {
+  async createTestEnvironment(propertyId, baseName, hostId = null) {
     let ctx = `while creating "${baseName}" test Environment`;
-    ctx += ` on ${propertyId} ${adapterId}:`;
+    ctx += ` on ${propertyId} ${hostId}:`;
     try {
-      const kind = determineAdapterKind(adapterId);
+      const kind = determineHostKind(hostId);
       if (kind === 'sftp') {
-        const adapter = await helpers.createTestSftpAdapter(
-          propertyId,
-          baseName
-        );
-        adapterId = adapter.id;
+        const host = await helpers.createTestSftpHost(propertyId, baseName);
+        hostId = host.id;
       } else if (kind === 'akamai') {
-        const adapter = await helpers.createTestAkamaiAdapter(
-          propertyId,
-          baseName
-        );
-        adapterId = adapter.id;
+        const host = await helpers.createTestAkamaiHost(propertyId, baseName);
+        hostId = host.id;
       }
       const attributes = {
         name: makeNameForTestObject('Environment', baseName),
@@ -275,11 +269,11 @@ const helpers = {
         type: 'environments',
         attributes: attributes,
         relationships: {
-          adapter: { data: { type: 'adapters', id: adapterId } }
+          host: { data: { type: 'hosts', id: hostId } }
         }
       });
       expectWithContext(response.data.id, ctx).toMatch(helpers.idEN);
-      response.data.associatedAdapterId = adapterId;
+      response.data.associatedHostId = hostId;
       return response.data;
     } catch (error) {
       helpers.specName = ctx;
@@ -336,10 +330,10 @@ const helpers = {
   },
 
   // create a new Environment and add it to the library
-  async makeLibraryEnvironment(library, name = 'env', adapterId = null) {
+  async makeLibraryEnvironment(library, name = 'env', hostId = null) {
     const lId = library.id;
     const pId = library.relationships.property.data.id;
-    const e = await helpers.createTestEnvironment(pId, name, adapterId);
+    const e = await helpers.createTestEnvironment(pId, name, hostId);
     const r = await reactor.setEnvironmentRelationshipForLibrary(lId, e.id);
     expect(r.data.id).toBe(e.id);
     expect(r.links.related).toContain(`/${lId}/`);
@@ -566,7 +560,7 @@ function toLocalISOString(date) {
 }
 
 function makeNameForTestObject(objectType, baseName) {
-  // We want to be able to generate {Property, Adapter, Library, ...} names that
+  // We want to be able to generate {Property, Host, Library, ...} names that
   // are different from one run to the next, so they don't collide.
   //
   // Adding the date helps, but multiple simultaneous runs of the integration
@@ -841,11 +835,11 @@ async function makeTestRuleComponent(
   return ruleComponent;
 }
 
-function determineAdapterKind(adapterId) {
-  const kind = adapterId;
-  if (adapterId === null) return 'sftp';
-  if (adapterId.match(helpers.idEN)) return adapterId;
-  if (adapterId.match(/\bakamai\b/i)) return 'akamai';
+function determineHostKind(hostId) {
+  const kind = hostId;
+  if (hostId === null) return 'sftp';
+  if (hostId.match(helpers.idEN)) return hostId;
+  if (hostId.match(/\bakamai\b/i)) return 'akamai';
   return 'sftp';
 }
 

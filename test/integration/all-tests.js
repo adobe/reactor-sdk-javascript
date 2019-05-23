@@ -78,7 +78,6 @@ import './heartbeat.test.js';
 import './profile.test.js';
 
 // Launch Types
-import './adapters.test.js';
 import './audit-events.test.js';
 import './builds.test.js';
 import './callbacks.test.js';
@@ -87,6 +86,7 @@ import './data-elements.test.js';
 import './environments.test.js';
 import './extension-packages.test.js';
 import './extensions.test.js';
+import './hosts.test.js';
 import './libraries.test.js';
 import './properties.test.js';
 import './rule-components.test.js';

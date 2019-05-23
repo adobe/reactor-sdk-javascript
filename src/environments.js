@@ -33,16 +33,16 @@ export function getEnvironment(environmentId) {
   return this.get(`/environments/${environmentId}`);
 }
 
-// Get the Adapter
-// https://developer.adobelaunch.com/api/environments/adapter/
-export function getAdapterForEnvironment(environmentId) {
-  return this.get(`/environments/${environmentId}/adapter`);
+// Get the Host
+// https://developer.adobelaunch.com/api/environments/host/
+export function getHostForEnvironment(environmentId) {
+  return this.get(`/environments/${environmentId}/host`);
 }
 
-// Get the Adapter relationship
-// https://developer.adobelaunch.com/api/environments/adapter_relationship/
-export function getAdapterRelationshipForEnvironment(environmentId) {
-  return this.get(`/environments/${environmentId}/relationships/adapter`);
+// Get the Host relationship
+// https://developer.adobelaunch.com/api/environments/host_relationship/
+export function getHostRelationshipForEnvironment(environmentId) {
+  return this.get(`/environments/${environmentId}/relationships/host`);
 }
 
 // Get the Library

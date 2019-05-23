@@ -32,7 +32,7 @@ describe('Reactor SDK Example', function() {
   runStep('add send-beacon RuleComponent', makeSendBeaconRC);
   runStep('install Facebook Pixel Extension', makeFacebookPixelEX);
   runStep('add Facebook add-to-cart RuleComponent', makeAddToCartRC);
-  runStep('add Akamai Adapter', makeAkamaiAD);
+  runStep('add Akamai Host', makeAkamaiHT);
   runStep('create an Akamai Environment', makeAkamaiEN);
   runStep('create a Library', makeBibliotecaLB);
   runStep('post a Build to the Library', makeBuildBL);
@@ -141,7 +141,7 @@ var clickEventRC; // set by makeClickEventRC
 var browserConditionRC; // set by makeBrowserConditionRC
 var sendBeaconRC; // set by makeSendBeaconRC
 var addToCartRC; // set by makeAddToCartRC
-var akamaiAD; // set by makeAkamaiAD
+var akamaiHT; // set by makeAkamaiHT
 var akamaiEN; // set by makeAkamaiEN
 var bibliotecaLB; // set by makeBibliotecaLB
 var buildBL; // set by makeBuildBL
@@ -594,24 +594,24 @@ async function makeAddToCartRC() {
   expect(ruleComponent.relationships.extension.data.id).toBe(facebookPixelEX);
 }
 
-async function makeAkamaiAD() {
+async function makeAkamaiHT() {
   const data = {
     /*eslint-disable camelcase*/
     attributes: { name: 'Cloudy Cloud', type_of: 'akamai' },
-    type: 'adapters'
+    type: 'hosts'
     /*eslint-enable camelcase*/
   };
 
-  // Create a new Adapter on the Property.
-  const response = await reactor.createAdapter(awesomePR, data);
-  const adapter = response.data;
+  // Create a new Host on the Property.
+  const response = await reactor.createHost(awesomePR, data);
+  const host = response.data;
 
-  akamaiAD = adapter.id;
+  akamaiHT = host.id;
 
   // Verify that we built what we expected.
-  expect(akamaiAD).toMatch(/^AD[0-9A-F]{32}$/i);
-  expect(adapter.attributes.name).toBe('Cloudy Cloud');
-  expect(adapter.relationships.property.data.id).toBe(awesomePR);
+  expect(akamaiHT).toMatch(/^HT[0-9A-F]{32}$/i);
+  expect(host.attributes.name).toBe('Cloudy Cloud');
+  expect(host.relationships.property.data.id).toBe(awesomePR);
 }
 
 async function makeAkamaiEN() {
@@ -624,10 +624,10 @@ async function makeAkamaiEN() {
       stage: 'development'
     },
     relationships: {
-      adapter: {
+      host: {
         data: {
-          id: akamaiAD,
-          type: 'adapters'
+          id: akamaiHT,
+          type: 'hosts'
         }
       }
     },
@@ -645,7 +645,7 @@ async function makeAkamaiEN() {
   expect(akamaiEN).toMatch(/^EN[0-9A-F]{32}$/i);
   expect(environment.attributes.name).toBe('My Precious');
   expect(environment.relationships.property.data.id).toBe(awesomePR);
-  expect(environment.relationships.adapter.data.id).toBe(akamaiAD);
+  expect(environment.relationships.host.data.id).toBe(akamaiHT);
 }
 
 async function makeBibliotecaLB() {

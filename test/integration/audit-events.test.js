@@ -17,7 +17,7 @@ import helpers from './helpers';
 // https://developer.adobelaunch.com/api/audit_events/
 helpers.describe('AuditEvent API', function() {
   var theProperty;
-  var theAdapter;
+  var theHost;
 
   beforeAll(async function() {
     try {
@@ -25,9 +25,9 @@ helpers.describe('AuditEvent API', function() {
       if (!theProperty) fail('could not create test property');
 
       //     // create an AuditEvent trail by doing some operations on the property
-      //     theAdapter = await helpers.createTestSftpAdapter(theProperty.id, 'temp');
-      //     if (!theProperty) fail('could not create test adapter');
-      //     await reactor.deleteAdapter(theAdapter.id);
+      //     theHost = await helpers.createTestSftpHost(theProperty.id, 'temp');
+      //     if (!theProperty) fail('could not create test host');
+      //     await reactor.deleteHost(theHost.id);
       //     const response = await reactor.updateProperty({
       //       attributes: {
       //         name: theProperty.attributes.name.replace('Base', 'Updated'),
@@ -92,8 +92,8 @@ helpers.describe('AuditEvent API', function() {
       expect([
         'property.created',
         'property.updated',
-        'adapter.created',
-        'adapter.deleted'
+        'host.created',
+        'host.deleted'
       ]).toContain(theAuditEvent.attributes.type_of);
     })
     .pend('blocked by DTM-11356 and DTM-10098');
@@ -124,11 +124,11 @@ helpers.describe('AuditEvent API', function() {
       var updatedProperty = findAE('property.updated', theProperty.id);
       expect(updatedProperty).toBeDefined();
 
-      var createdAdapter = findAE('adapter.created', theAdapter.id);
-      expect(createdAdapter).toBeDefined();
+      var createdHost = findAE('host.created', theHost.id);
+      expect(createdHost).toBeDefined();
 
-      var deletedAdapter = findAE('adapter.deleted', theAdapter.id);
-      expect(deletedAdapter).toBeDefined();
+      var deletedHost = findAE('host.deleted', theHost.id);
+      expect(deletedHost).toBeDefined();
     })
     .pend('blocked by DTM-11356 and DTM-10098');
 });

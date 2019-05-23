@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import fetch from 'node-fetch';
 
 import { version } from './version';
-import * as adapters from './adapters';
+import * as hosts from './hosts';
 import * as auditEvents from './audit-events';
 import * as builds from './builds';
 import * as callbacks from './callbacks';
@@ -173,7 +173,6 @@ class FetchError extends Error {
 
 Object.assign(
   Reactor.prototype,
-  adapters,
   auditEvents,
   builds,
   callbacks,
@@ -183,6 +182,7 @@ Object.assign(
   extensionPackages,
   extensions,
   heartbeat,
+  hosts,
   libraries,
   profiles,
   properties,

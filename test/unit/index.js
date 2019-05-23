@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 import './helpers.js';
-import './adapter.test.js';
 import './audit-event.test.js';
 import './build.test.js';
 import './callback.test.js';
@@ -21,6 +20,7 @@ import './environment.test.js';
 import './extension.test.js';
 import './extension-package.test.js';
 import './heartbeat.test.js';
+import './host.test.js';
 import './library.test.js';
 import './profile.test.js';
 import './property.test.js';

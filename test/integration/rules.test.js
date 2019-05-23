@@ -106,7 +106,7 @@ helpers.describe('Rule API', function() {
     await addRuleToLib(wyong1, queensland);
   }
 
-  // Give Victoria an Environment & Adapter, and return a build of the Library
+  // Give Victoria an Environment & Host, and return a build of the Library
   async function createVictoriaBuild() {
     await initializeInfrastructure();
     const [p, v] = [theProperty, victoria];

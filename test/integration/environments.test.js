@@ -17,13 +17,13 @@ import helpers from './helpers';
 // https://developer.adobelaunch.com/api/environments
 helpers.describe('Environment API', function() {
   var theProperty;
-  var theAdapter;
+  var theHost;
 
   async function newTestEnvironment(environmentName) {
     const env = await helpers.createTestEnvironment(
       theProperty.id,
       environmentName,
-      theAdapter.id
+      theHost.id
     );
     return env;
   }
@@ -31,7 +31,7 @@ helpers.describe('Environment API', function() {
   beforeAll(async function setUpTestObjects() {
     theProperty = await helpers.createTestProperty('Environment-Testing');
     const p = theProperty.id;
-    theAdapter = await helpers.createTestSftpAdapter(p, 'Environment-Testing');
+    theHost = await helpers.createTestSftpHost(p, 'Environment-Testing');
   });
 
   // Create an Environment
@@ -46,7 +46,7 @@ helpers.describe('Environment API', function() {
   // Delete an Environment
   // https://developer.adobelaunch.com/api/environments/delete/
   helpers.it('deletes an Environment', async function() {
-    const [p, a] = [theProperty.id, theAdapter.id];
+    const [p, a] = [theProperty.id, theHost.id];
     const nonce = await helpers.createTestEnvironment(p, 'Mayfly', a);
     expect(nonce.attributes.name).toMatch(/mayfly/i);
 
@@ -69,24 +69,24 @@ helpers.describe('Environment API', function() {
     expect(response.data.attributes.name).toBe(env.attributes.name);
   });
 
-  // Get the Adapter
-  // https://developer.adobelaunch.com/api/environments/adapter/
-  helpers.it("gets an Environment's Adapter", async function() {
+  // Get the Host
+  // https://developer.adobelaunch.com/api/environments/host/
+  helpers.it("gets an Environment's Host", async function() {
     const env = await newTestEnvironment('Grady');
-    const response = await reactor.getAdapterForEnvironment(env.id);
+    const response = await reactor.getHostForEnvironment(env.id);
     expect(response.data).not.toBeUndefined();
-    expect(response.data.id).toBe(env.associatedAdapterId);
-    expect(response.data.type).toBe('adapters');
+    expect(response.data.id).toBe(env.associatedHostId);
+    expect(response.data.type).toBe('hosts');
   });
 
-  // Get the Adapter relationship
-  // https://developer.adobelaunch.com/api/environments/adapter_relationship/
-  helpers.it("gets an Environment's Adapter relationship", async function() {
+  // Get the Host relationship
+  // https://developer.adobelaunch.com/api/environments/host_relationship/
+  helpers.it("gets an Environment's Host relationship", async function() {
     const env = await newTestEnvironment('Kyrie');
-    const response = await reactor.getAdapterRelationshipForEnvironment(env.id);
+    const response = await reactor.getHostRelationshipForEnvironment(env.id);
     expect(response.data).not.toBeUndefined();
-    expect(response.data.id).toBe(env.associatedAdapterId);
-    expect(response.data.type).toBe('adapters');
+    expect(response.data.id).toBe(env.associatedHostId);
+    expect(response.data.type).toBe('hosts');
     expect(response.data.attributes).toBeUndefined();
   });
 
@@ -128,7 +128,7 @@ helpers.describe('Environment API', function() {
   // List Builds
   // https://developer.adobelaunch.com/api/environments/builds/
   helpers.it("lists an Environment's builds", async function() {
-    // Create an library, adapter, environment
+    // Create a library, host, environment
     const lib = await helpers.createTestLibrary(theProperty.id, 'Jack');
     const env = await helpers.makeLibraryEnvironment(lib, 'Jill', 'Akamai');
     await helpers.addCoreToLibrary(theProperty, lib);
