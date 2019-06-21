@@ -1,4 +1,4 @@
-[![npm version](https://badge.fury.io/js/%40adobe%2Freactor-sdk.svg)](https://badge.fury.io/js/%40adobe%2Freactor-sdk)
+[![npm version](https://badge.fury.io/js/%40adobe%2Freactor-sdk.svg)](https://badge.fury.io/js/%40adobe%2Freactor-sdk) [![Greenkeeper badge](https://badges.greenkeeper.io/adobe/reactor-sdk-javascript.svg)](https://greenkeeper.io/)
 
 # JavaScript Reactor SDK
 
