@@ -1,8 +1,9 @@
 *.un~
 *.swp
 *.DS_Store
-node_modules
+.npmrc
 .cache
+node_modules
 dist
 lib
 tmp.tests
