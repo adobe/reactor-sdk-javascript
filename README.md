@@ -1,4 +1,12 @@
-[![npm version](https://badge.fury.io/js/%40adobe%2Freactor-sdk.svg)](https://badge.fury.io/js/%40adobe%2Freactor-sdk) [![Greenkeeper badge](https://badges.greenkeeper.io/adobe/reactor-sdk-javascript.svg)](https://greenkeeper.io/)
+[![Travis badge](
+https://travis-ci.com/adobe/reactor-sdk-javascript.svg?branch=master)](
+https://travis-ci.com/adobe/reactor-sdk-javascript/settings)
+[![npm version](
+https://badge.fury.io/js/%40adobe%2Freactor-sdk.svg)](
+https://badge.fury.io/js/%40adobe%2Freactor-sdk)
+[![Greenkeeper badge](
+https://badges.greenkeeper.io/adobe/reactor-sdk-javascript.svg)](
+https://account.greenkeeper.io/account/adobe#repositories)
 
 # JavaScript Reactor SDK
 
