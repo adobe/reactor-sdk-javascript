@@ -56,7 +56,7 @@ helpers.describe('Callback API', function() {
   // Delete a Callback
   // https://developer.adobelaunch.com/api/callbacks/delete/
   helpers.it('deletes a Callback', async function() {
-    const theCallback = await createTestCallback('http://syzygy.com');
+    const theCallback = await createTestCallback('https://syzygy.com');
 
     const deleteResponse = await reactor.deleteCallback(theCallback.id);
     expect(deleteResponse).toBe(null);
@@ -72,7 +72,7 @@ helpers.describe('Callback API', function() {
   // Get a Callback
   // https://developer.adobelaunch.com/api/callbacks/fetch/
   helpers.it('gets a Callback', async function() {
-    const myUrl = 'http://www.example.com/getter';
+    const myUrl = 'https://www.example.com/getter';
     const theCallback = await createTestCallback(myUrl);
 
     const response = await reactor.getCallback(theCallback.id);
@@ -91,10 +91,10 @@ helpers.describe('Callback API', function() {
   // https://developer.adobelaunch.com/api/callbacks/list/
   helpers.it('lists all Callbacks', async function() {
     // Create four Callbacks
-    const eleanor = await createTestCallback('http://eleanor.com/');
-    const chidi = await createTestCallback('http://chidi.com/');
-    const tahani = await createTestCallback('http://tahani.com/');
-    const jason = await createTestCallback('http://jason.com/');
+    const eleanor = await createTestCallback('https://eleanor.com/');
+    const chidi = await createTestCallback('https://chidi.com/');
+    const tahani = await createTestCallback('https://tahani.com/');
+    const jason = await createTestCallback('https://jason.com/');
 
     // Make sure all four show up in the list of Callbacks on the company
     const listResponse = await reactor.listCallbacksForProperty(theProperty.id);
