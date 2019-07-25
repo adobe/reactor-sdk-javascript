@@ -14,14 +14,6 @@ governing permissions and limitations under the License.
 // https://developer.adobelaunch.com/api/rule_components
 
 // Create a RuleComponent
-// https://developer.adobelaunch.com/api/rule_components/create/
-export function deprecatedCreateRuleComponent(ruleId, ruleComponent) {
-  return this.post(`/rules/${ruleId}/rule_components`, {
-    data: ruleComponent
-  });
-}
-
-// Create a RuleComponent
 // https://developer.adobelaunch.com/api/reference/1.0/rule_components/create/
 export function createRuleComponent(propertyId, ruleComponent) {
   return this.post(`/properties/${propertyId}/rule_components`, {
