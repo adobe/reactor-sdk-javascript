@@ -17,23 +17,6 @@ describe('RuleComponent:', function() {
   const ruleId = 'RL123';
   const ruleComponentId = 'RC123';
 
-  describe('deprecatedCreateRuleComponent', function() {
-    it('runs an http POST', async function() {
-      const ruleComponent = {
-        attributes: {
-          name: `RuleComponent ${new Date().getTime()}`
-        },
-        type: 'rule_components'
-      };
-      context.expectRequest(
-        'post',
-        `/rules/${ruleId}/rule_components`,
-        ruleComponent
-      );
-      await reactor.deprecatedCreateRuleComponent(ruleId, ruleComponent);
-    });
-  });
-
   describe('createRuleComponent', function() {
     it('runs an http POST', async function() {
       const ruleComponent = {
