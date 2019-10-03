@@ -9,11 +9,11 @@
   },
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/Adobe-Marketing-Cloud/reactor-sdk-javascript/issues"
+    "url": "https://github.com/adobe/reactor-sdk-javascript/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https@github.com:Adobe-Marketing-Cloud/reactor-sdk-javascript.git"
+    "url": "git+https@github.com:adobe/reactor-sdk-javascript.git"
   },
   "keywords": [
     "Adobe",

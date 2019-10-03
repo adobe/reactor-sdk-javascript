@@ -138,10 +138,10 @@ of the ["Fetch a Profile"][FetchProfile doc] documentation is at
 
 
 [Launch API doc]: https://developer.adobelaunch.com/api/ 'Adobe Experience Platform Launch API'
-[Launch API doc repo]: https://github.com/Adobe-Marketing-Cloud/reactor-developer-docs 'Launch API documentation repository'
+[Launch API doc repo]: https://github.com/adobe/reactor-developer-docs 'Launch API documentation repository'
 [FetchProfile doc]: https://developer.adobelaunch.com/api/reference/1.0/profiles/fetch/ 'Fetch a Profile'
-[FetchProfile impl]: https://github.com/Adobe-Marketing-Cloud/reactor-sdk-javascript/blob/0d10436c31ab84772882ead2e4da6cc9d41fc7bc/src/profiles.js#L13
-[FetchProfile doc src]: https://github.com/Adobe-Marketing-Cloud/reactor-developer-docs/blob/master/api/reference/1.0/profiles/fetch.md 'Fetch a Profile'
+[FetchProfile impl]: https://github.com/adobe/reactor-sdk-javascript/blob/1a307160d9dddadb35024e14bdc19e2beb9ec8fe/src/profiles.js#L13
+[FetchProfile doc src]: https://github.com/adobe/reactor-developer-docs/blob/master/api/reference/1.0/profiles/fetch.md 'Fetch a Profile'
 [ListCompanies doc]: https://developer.adobelaunch.com/api/reference/1.0/companies/list/ 'List Companies'
 
 Every SDK function [has an integration test](test/integration)
@@ -152,14 +152,14 @@ isn't quite true yet.  We're almost there, but a few remain to be implemented.]
 For a complete and self-contained example program, see
 [examples.test.js](./test/integration/examples.test.js), which is included in
 the integration tests. It's a JavaScript implementation of the [Reactor
-Postman]( https://github.com/Adobe-Marketing-Cloud/reactor-postman) query set.
+Postman]( https://github.com/adobe/reactor-postman) query set.
 
 ## Developer Setup
 
 If you want to contribute to development of this library,
 
 ```bash
-$ git clone git@github.com:Adobe-Marketing-Cloud/reactor-sdk-javascript.git
+$ git clone git@github.com:adobe/reactor-sdk-javascript.git
 $ cd reactor-sdk-javascript
 $ npm clean-install           # install dependencies and build Reactor SDK library
 ```
@@ -251,5 +251,5 @@ $ script/delete-test-properties
 
 ## Contributing
 
-Contributions are welcomed! Read the [Contributing Guide](https://github.com/Adobe-Marketing-Cloud/reactor-sdk-javascript/blob/master/CONTRIBUTING.md)
+Contributions are welcomed! Read the [Contributing Guide](https://github.com/adobe/reactor-sdk-javascript/blob/master/CONTRIBUTING.md)
 for more information.

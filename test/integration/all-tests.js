@@ -92,6 +92,6 @@ import './properties.test.js';
 import './rule-components.test.js';
 import './rules.test.js';
 
-// [Reactor Postman](https://github.com/Adobe-Marketing-Cloud/reactor-postman),
+// [Reactor Postman](https://github.com/adobe/reactor-postman),
 // re-imagined via the JavaScript SDK.
 import './examples.test.js';
