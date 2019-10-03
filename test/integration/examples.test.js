@@ -19,7 +19,7 @@ describe('Reactor SDK Example', function() {
   afterAll(() => console.groupEnd('Awesome Example'));
 
   // CREDIT: The actions of this script are inspired by
-  // [Reactor Postman](https://github.com/Adobe-Marketing-Cloud/reactor-postman).
+  // [Reactor Postman](https://github.com/adobe/reactor-postman).
   runStep('create a Property', makeNewAwesomePR);
   runStep('find ExtensionPackages', findThreeEP);
   runStep('find core Extension', findCoreEX);
