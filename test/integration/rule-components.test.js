@@ -123,7 +123,7 @@ helpers.describe('RuleComponent API', function() {
 
     // Test a name filter
     var filteredResponse = await reactor.listRuleComponentsForRule(theRule.id, {
-      'filter[name]': 'LIKE amas,LIKE andy'
+      'filter[name]': 'CONTAINS amas,CONTAINS andy'
     });
     const twoIds = filteredResponse.data.map(resource => resource.id);
     expect(twoIds).toContain(rcKamas.id);

@@ -161,7 +161,7 @@ helpers.describe('Environment API', function() {
     const jacob = await newTestEnvironment('Jacob Alpha');
     var filteredResponse = await reactor.listEnvironmentsForProperty(
       theProperty.id,
-      { 'filter[name]': 'LIKE alpha' }
+      { 'filter[name]': 'CONTAINS alpha' }
     );
     const twoIds = filteredResponse.data.map(resource => resource.id);
     expect(twoIds).toContain(lucas.id);

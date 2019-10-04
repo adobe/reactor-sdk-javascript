@@ -661,7 +661,7 @@ async function makeBibliotecaLB() {
           type: 'environments'
         }
       },
-      resources: {
+      data_elements: {
         data: [
           {
             id: shoppingCartDE,
@@ -672,9 +672,16 @@ async function makeBibliotecaLB() {
             id: productIdDE,
             meta: { action: 'revise' },
             type: 'data_elements'
+          }
+        ]
+      },
+      extensions: {
+        data: [
+          {
+            id: coreEX,
+            meta: { action: 'revise' },
+            type: 'extensions'
           },
-          { id: clickEventRL, meta: { action: 'revise' }, type: 'rules' },
-          { id: coreEX, meta: { action: 'revise' }, type: 'extensions' },
           {
             id: adobeAnalyticsEX,
             meta: { action: 'revise' },
@@ -686,6 +693,9 @@ async function makeBibliotecaLB() {
             type: 'extensions'
           }
         ]
+      },
+      rules: {
+        data: [{ id: clickEventRL, meta: { action: 'revise' }, type: 'rules' }]
       }
     },
     type: 'libraries'

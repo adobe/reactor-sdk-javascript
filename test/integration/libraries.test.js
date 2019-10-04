@@ -14,7 +14,7 @@ import reactor from './reactor';
 import helpers from './helpers';
 
 // Libraries
-// https://developer.adobelaunch.com/api/libraries
+// https://developer.adobelaunch.com/api/reference/1.0/libraries/
 helpers.describe('Library API', function() {
   var theProperty;
   var libAaron;
@@ -31,16 +31,6 @@ helpers.describe('Library API', function() {
       helpers.specName = 'Library beforeAll';
       helpers.reportError(error);
     }
-  });
-
-  // Add resource relationships to a Library
-  // https://developer.adobelaunch.com/api/libraries/add_resources/
-  helpers.it('adds Library/resource relationships', async function() {
-    // All the expectations are in makeDataElementsAndAddToLibrary().
-    await makeDataElementsAndAddToLibrary(theProperty, libAaron, [
-      'ann',
-      'bob'
-    ]);
   });
 
   // Add DataElement relationships to a Library
@@ -80,7 +70,7 @@ helpers.describe('Library API', function() {
   });
 
   // Create a Library
-  // https://developer.adobelaunch.com/api/libraries/create/
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/create/
   helpers.it('creates a new Library', function() {
     // Three libraries should have been created in beforeAll().
     expect(libAaron.id).toMatch(helpers.idLB);
@@ -89,7 +79,7 @@ helpers.describe('Library API', function() {
   });
 
   // Get a Library
-  // https://developer.adobelaunch.com/api/libraries/fetch/
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/fetch/
   helpers.it('gets a Library', async function() {
     const response = await reactor.getLibrary(libBrian.id);
     const brian = response.data;
@@ -97,7 +87,7 @@ helpers.describe('Library API', function() {
   });
 
   // Get the Environment
-  // https://developer.adobelaunch.com/api/libraries/fetch_environment/
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/environment/fetch_related/
   helpers.it("gets a Library's Environment", async function() {
     const env = await helpers.makeLibraryEnvironment(libAaron, 'David');
 
@@ -105,12 +95,12 @@ helpers.describe('Library API', function() {
     var response = await reactor.getEnvironmentForLibrary(libAaron.id);
     expect(response.data).not.toBeUndefined();
     expect(response.data.id).toBe(env.id);
-    // check that we got a resource, not a relationship
+    // check that we got an object, not a relationship
     expect(response.data.attributes.name).toMatch(/david/i);
   });
 
   // Get the Environment relationship
-  // https://developer.adobelaunch.com/api/libraries/fetch_environment_relationship/
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/environment/fetch_relationship/
   helpers.it('gets Library/Environment relationship', async function() {
     const env = await helpers.makeLibraryEnvironment(libBrian, 'Ethan');
 
@@ -120,13 +110,13 @@ helpers.describe('Library API', function() {
     );
     expect(response.data).not.toBeUndefined();
     expect(response.data.id).toBe(env.id);
-    // Check that we got a relationship, not a resource
+    // Check that we got a relationship, not an object
     expect(response.data.attributes).not.toBeDefined();
     expect(response.data.type).toBe('environments');
   });
 
   // Get the Property
-  // https://developer.adobelaunch.com/api/libraries/property/
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/property/fetch_related/
   helpers.it("gets a Library's Property", async function() {
     const response = await reactor.getPropertyForLibrary(libChuck.id);
     expect(response.data.id).toBe(theProperty.id);
@@ -134,7 +124,7 @@ helpers.describe('Library API', function() {
   });
 
   // Get the upstream Library
-  // https://developer.adobelaunch.com/api/libraries/fetch_upstream/
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/upstream_library/fetch_related/
   helpers.it("gets a Library's upstream Library", async function() {
     const lib = libAaron;
     const upstreamResponse = await reactor.getUpstreamLibraryForLibrary(lib.id);
@@ -151,8 +141,8 @@ helpers.describe('Library API', function() {
     const allNames = response.data.map(r => r.attributes.name);
     for (const de of d.dataElements) {
       expect(allDataIds).toContain(de.id);
-      // Check that these are resources, not just resource relationships. The
-      // relationship will not have an `attributes` field, but the resource will.
+      // Check that these are hydrated objects, not just relationships. The
+      // relationship will not have an `attributes` field, but the object will.
       // And `attributes` will have a `name` (among other values).
       expect(allNames).toContain(de.attributes.name);
     }
@@ -172,7 +162,7 @@ helpers.describe('Library API', function() {
   });
 
   // List Extensions
-  // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/extension/list_relationships/
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/extensions/list_related/
   helpers.it("lists Library's Extensions", async function() {
     const d = await buildLibraryWithResources();
     const aRev = await helpers.analyticsExtensionRevision(theProperty);
@@ -185,15 +175,15 @@ helpers.describe('Library API', function() {
     const lsIds = lsResponse.data.map(r => r.id);
     expect(lsIds).toContain(aRev.id);
 
-    // Check that the listed Extensions are resources, not just extension
+    // Check that the listed Extensions are hydrated objects, not just extension
     // relationships. The relationship will not have an `attributes` field, but
-    // the resource will have `attributes.name` (among other values).
+    // the ojbect will have `attributes.name` (among other values).
     const lsNames = lsResponse.data.map(r => r.attributes.name);
     expect(lsNames).toContain(aRev.attributes.name);
   });
 
   // List Extension relationships
-  // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/extension/list_relationships/
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/extensions/list_relationships/
   helpers.it('lists Library/Extension relationships', async function() {
     const d = await buildLibraryWithResources();
     const aRev = await helpers.analyticsExtensionRevision(theProperty);
@@ -210,11 +200,11 @@ helpers.describe('Library API', function() {
   });
 
   // List Libraries for a Property
-  // https://developer.adobelaunch.com/api/libraries/list/
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/list/
   helpers.it('lists all Libraries for a Property', async function() {
     // Make sure all three libraries show up in the list of Libraries on Property
     const listResponse = await reactor.listLibrariesForProperty(theProperty.id);
-    const allIds = listResponse.data.map(resource => resource.id);
+    const allIds = listResponse.data.map(object => object.id);
     expect(allIds).toContain(libAaron.id);
     expect(allIds).toContain(libBrian.id);
     expect(allIds).toContain(libChuck.id);
@@ -223,44 +213,12 @@ helpers.describe('Library API', function() {
   helpers.it('lists filtered Libraries for a Property', async function() {
     var filteredResponse = await reactor.listLibrariesForProperty(
       theProperty.id,
-      { 'filter[name]': 'LIKE aro,LIKE ria' }
+      { 'filter[name]': 'CONTAINS aro,CONTAINS ria' }
     );
-    const twoIds = filteredResponse.data.map(resource => resource.id);
+    const twoIds = filteredResponse.data.map(object => object.id);
     expect(twoIds).toContain(libAaron.id);
     expect(twoIds).toContain(libBrian.id);
     expect(twoIds).not.toContain(libChuck.id);
-  });
-
-  // List resource relationships
-  // https://developer.adobelaunch.com/api/libraries/list_resource_relationships/
-  helpers.it('lists a resource/Library relationships', async function() {
-    // All the expectations are in makeDataElementsAndAddToLibrary().
-    await makeDataElementsAndAddToLibrary(theProperty, libBrian, [
-      'cyd',
-      'don'
-    ]);
-  });
-
-  // List resources
-  // https://developer.adobelaunch.com/api/libraries/resources/
-  helpers.it("lists a Library's resources", async function() {
-    const names = ['eve', 'flo', 'gus'];
-    const dataElements = await makeDataElementsAndAddToLibrary(
-      theProperty,
-      libChuck,
-      names
-    );
-
-    const listResponse = await reactor.listResourcesForLibrary(libChuck.id);
-    const allIds = listResponse.data.map(r => r.id);
-    const allNames = listResponse.data.map(r => r.attributes.name);
-    for (const de of dataElements) {
-      expect(allIds).toContain(de.id);
-      // Check that these are resources, not just resource relationships. The
-      // relationship will not have an `attributes` field, but the resource will.
-      // And `attributes` will have a `name` (among other values).
-      expect(allNames).toContain(de.attributes.name);
-    }
   });
 
   // List Rules
@@ -272,15 +230,15 @@ helpers.describe('Library API', function() {
     const allNames = response.data.map(r => r.attributes.name);
     for (const rl of d.rules) {
       expect(allRuleIds).toContain(rl.id);
-      // Check that these are resources, not just resource relationships. The
-      // relationship will not have an `attributes` field, but the resource will.
+      // Check that these are hydrated objects, not just relationships. The
+      // relationship will not have an `attributes` field, but the object will.
       // And `attributes` will have a `name` (among other values).
       expect(allNames).toContain(rl.attributes.name);
     }
   });
 
   // List Rule relationships
-  // https://developer.adobelaunch.com/api/libraries/resources/
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/rules/list_relationships/
   helpers.it('lists Library/Rule relationships', async function() {
     const d = await buildLibraryWithResources();
     const response = await reactor.listRuleRelationshipsForLibrary(
@@ -293,7 +251,7 @@ helpers.describe('Library API', function() {
   });
 
   // Publish a Library
-  // https://developer.adobelaunch.com/api/libraries/publish/
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/publish/
   helpers.it('publishes a Library', async function() {
     const aProperty = await helpers.createTestProperty('Publishing Base');
     let lib = await helpers.createTestLibrary(aProperty.id, 'Hyrum');
@@ -340,7 +298,7 @@ helpers.describe('Library API', function() {
   });
 
   // Remove Environment relationship
-  // https://developer.adobelaunch.com/api/libraries/delete_environment_relationship/
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/environment/remove_relationship/
   helpers.it('removes a Library/Environment relationship', async function() {
     const env = await helpers.makeLibraryEnvironment(libAaron, 'Felix');
 
@@ -352,31 +310,36 @@ helpers.describe('Library API', function() {
     expect(response).toBeNull(); // and no error was thrown
   });
 
-  // Remove resources
-  // https://developer.adobelaunch.com/api/libraries/remove_resource_relationships/
-  helpers.it("removes a Library's resources", async function() {
-    const names = ['ian', 'jan', 'kip'];
-    const [ian, jan, kip] = await makeDataElementsAndAddToLibrary(
-      theProperty,
-      libAaron,
-      names
+  // Remove Extension relationships
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/extensions/remove_relationships/
+  helpers.it('removes Library/Extension relationships', async function() {
+    const d = await buildLibraryWithResources();
+    const testLib = d.library;
+    const aRev = await helpers.analyticsExtensionRevision(theProperty);
+
+    const addResponse = await reactor.addExtensionRelationshipsToLibrary(
+      testLib.id,
+      [{ id: aRev.id, type: 'extensions' }]
+    );
+    const responseIds = addResponse.data.map(r => r.id);
+    expect(responseIds).toContain(aRev.id);
+
+    const lsResponse = await reactor.listExtensionRelationshipsForLibrary(
+      testLib.id
+    );
+    const lsIds = lsResponse.data.map(r => r.id);
+    expect(lsIds).toContain(aRev.id);
+
+    const rmResponse = await reactor.removeExtensionRelationshipsFromLibrary(
+      testLib.id,
+      [{ id: aRev.id, type: 'extensions' }]
     );
 
-    const response = await reactor.removeResourceRelationshipsFromLibrary(
-      libAaron.id,
-      [
-        { id: ian.id, type: 'data_elements' },
-        { id: kip.id, type: 'data_elements' }
-      ]
+    const lsResponse2 = await reactor.listExtensionRelationshipsForLibrary(
+      testLib.id
     );
-
-    const listResponse = await reactor.listResourceRelationshipsForLibrary(
-      libAaron.id
-    );
-    const listedIds = listResponse.data.map(resource => resource.id);
-    expect(listedIds).not.toContain(ian.id);
-    expect(listedIds).toContain(jan.id);
-    expect(listedIds).not.toContain(kip.id);
+    const lsIds2 = lsResponse2.data.map(r => r.id);
+    expect(lsIds2).not.toContain(aRev.id);
   });
 
   // Remove Rule relationships
@@ -396,7 +359,7 @@ helpers.describe('Library API', function() {
   });
 
   // Replace DataElement relationships
-  // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/data_element/replace_relationships/
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/data_elements/replace_relationships/
   helpers.it('replaces Library/DataElement relationships', async function() {
     const d = await buildLibraryWithResources();
 
@@ -424,29 +387,22 @@ helpers.describe('Library API', function() {
     expect(dataIds0).not.toContain(d.dataElements[2].id);
   });
 
-  // Replace resources
-  // https://developer.adobelaunch.com/api/libraries/replace_resource_relationships/
-  helpers.it("replaces a Library's resources", async function() {
-    const [liz, mac, nan] = await makeDataElementsAndAddToLibrary(
-      theProperty,
-      libAaron,
-      ['liz', 'mac', 'nan']
+  // Replace Extension relationships
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/extensions/replace_relationships/
+  helpers.it('replaces Library/Extension relationships', async function() {
+    const d = await buildLibraryWithResources();
+    const reviseResponse = await reactor.reviseExtension(d.extension.id);
+    const coreRevision = reviseResponse.data;
+
+    const replaceResponse = await reactor.replaceExtensionRelationshipsForLibrary(
+      d.library.id,
+      [{ id: coreRevision.id, type: 'extensions' }]
     );
-    const [ole, pam] = await makeDataElements(theProperty, ['ole', 'pam']);
+    expect(replaceResponse.data[0].id).toBe(coreRevision.id);
 
-    const id = libAaron.id;
-    const response = await reactor.replaceResourceRelationshipsForLibrary(id, [
-      { id: ole.id, type: 'data_elements' },
-      { id: pam.id, type: 'data_elements' }
-    ]);
-
-    const listResponse = await reactor.listResourceRelationshipsForLibrary(id);
-    const listedIds = listResponse.data.map(resource => resource.id);
-    expect(listedIds).not.toContain(liz.id);
-    expect(listedIds).not.toContain(mac.id);
-    expect(listedIds).not.toContain(nan.id);
-    expect(listedIds).toContain(ole.id);
-    expect(listedIds).toContain(pam.id);
+    const ls = await reactor.listExtensionRelationshipsForLibrary(d.library.id);
+    const extIds = ls.data.map(object => object.id);
+    expect(extIds).toEqual([coreRevision.id]);
   });
 
   // Replace Rule relationships
@@ -477,13 +433,14 @@ helpers.describe('Library API', function() {
   });
 
   // Set Environment relationship for a Library
-  // https://developer.adobelaunch.com/api/libraries/add_environment/
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/environment/set_relationship/
   helpers.it('sets Library/Environment relationship', async function() {
+    // calls reactor.setEnvironmentRelationshipForLibrary(libId, env.id);
     await helpers.makeLibraryEnvironment(libAaron);
   });
 
   // Transition a Library
-  // https://developer.adobelaunch.com/api/libraries/transition/
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/transition/
   helpers.it('transitions a Library', async function() {
     const aProperty = await helpers.createTestProperty(
       'Library Transition-Testing Base'
@@ -499,7 +456,7 @@ helpers.describe('Library API', function() {
   });
 
   // Update a Library
-  // https://developer.adobelaunch.com/api/libraries/update/
+  // https://developer.adobelaunch.com/api/reference/1.0/libraries/update/
   helpers.it('updates a Library', async function() {
     const updateResponse = await reactor.updateLibrary({
       attributes: { name: 'Chuck Updated' },
@@ -547,21 +504,21 @@ helpers.describe('Library API', function() {
     const revisions = await makeDataElements(prop, names);
 
     // Add all the revised DataElements to lib
-    const revisionIds = revisions.map(resource => resource.id);
-    const addResponse = await reactor.addResourceRelationshipsToLibrary(
+    const revisionIds = revisions.map(revision => revision.id);
+    const addResponse = await reactor.addDataElementRelationshipsToLibrary(
       lib.id,
       revisionIds.map(id => ({ id: id, type: 'data_elements' }))
     );
-    const addedIds = addResponse.data.map(resource => resource.id).sort();
+    const addedIds = addResponse.data.map(object => object.id).sort();
     for (const id of revisionIds) {
       expect(addedIds).toContain(id);
     }
 
-    // Check whether they all show up when resources are listed
-    const listResponse = await reactor.listResourceRelationshipsForLibrary(
+    // Check whether they all show up when DataElements are listed
+    const listResponse = await reactor.listDataElementRelationshipsForLibrary(
       lib.id
     );
-    const listedIds = listResponse.data.map(resource => resource.id);
+    const listedIds = listResponse.data.map(object => object.id);
     for (const id of revisionIds) {
       expect(listedIds).toContain(id);
     }
