@@ -107,7 +107,7 @@ helpers.describe('Property API', function() {
 
     // Test filtering Properties by name
     const idsForBarstowAndDetroit = [];
-    const query = { 'filter[name]': 'LIKE Detroit,LIKE Barstow' };
+    const query = { 'filter[name]': 'CONTAINS Detroit,CONTAINS Barstow' };
     await helpers.forEachEntityInList(
       paging =>
         reactor.listPropertiesForCompany(

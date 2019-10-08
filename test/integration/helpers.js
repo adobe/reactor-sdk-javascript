@@ -151,15 +151,15 @@ const helpers = {
     if (library.coreExRevision) return library.coreExRevision.id; // already done
 
     const revId = await helpers.coreExtensionRevisionId(property);
-    const addResponse = await reactor.addResourceRelationshipsToLibrary(
+    const addResponse = await reactor.addExtensionRelationshipsToLibrary(
       library.id,
       [{ id: revId, type: 'extensions' }]
     );
     const addedIds = addResponse.data.map(resource => resource.id);
     expect(addedIds).toContain(revId);
 
-    // Check whether they all show up when resources are listed
-    const listResponse = await reactor.listResourceRelationshipsForLibrary(
+    // Check whether they all show up when extensions are listed
+    const listResponse = await reactor.listExtensionRelationshipsForLibrary(
       library.id
     );
     const listedIds = listResponse.data.map(resource => resource.id);

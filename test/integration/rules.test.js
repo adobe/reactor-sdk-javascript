@@ -47,10 +47,9 @@ helpers.describe('Rule API', function() {
   }
 
   async function addRuleToLib(rule, lib) {
-    const addResponse = await reactor.addResourceRelationshipsToLibrary(
-      lib.id,
-      [{ id: rule.id, type: 'rules' }]
-    );
+    const addResponse = await reactor.addRuleRelationshipsToLibrary(lib.id, [
+      { id: rule.id, type: 'rules' }
+    ]);
     const allIds = addResponse.data.map(resource => resource.id);
     expect(allIds).toContain(rule.id);
   }
@@ -187,7 +186,7 @@ helpers.describe('Rule API', function() {
 
       // Test a name filter on listRulesForBuild
       rules = await reactor.listRulesForBuild(buildId, {
-        'filter[name]': 'LIKE snowy,LIKE wyong'
+        'filter[name]': 'CONTAINS snowy,CONTAINS wyong'
       });
       ids = rules.data.map(resource => resource.id);
       expect(ids).toContain(snowy1.id);
@@ -212,7 +211,7 @@ helpers.describe('Rule API', function() {
 
     // Test a name filter on listRulesForProperty
     rules = await reactor.listRulesForProperty(theProperty.id, {
-      'filter[name]': 'LIKE wyong,LIKE tarra'
+      'filter[name]': 'CONTAINS wyong,CONTAINS tarra'
     });
     ids = rules.data.map(resource => resource.id);
     expect(ids).toContain(wyong.id);

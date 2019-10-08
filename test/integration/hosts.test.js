@@ -90,7 +90,7 @@ helpers.describe('Host API', function() {
     const peridot = await newHost('Peridot');
     const kunzite = await newHost('Kunzite');
     var filteredResponse = await reactor.listHostsForProperty(theProperty.id, {
-      'filter[name]': 'LIKE erido,LIKE nzite',
+      'filter[name]': 'CONTAINS erido,CONTAINS nzite',
       sort: '-name'
     });
     const hostNames = filteredResponse.data.map(

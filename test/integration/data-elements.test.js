@@ -123,7 +123,7 @@ helpers.describe('DataElement API', function() {
     // Test filtering DataElements by name
     const filteredResponse = await reactor.listDataElementsForProperty(
       theProperty.id,
-      { 'filter[name]': 'LIKE y_reag' }
+      { 'filter[name]': 'CONTAINS y_reag' }
     );
     const twoIds = filteredResponse.data.map(resource => resource.id);
     expect(twoIds).not.toContain(jamie.id);
@@ -144,7 +144,7 @@ helpers.describe('DataElement API', function() {
     expect(jesse.attributes.revision_number).toBe(1);
 
     async function linkToLibrary(libraryId) {
-      const response = await reactor.addResourceRelationshipsToLibrary(
+      const response = await reactor.addDataElementRelationshipsToLibrary(
         libraryId,
         [{ id: jesse.id, type: 'data_elements' }]
       );
@@ -175,7 +175,7 @@ helpers.describe('DataElement API', function() {
     // Filter: https://developer.adobelaunch.com/guides/api/filtering/
     // Sort:   https://developer.adobelaunch.com/guides/api/sorting/
     var filteredResponse = await reactor.listLibrariesForDataElement(jesse.id, {
-      'filter[name]': 'LIKE P%(',
+      'filter[name]': 'CONTAINS P%(',
       sort: '-name'
     });
     const libraryNames = filteredResponse.data.map(lib => lib.attributes.name);

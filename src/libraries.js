@@ -39,14 +39,6 @@ export function addExtensionRelationshipsToLibrary(libraryId, exList) {
   });
 }
 
-// Add resources to a Library
-// https://developer.adobelaunch.com/api/libraries/add_resources/
-export function addResourceRelationshipsToLibrary(libraryId, postParams) {
-  return this.post(`/libraries/${libraryId}/relationships/resources`, {
-    data: postParams
-  });
-}
-
 // Add Rule relationships to a Library
 // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/rules/add_relationships/
 // Example `rlList` value:
@@ -139,21 +131,6 @@ export function listLibrariesForProperty(propertyId, queryParams) {
   return this.get(`/properties/${propertyId}/libraries`, queryParams);
 }
 
-// List resource relationships
-// https://developer.adobelaunch.com/api/libraries/list_resource_relationships/
-export function listResourceRelationshipsForLibrary(libraryId, queryParams) {
-  return this.get(
-    `/libraries/${libraryId}/relationships/resources`,
-    queryParams
-  );
-}
-
-// List resources
-// https://developer.adobelaunch.com/api/libraries/resources/
-export function listResourcesForLibrary(libraryId, queryParams) {
-  return this.get(`/libraries/${libraryId}/resources`, queryParams);
-}
-
 // List Rule relationships
 // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/rules/list_relationships/
 export function listRuleRelationshipsForLibrary(libraryId, queryParams) {
@@ -216,14 +193,6 @@ export function removeEnvironmentRelationshipFromLibrary(
   });
 }
 
-// Remove resource relationships
-// https://developer.adobelaunch.com/api/libraries/remove_resource_relationships/
-export function removeResourceRelationshipsFromLibrary(libraryId, resources) {
-  return this.delete(`/libraries/${libraryId}/relationships/resources`, {
-    data: resources
-  });
-}
-
 // Remove Rule relationships
 // https://developer.adobelaunch.com/api/reference/1.0/libraries/relationships/rules/remove_relationships/
 // Example `rules` value:
@@ -260,14 +229,6 @@ export function replaceExtensionRelationshipsForLibrary(libraryId, exList) {
 export function replaceDataElementRelationshipsForLibrary(libraryId, deList) {
   return this.patch(`/libraries/${libraryId}/relationships/data_elements`, {
     data: deList
-  });
-}
-
-// Replace resource relationships
-// https://developer.adobelaunch.com/api/libraries/replace_resource_relationships/
-export function replaceResourceRelationshipsForLibrary(libraryId, resources) {
-  return this.patch(`/libraries/${libraryId}/relationships/resources`, {
-    data: resources
   });
 }
 
