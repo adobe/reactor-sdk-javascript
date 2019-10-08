@@ -26,7 +26,7 @@
     "./lib/node/index.js": "./lib/browser/index.js"
   },
   "scripts": {
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
     "postinstall": "node scripts/check-version.js",
     "build": "npm run src:build",
     "test": "npm run unit-tests",
@@ -48,13 +48,13 @@
     "integration:build:node": "npx parcel build --no-minify --public-url=. -d tmp.tests/integration-in-node/ -o index.js test/integration/integration-tests-library-sdk.js --target node",
     "integration:build": "npm-run-all integration:clean integration:build:environment --print-label --parallel integration:build:*",
     "integration:run": "node scripts/check-version && open http://localhost:5000/integration-library-sdk/ && open http://localhost:5000/integration-bundled-sdk && NODE_TLS_REJECT_UNAUTHORIZED=0 npx jasmine tmp.tests/integration-in-node/index.js",
-    "unit-tests": "npm-run-all src:build:node unit:lint unit:build unit:run",
+    "unit-tests": "npm-run-all unit:lint unit:build unit:run",
     "integration-tests": "npm-run-all integration:lint integration:build integration:run",
-    "all-tests": "npm-run-all src:lint src:build --print-label --parallel unit-tests integration-tests",
+    "all-tests": "npm-run-all --print-label --parallel unit-tests integration-tests",
     "src-watch": "nodemon --watch src/ --watch package.json --exec npm-run-all src:lint src:build",
     "unit-watch": "nodemon --watch lib/node --watch test/unit/ --exec npm run unit-tests",
     "integration-watch": "nodemon --watch lib/browser --watch test/integration/ --exec npm run integration-tests",
-    "all-watch": "nodemon --watch package.json --watch src/ --watch test/ --exec npm run all-tests"
+    "all-watch": "npm-run-all --print-label --parallel src-watch unit-watch integration-watch"
   },
   "browserslist": [
     "last 2 chrome versions",
@@ -77,25 +77,25 @@
   ],
   "dependencies": {
     "node-fetch": "2.6.0",
-    "semver": "6.1.1"
+    "semver": "6.1.3"
   },
   "devDependencies": {
-    "@babel/cli": "7.4.4",
-    "@babel/core": "7.4.5",
-    "@babel/preset-env": "7.4.5",
+    "@babel/cli": "7.5.0",
+    "@babel/core": "7.5.0",
+    "@babel/preset-env": "7.5.0",
     "babel-preset-latest-node": "3.2.1",
-    "commander": "2.20.0",
+    "commander": "3.0.0",
     "dateformat": "3.0.3",
-    "eslint": "6.1.0",
-    "eslint-config-prettier": "5.0.0",
-    "eslint-plugin-prettier": "3.1.0",
+    "eslint": "6.2.0",
+    "eslint-config-prettier": "6.1.0",
+    "eslint-plugin-prettier": "3.1.1",
     "express": "4.17.1",
     "genversion": "^2.1.1",
-    "jasmine": "3.4.0",
+    "jasmine": "3.5.0",
     "mkdirp": "^0.5.1",
-    "nock": "10.0.6",
-    "nodemon": "1.19.1",
-    "npm-run-all": "4.1.5",
+    "nock": "11.1.0",
+    "nodemon": "1.19.2",
+    "npm-run-all": "^4.1.5",
     "path": "0.12.7",
     "prettier": "1.18.2"
   }
