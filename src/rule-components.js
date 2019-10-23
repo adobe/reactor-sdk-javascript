@@ -44,11 +44,6 @@ export function listRulesForRuleComponent(ruleComponentId) {
   return this.get(`/rule_components/${ruleComponentId}/rules`);
 }
 
-// List Rule relationships for a RuleComponent
-export function listRuleRelationshipsForRuleComponent(ruleComponentId) {
-  return this.get(`/rule_components/${ruleComponentId}/relationships/rule`);
-}
-
 // Get the origin
 // https://developer.adobelaunch.com/api/rule_components/origin/
 export function getOriginForRuleComponent(ruleComponentId) {

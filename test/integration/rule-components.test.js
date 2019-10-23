@@ -86,18 +86,6 @@ helpers.describe('RuleComponent API', function() {
     expect(response.data[0].type).toBe('rules');
   });
 
-  // List Rules for a RuleComponent
-  // https://developer.adobelaunch.com/api/reference/1.0/rule_components/relationships/rules/list_related/
-  // NOTE that (for now) in this actually returns a single rule, NOT a list.
-  helpers.it('lists Rule relationships for a RuleComponent', async function() {
-    const rcLevan = await makeTestRC('Levan', 11);
-    const response = await reactor.listRuleRelationshipsForRuleComponent(
-      rcLevan.id
-    );
-    expect(response.data.id).toBe(theRule.id);
-    expect(response.data.type).toBe('rules');
-  });
-
   // Get a RuleComponent's origin
   // https://developer.adobelaunch.com/api/rule_components/origin/
   helpers.it("gets a RuleComponent's origin", async function() {
