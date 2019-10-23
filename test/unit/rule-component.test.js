@@ -83,16 +83,6 @@ describe('RuleComponent:', function() {
     });
   });
 
-  describe('listRuleRelationshipsForRuleComponent', function() {
-    it('runs an http GET', async function() {
-      context.expectRequest(
-        'get',
-        `/rule_components/${ruleComponentId}/relationships/rule`
-      );
-      await reactor.listRuleRelationshipsForRuleComponent(ruleComponentId);
-    });
-  });
-
   describe('deleteRuleComponent', function() {
     it('runs an http DELETE', async function() {
       context.expectRequest('delete', `/rule_components/${ruleComponentId}`);
