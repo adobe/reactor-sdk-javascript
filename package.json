@@ -1,10 +1,10 @@
 {
   "name": "@adobe/reactor-sdk",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "JavaScript SDK for the Reactor API",
   "author": {
     "name": "Adobe Systems",
-    "url": "https://www.adobe.com/experience-platform/launch.html",
+    "url": "https://developer.adobelaunch.com/api/",
     "email": "reactor@adobe.com"
   },
   "license": "Apache-2.0",
