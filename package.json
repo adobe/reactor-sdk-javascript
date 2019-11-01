@@ -84,7 +84,7 @@
     "@babel/core": "7.6.3",
     "@babel/preset-env": "7.6.3",
     "babel-preset-latest-node": "3.2.1",
-    "commander": "3.0.0",
+    "commander": "4.0.0",
     "dateformat": "3.0.3",
     "eslint": "6.2.0",
     "eslint-config-prettier": "6.1.0",
