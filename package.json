@@ -81,7 +81,7 @@
   },
   "devDependencies": {
     "@babel/cli": "7.7.0",
-    "@babel/core": "7.6.3",
+    "@babel/core": "7.7.0",
     "@babel/preset-env": "7.6.3",
     "babel-preset-latest-node": "3.2.1",
     "commander": "3.0.0",
