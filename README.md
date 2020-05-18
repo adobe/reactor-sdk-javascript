@@ -245,7 +245,7 @@ $ script/delete-test-properties
 ### Your Access Token
 * Using Google Chrome, log in to `https://launch.adobe.com/companies`
 * Open the developer console
-* Execute `copy(userData.imsAccessToken)`
+* Execute `copy(window.adobeIMS.getAccessToken())`
 * The access token is now in your system clipboard. Paste it into an
   environment variable definition:
     - $ `export ACCESS_TOKEN='<paste>'`
