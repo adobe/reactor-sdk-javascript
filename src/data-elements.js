@@ -88,7 +88,7 @@ export function updateDataElement(dataElementPatch) {
 
 // Create a note for DataElement
 // https://developer.adobelaunch.com/api/data_elements/:data_element_id/notes
-export function createNoteForLibrary(dataElementId, note) {
+export function createNoteForDataElement(dataElementId, note) {
   return this.post(`/data_elements/${dataElementId}/notes`, {
     data: note
   });
