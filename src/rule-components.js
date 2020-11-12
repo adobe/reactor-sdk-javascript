@@ -63,3 +63,11 @@ export function updateRuleComponent(ruleComponentPatch) {
     data: ruleComponentPatch
   });
 }
+
+// Create a note for RuleComponent
+// https://developer.adobelaunch.com/api/rule_components/:rule_component_id/notes
+export function createNoteForRuleComponent(ruleComponentId, note) {
+  return this.post(`/rule_components/${ruleComponentId}/notes`, {
+    data: note
+  });
+}

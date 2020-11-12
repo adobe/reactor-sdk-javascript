@@ -33,3 +33,11 @@ export function updateProperty(propertyPatch) {
 export function deleteProperty(propertyId) {
   return this.delete(`/properties/${propertyId}`);
 }
+
+// Create a note for Property
+// https://developer.adobelaunch.com/api/properties/:property_id/notes
+export function createNoteForProperty(propertyId, note) {
+  return this.post(`/properties/${propertyId}/notes`, {
+    data: note
+  });
+}
