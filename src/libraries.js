@@ -279,3 +279,11 @@ export function updateLibrary(libraryPatch) {
     data: libraryPatch
   });
 }
+
+// Create a note for Library
+// https://developer.adobelaunch.com/api/libraries/:library_id/notes
+export function createNoteForLibrary(libraryId, note) {
+  return this.post(`/libraries/${libraryId}/notes`, {
+    data: note
+  });
+}

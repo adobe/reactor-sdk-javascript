@@ -85,3 +85,11 @@ export function updateExtension(extensionId, extensionPatch) {
     data: extensionPatch,
   });
 }
+
+// Create a note for Extension
+// https://developer.adobelaunch.com/api/extensions/:extension_id/notes
+export function createNoteForExtension(extensionId, note) {
+  return this.post(`/extensions/${extensionId}/notes`, {
+    data: note
+  });
+}
