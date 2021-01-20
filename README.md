@@ -69,15 +69,15 @@ const Reactor = require('@adobe/reactor-sdk').default;
 (async function() {
   const accessToken = process.env['ACCESS_TOKEN'];
   const reactorUrl = 'https://reactor.adobe.io';
-  const reactor = new Reactor(accessToken, { reactorUrl: reactorUrl });;
+  const reactor = new Reactor(accessToken, { reactorUrl: reactorUrl });
   // Example API call: list Companies for the authenticated organization
   const companyList = await reactor.listCompanies();
   for (var company of companyList.data) {
-    console.log("%j %j", company.id, company.attributes.name);
+    console.log(`${company.id} ${company.attributes.name}`);
     // Example API call: list Properties for the identified Company
     const list = await reactor.listPropertiesForCompany(company.id);
     for (var property of list.data) {
-      console.log('  %j %j', property.id, property.attributes.name);
+      console.log(`- ${property.id} ${property.attributes.name}`);
     }
   }
 })();
