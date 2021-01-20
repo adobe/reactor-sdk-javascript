@@ -67,15 +67,9 @@ Put this text in a file named `list-properties.js`:
 const Reactor = require('@adobe/reactor-sdk').default;
 
 (async function() {
-
-  // Build a Reactor object with API methods
-  async function buildReactor() {
-    const accessToken = process.env['ACCESS_TOKEN'];
-    const reactorUrl = 'https://reactor.adobe.io';
-    return await new Reactor(accessToken, { reactorUrl: reactorUrl });
-  }
-
-  const reactor = await buildReactor();
+  const accessToken = process.env['ACCESS_TOKEN'];
+  const reactorUrl = 'https://reactor.adobe.io';
+  const reactor = new Reactor(accessToken, { reactorUrl: reactorUrl });;
   // Example API call: list Companies for the authenticated organization
   const companyList = await reactor.listCompanies();
   for (var company of companyList.data) {
@@ -86,10 +80,7 @@ const Reactor = require('@adobe/reactor-sdk').default;
       console.log('  %j %j', property.id, property.attributes.name);
     }
   }
-})().then(
-  function(result) { console.log('success') },
-  function(err) { console.log(err) }
-);
+})();
 ```
 
 Run it...
