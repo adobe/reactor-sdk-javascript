@@ -82,7 +82,7 @@ export function reviseExtension(extensionId) {
 // https://developer.adobelaunch.com/api/reference/1.0/extensions/update/
 export function updateExtension(extensionId, extensionPatch) {
   return this.patch(`/extensions/${extensionId}`, {
-    data: extensionPatch,
+    data: extensionPatch
   });
 }
 

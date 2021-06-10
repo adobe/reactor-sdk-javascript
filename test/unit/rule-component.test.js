@@ -89,4 +89,21 @@ describe('RuleComponent:', function() {
       await reactor.deleteRuleComponent(ruleComponentId);
     });
   });
+
+  describe('createRuleComponentNote', function() {
+    it('runs an http POST', async function() {
+      const post = {
+        type: 'notes',
+        attributes: {
+          text: 'this note on this rule component intentionally left blank'
+        }
+      };
+      context.expectRequest(
+        'post',
+        `/rule_components/${ruleComponentId}/notes`,
+        post
+      );
+      await reactor.createNoteForRuleComponent(ruleComponentId, post);
+    });
+  });
 });

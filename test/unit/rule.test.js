@@ -88,4 +88,17 @@ describe('Rule:', function() {
       await reactor.deleteRule(ruleId);
     });
   });
+
+  describe('createRuleNote', function() {
+    it('runs an http POST', async function() {
+      const post = {
+        type: 'notes',
+        attributes: {
+          text: 'this note on this rule intentionally left blank'
+        }
+      };
+      context.expectRequest('post', `/rules/${ruleId}/notes`, post);
+      await reactor.createNoteForRule(ruleId, post);
+    });
+  });
 });

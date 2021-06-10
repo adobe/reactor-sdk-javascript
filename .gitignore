@@ -8,3 +8,4 @@ dist
 lib
 tmp.tests
 test/integration/globals-for-browser.js
+.parcel-cache/

@@ -67,12 +67,12 @@ export default class Reactor {
   createReviseBody(resourceType, resourceId) {
     return {
       data: {
+        id: resourceId,
         attributes: {},
+        type: resourceType,
         meta: {
           action: 'revise'
-        },
-        id: resourceId,
-        type: resourceType
+        }
       }
     };
   }

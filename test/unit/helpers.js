@@ -26,8 +26,8 @@ function expectRequest(method, path, body) {
     reqheaders: reqheaders
   });
   const args = [path];
-  if (typeof body !== 'undefined') {
-    body = typeof body.data === 'undefined' ? { data: body } : body;
+  if (body != null) {
+    body = !body.hasOwnProperty('data') ? { data: body } : body;
     args.push(body);
   }
   initializedNock[method.toLowerCase()].apply(initializedNock, args).reply(200);
