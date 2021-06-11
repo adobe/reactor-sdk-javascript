@@ -103,4 +103,21 @@ describe('DataElement:', function() {
       await reactor.deleteDataElement(dataElementId);
     });
   });
+
+  describe('createDataElementNote', function() {
+    it('runs an http POST', async function() {
+      const post = {
+        type: 'notes',
+        attributes: {
+          text: 'this note on a data element intentionally left blank'
+        }
+      };
+      context.expectRequest(
+        'post',
+        `/data_elements/${dataElementId}/notes`,
+        post
+      );
+      await reactor.createNoteForDataElement(dataElementId, post);
+    });
+  });
 });

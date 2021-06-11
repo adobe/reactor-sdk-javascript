@@ -36,11 +36,9 @@ describe('Extension:', function() {
   describe('updateExtension', function() {
     it('runs an http PATCH', async function() {
       const patch = {
-        data: {
-          id: extensionId,
-          attributes: { enabled: false },
-          type: 'extensions'
-        }
+        id: extensionId,
+        attributes: { enabled: false },
+        type: 'extensions'
       };
       context.expectRequest('patch', `/extensions/${extensionId}`, patch);
       await reactor.updateExtension(extensionId, patch);
@@ -90,6 +88,19 @@ describe('Extension:', function() {
     it('runs an http DELETE', async function() {
       context.expectRequest('delete', `/extensions/${extensionId}`);
       await reactor.deleteExtension(extensionId);
+    });
+  });
+
+  describe('createExtensionNote', function() {
+    it('runs an http POST', async function() {
+      const post = {
+        type: 'notes',
+        attributes: {
+          text: 'this note on an extension intentionally left blank'
+        }
+      };
+      context.expectRequest('post', `/extensions/${extensionId}/notes`, post);
+      await reactor.createNoteForExtension(extensionId, post);
     });
   });
 });

@@ -82,4 +82,17 @@ describe('Property:', function() {
       await reactor.deleteProperty(propertyId);
     });
   });
+
+  describe('createPropertyNote', function() {
+    it('runs an http POST', async function() {
+      const post = {
+        type: 'notes',
+        attributes: {
+          text: 'this note on a property intentionally left blank'
+        }
+      };
+      context.expectRequest('post', `/properties/${propertyId}/notes`, post);
+      await reactor.createNoteForProperty(propertyId, post);
+    });
+  });
 });

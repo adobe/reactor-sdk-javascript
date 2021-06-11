@@ -28,7 +28,7 @@ You can use the Reactor SDK from npm with a bundler like
 you can install the SDK with:
 
 ```bash
-npm install @adobe/reactor-sdk --save
+npm install @adobe/reactor-sdk
 ```
 
 ### Using a CDN
@@ -46,13 +46,15 @@ would go something like this:
 ```html
 <script src="https://unpkg.com/@adobe/reactor-sdk/dist/reactor-sdk.min.js"></script>
 <script>
-  const tok = '<see instructions below for getting your access token>';
+  const tok = 'Your Access Token';
   const url = 'https://reactor.adobe.io';
   const reactor = new window.Reactor(tok, { reactorUrl: url });
   const acme = await reactor.getCompany('CO0123456789012345678901');
   ...
 </script>
 ```
+
+[How to retrieve your Access Token](#your-access-token).
 
 ## Usage
 
@@ -67,29 +69,20 @@ Put this text in a file named `list-properties.js`:
 const Reactor = require('@adobe/reactor-sdk').default;
 
 (async function() {
-
-  // Build a Reactor object with API methods
-  async function buildReactor() {
-    const accessToken = process.env['ACCESS_TOKEN'];
-    const reactorUrl = 'https://reactor.adobe.io';
-    return await new Reactor(accessToken, { reactorUrl: reactorUrl });
-  }
-
-  const reactor = await buildReactor();
+  const accessToken = process.env['ACCESS_TOKEN'];
+  const reactorUrl = 'https://reactor.adobe.io';
+  const reactor = new Reactor(accessToken, { reactorUrl: reactorUrl });
   // Example API call: list Companies for the authenticated organization
   const companyList = await reactor.listCompanies();
   for (var company of companyList.data) {
-    console.log("%j %j", company.id, company.attributes.name);
+    console.log(`${company.id} ${company.attributes.name}`);
     // Example API call: list Properties for the identified Company
     const list = await reactor.listPropertiesForCompany(company.id);
     for (var property of list.data) {
-      console.log('  %j %j', property.id, property.attributes.name);
+      console.log(`- ${property.id} ${property.attributes.name}`);
     }
   }
-})().then(
-  function(result) { console.log('success') },
-  function(err) { console.log(err) }
-);
+})();
 ```
 
 Run it...
@@ -99,13 +92,14 @@ export ACCESS_TOKEN=... # see instructions below
 chmod u+x ./list-properties.js
 ./list-properties.js
 ```
+[How to retrieve your Access Token](#your-access-token).
 
 ...and you should get output similar to:
 
 ```
 "COb711272b544e8359eab4492484893f77" "Fredigar and Bagginses"
-  "PR090c7b576f892bf7a7f5e783d0e9ab75" "Shire Real Estate Holdings, LLC"
-  "PR399e5b7dbcfc83db37051b43f5ac4d3b" "Mathom Recyclers, Ltd."
+"- PR090c7b576f892bf7a7f5e783d0e9ab75" "Shire Real Estate Holdings, LLC"
+"- PR399e5b7dbcfc83db37051b43f5ac4d3b" "Mathom Recyclers, Ltd."
 success
 ```
 
@@ -161,7 +155,7 @@ If you want to contribute to development of this library,
 ```bash
 $ git clone git@github.com:adobe/reactor-sdk-javascript.git
 $ cd reactor-sdk-javascript
-$ npm clean-install           # install dependencies and build Reactor SDK library
+$ npm ci           # install dependencies and build Reactor SDK library
 ```
 
 The clean install generates three versions of the library:
@@ -178,8 +172,8 @@ $ npm run unit-tests          # run the tests in test/unit/**
 
 The integration tests need a current access token, and a provisioned Company.
 You are expected to provide them to the tests via the environment variables
-`ACCESS_TOKEN` and `COMPANY_ID`.  Instructions for getting appropriate values
-are given below.  See _Your Company ID_ and _Your Access Token_.
+`ACCESS_TOKEN` and `COMPANY_ID`.  Instructions for getting [your Access Token](#your-access-token) and
+[your Company Id](#your-company-id) are given below.
 
 The in-browser integration tests require a local static-file web server, because
 loading their HTML using a `file://` URL is not effective: the browser
@@ -245,7 +239,8 @@ $ script/delete-test-properties
 ### Your Access Token
 * Using Google Chrome, log in to `https://launch.adobe.com/companies`
 * Open the developer console
-* Select the "Main Content" context from the dropdown menu (the selection default is "top")
+* Change the JavaScript context from "top" to "Main Content" using the dropdown menu
+  ![Switch JavaScriptContext](./.readme-assets/switch-js-context.png)
 * Execute `copy(userData.imsAccessToken)`
 * The access token is now in your system clipboard. Paste it into an
   environment variable definition:
@@ -264,3 +259,13 @@ $ script/delete-test-properties
 
 Contributions are welcomed! Read the [Contributing Guide](https://github.com/adobe/reactor-sdk-javascript/blob/master/CONTRIBUTING.md)
 for more information.
+
+Before submitting your PR
+
+```bash
+# commit your changes
+$ git add .
+$ git commit -m 'your commit message'
+$ npm version {major|minor|patch}
+$ git push
+```

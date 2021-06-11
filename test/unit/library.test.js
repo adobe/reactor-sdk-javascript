@@ -326,4 +326,17 @@ describe('Library:', function() {
       );
     });
   });
+
+  describe('createLibraryNote', function() {
+    it('runs an http POST', async function() {
+      const post = {
+        type: 'notes',
+        attributes: {
+          text: 'this note on a library intentionally left blank'
+        }
+      };
+      context.expectRequest('post', `/libraries/${libraryId}/notes`, post);
+      await reactor.createNoteForLibrary(libraryId, post);
+    });
+  });
 });
