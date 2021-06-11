@@ -21,7 +21,7 @@
     "tag manager",
     "SDK"
   ],
-  "default": "dist/reactor.min.js",
+  "default": "dist/reactor-sdk.min.js",
   "targets": {
     "default": {
       "context": "browser"
