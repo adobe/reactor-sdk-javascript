@@ -9,3 +9,8 @@ lib
 tmp.tests
 test/integration/globals-for-browser.js
 .parcel-cache/
+
+## Directory-based project format
+.idea/
+.vscode/**
+!.vscode/settings.json
