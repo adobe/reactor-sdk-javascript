@@ -57,7 +57,7 @@
     "unit-watch": "nodemon --watch lib/node --watch test/unit/ --exec npm run unit-tests",
     "integration-watch": "nodemon --watch lib/browser --watch test/integration/ --exec npm run integration-tests",
     "all-watch": "npm-run-all --print-label --parallel src-watch unit-watch integration-watch",
-    "version": "npx genversion --es6 src/version.js && git add src/version.js"
+    "version": "npx genversion --es6 --semi src/version.js && git add src/version.js"
   },
   "browserslist": [
     "last 2 chrome versions",
