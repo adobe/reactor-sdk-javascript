@@ -239,7 +239,8 @@ $ script/delete-test-properties
 ### Your Access Token
 * Using Google Chrome, log in to `https://launch.adobe.com/companies`
 * Open the developer console
-* Select the "Main Content" context from the dropdown menu (the selection default is "top")
+* Change the JavaScript context from "top" to "Main Content" using the dropdown menu
+  ![Switch JavaScriptContext](./.readme-assets/switch-js-context.png)
 * Execute `copy(userData.imsAccessToken)`
 * The access token is now in your system clipboard. Paste it into an
   environment variable definition:
