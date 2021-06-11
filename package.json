@@ -28,7 +28,7 @@
     }
   },
   "scripts": {
-    "prepare": "npm run build",
+    "prepare": "npm run build && husky install",
     "postinstall": "node scripts/check-version.js",
     "build": "npm run src:build",
     "test": "npm-run-all build unit-tests",
@@ -94,6 +94,7 @@
     "eslint-plugin-prettier": "3.1.1",
     "express": "4.17.1",
     "genversion": "^2.1.1",
+    "husky": "^6.0.0",
     "jasmine": "3.5.0",
     "mkdirp": "^0.5.1",
     "nock": "11.5.0",
