@@ -1,0 +1,47 @@
+name: CI notify
+
+# Only trigger, when the build workflow succeeded
+on:
+  workflow_run:
+    workflows: ['Node.js Package']
+    types:
+      - completed
+
+jobs:
+  notify-on-success:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get latest tag
+        uses: oprypin/find-latest-tag@v1
+        with:
+          repository: '${{ github.repository }}' # The repository to scan.
+          releases-only: true # We know that all relevant tags have a GitHub release for them.
+        id: repoTag # The step ID to refer to later.
+      - name: Show ENV
+        run: env
+      - name: Notify Slack of Release
+        uses: tokorom/action-slack-incoming-webhook@main
+        env:
+          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          text: 'A new version of ${{ github.event.repository.full_name }}[${{ steps.repoTag.outputs.tag }}] has been released'
+          attachments: |
+            [
+              {
+                "color": "good",
+                "author_name": "${{ github.actor }}",
+                "author_icon": "${{ github.event.sender.avatar_url }}",
+                "fields": [
+                  {
+                    "title": "Repo URL",
+                    "value": "${{ github.event.repository.html_url }}"
+                  },
+                  {
+                    "title": "See Releases",
+                    "value": "${{ github.event.repository.html_url }}/releases"
+                  }
+               ]
+              }
+            ]
