@@ -22,10 +22,12 @@
     "SDK"
   ],
   "default": "dist/reactor-sdk.min.js",
+  "main": "./lib/node/index.js",
   "targets": {
     "default": {
       "context": "browser"
-    }
+    },
+    "main": false
   },
   "scripts": {
     "prepare": "npm run build && husky install",
