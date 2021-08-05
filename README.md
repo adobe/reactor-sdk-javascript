@@ -61,7 +61,6 @@ would go something like this:
 The example below is a nodejs script that lists the ID's and names of all your
 Company's properties.
 
-
 Put this text in a file named `list-properties.js`:
 
 ```javascript
@@ -92,11 +91,12 @@ export ACCESS_TOKEN=... # see instructions below
 chmod u+x ./list-properties.js
 ./list-properties.js
 ```
+
 [How to retrieve your Access Token](#your-access-token).
 
 ...and you should get output similar to:
 
-```
+```plain text
 "COb711272b544e8359eab4492484893f77" "Fredigar and Bagginses"
 "- PR090c7b576f892bf7a7f5e783d0e9ab75" "Shire Real Estate Holdings, LLC"
 "- PR399e5b7dbcfc83db37051b43f5ac4d3b" "Mathom Recyclers, Ltd."
@@ -104,6 +104,7 @@ success
 ```
 
 A browser implementation of this functionality would differ in two ways:
+
 1. it would use the pre-initialized `window.Reactor` rather than
    `const Reactor = require('@adobe/reactor-sdk')`
 2. providing your access token needs a different approach, since `process.env`
@@ -130,7 +131,6 @@ documentation is available under open source, at
 of the ["Fetch a Profile"][FetchProfile doc] documentation is at
 [profiles/fetch.md][FetchProfile doc src].)
 
-
 [Launch API doc]: https://developer.adobelaunch.com/api/ 'Adobe Experience Platform Launch API'
 [Launch API doc repo]: https://github.com/adobe/reactor-developer-docs 'Launch API documentation repository'
 [FetchProfile doc]: https://developer.adobelaunch.com/api/reference/1.0/profiles/fetch/ 'Fetch a Profile'
@@ -153,21 +153,23 @@ Postman]( https://github.com/adobe/reactor-postman) query set.
 If you want to contribute to development of this library,
 
 ```bash
-$ git clone git@github.com:adobe/reactor-sdk-javascript.git
-$ cd reactor-sdk-javascript
-$ npm ci           # install dependencies and build Reactor SDK library
+git clone git@github.com:adobe/reactor-sdk-javascript.git
+cd reactor-sdk-javascript
+npm ci           # install dependencies and build Reactor SDK library
 ```
 
 The clean install generates three versions of the library:
-1.  `./lib/node/*.js`, intended for use by nodejs projects
-2.  `./lib/browser/*.js`, intended for use by bundlers in browser projects
-2.  `./dist/reactor.min.js`, intended for loading directly into an HTML
+
+1. `./lib/node/*.js`, intended for use by nodejs projects
+2. `./lib/browser/*.js`, intended for use by bundlers in browser projects
+3. `./dist/reactor.min.js`, intended for loading directly into an HTML
     page (i.e., for non-bundled browser use)
 
 With the SDK built, you can run its nodejs unit tests:
+
 ```bash
-$ npm link "$(pwd)"           # make this SDK available to tests
-$ npm run unit-tests          # run the tests in test/unit/**
+npm link "$(pwd)"           # make this SDK available to tests
+npm run unit-tests          # run the tests in test/unit/**
 ```
 
 The integration tests need a current access token, and a provisioned Company.
@@ -183,17 +185,18 @@ project, as `scripts/static-server.js`.
 
 Once you've collected the necessary values for your environment variables, you
 can run the integration tests:
+
 ```bash
-$ export ACCESS_TOKEN="your_reactor_access_token"
-$ export COMPANY_ID="your_reactor_test_company_id" # "CO" followed by 32 hex digits
-$ NODE_TLS_REJECT_UNAUTHORIZED=0 scripts/static-server.js --dir ./tmp.tests/
+export ACCESS_TOKEN="your_reactor_access_token"
+export COMPANY_ID="your_reactor_test_company_id" # "CO" followed by 32 hex digits
+NODE_TLS_REJECT_UNAUTHORIZED=0 scripts/static-server.js --dir ./tmp.tests/
 ```
 
 Switch to another terminal window, since you want that server to keep running.
 
 ```bash
-$ npm run integration-tests   # run the tests in test/integration/**
-$ # Currently known to pass in MacOS Chrome Version 72.0.3626.121.
+npm run integration-tests   # run the tests in test/integration/**
+# Currently known to pass in MacOS Chrome Version 72.0.3626.121.
 ```
 
 [Update] As of 20 August 2019, current versions of Google Chrome _still_ won't
@@ -201,7 +204,8 @@ allow the files to be loaded, even with the static server. Apparently,
 `localhost:5000` and `localhost:9010` are too different, and trigger CORS
 blocking. On MacOS, I've been able to get the tests to work by shutting down
 Chrome and relaunching with:
-```
+
+```bash
 open -a "Google Chrome" ./tmp.tests/integration-bundled-sdk/index.html \
      --args --disable-web-security --user-data-dir="/tmp/chrome"
 ```
@@ -211,32 +215,34 @@ change the source code:
 
 ```bash
 # re-run {lint, prettier, build} when src/**/*.js changes
-$ npm run src-watch
+npm run src-watch
 
 # re-run {lint, prettier, build, and test} when {dist,test/unit}/**/*.js changes
-$ npm run unit-watch
+npm run unit-watch
 
 # re-run {lint, prettier, build, and test} when {dist,test/integration}/**/*.js changes
-$ npm run integration-watch
+npm run integration-watch
 
 # re-run {lint, prettier, build, and test} when {src,test}/**/*.js changes
-$ npm run all-watch
+npm run all-watch
 
 # Periodically, you'll want to remove the Properties created during integration tests
-$ script/delete-test-properties
+script/delete-test-properties
 ```
 
 ## Determining Your Personal Information
 
 ### Your Company ID
+
 * Log in to `https://launch.adobe.com/companies`
 * While looking at your Properties page, the address bar will show a URL like
   `https://launch.adobe.com/companies/CO81f8cb0aca3a4ab8927ee1798c0d4f8a/properties`.
 * Your Company ID is the 'CO' followed by 32 hexadecimal digits (i.e., from "CO"
   up to the following slash). Copy that company ID to an environment variable:
-    - $ `export COMPANY_ID=CO81f8cb0aca3a4ab8927ee1798c0d4f8a`
+  * `export COMPANY_ID=CO81f8cb0aca3a4ab8927ee1798c0d4f8a`
 
 ### Your Access Token
+
 * Using Google Chrome, log in to `https://launch.adobe.com/companies`
 * Open the developer console
 * Change the JavaScript context from "top" to "Main Content" using the dropdown menu
@@ -244,7 +250,7 @@ $ script/delete-test-properties
 * Execute `copy(userData.imsAccessToken)`
 * The access token is now in your system clipboard. Paste it into an
   environment variable definition:
-    - $ `export ACCESS_TOKEN='<paste>'`
+  * `export ACCESS_TOKEN='<paste>'`
 
 ## Future Work
 
