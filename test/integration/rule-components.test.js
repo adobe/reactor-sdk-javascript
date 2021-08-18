@@ -52,12 +52,9 @@ helpers.describe('RuleComponent API', function() {
     const deleteResponse = await reactor.deleteRuleComponent(rcLehi.id);
     expect(deleteResponse).toBe(null);
 
-    try {
-      const deadRC = await reactor.getRuleComponent(rcLehi.id);
-      fail('getting a deleted rule_component should fail');
-    } catch (error) {
-      expect(error.status).toBe(404);
-    }
+    const response = await reactor.getRuleComponent(rcLehi.id);
+    const deletedRc = response.data;
+    expect(deletedRc.attributes.deleted_at).toBeDefined();
   });
 
   // Get a RuleComponent
