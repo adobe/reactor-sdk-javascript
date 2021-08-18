@@ -99,13 +99,14 @@ get configuration information directly from environment variables.
 This package exports nothing. However, loading it has the side effect of loading
 environment variables into jasmine.getEnv().reactorIntegrationTestGlobals.
 */
+
 jasmine.getEnv().reactorIntegrationTestGlobals = jasmine.getEnv()
   .reactorIntegrationTestGlobals || {
   /* eslint-disable */
   ACCESS_TOKEN: '${env.ACCESS_TOKEN}',
   /* eslint-enable */
   COMPANY_ID: '${env.COMPANY_ID}',
-  REACTOR_URL: '${env.REACTOR_URL || 'https://reactor.adobe.io'}',
+  REACTOR_URL: '${env.REACTOR_URL || 'https://reactor.adobe.io'}'
 };
 const globals = jasmine.getEnv().reactorIntegrationTestGlobals;
 export { globals as default };
