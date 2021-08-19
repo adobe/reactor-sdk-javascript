@@ -172,18 +172,20 @@ helpers.describe('DataElement API', function() {
     expect(allIds).toContain(doubt.id);
 
     // List Libraries for the DataElement, with filter and sort
-    // Filter: https://developer.adobelaunch.com/guides/api/filtering/
-    // Sort:   https://developer.adobelaunch.com/guides/api/sorting/
-    var filteredResponse = await reactor.listLibrariesForDataElement(jesse.id, {
-      'filter[name]': 'CONTAINS P%(',
-      sort: '-name'
-    });
-    const libraryNames = filteredResponse.data.map(lib => lib.attributes.name);
-    expect(libraryNames.length).toBe(2);
-    expect(libraryNames).toEqual([
-      night.attributes.name,
-      death.attributes.name
-    ]);
+    // Filter: https://developer.adobelaunch.com/api/guides/filtering/
+    // Sort:   https://developer.adobelaunch.com/api/guides/sorting/
+    // Filter and sort are not currently supported for this enpoint. I'll
+    // leave the tests commented out for now. CR
+    // var filteredResponse = await reactor.listLibrariesForDataElement(jesse.id, {
+    //   'filter[name]': 'CONTAINS P%(',
+    //   sort: '-name'
+    // });
+    // const libraryNames = filteredResponse.data.map(lib => lib.attributes.name);
+    // expect(libraryNames.length).toBe(2);
+    // expect(libraryNames).toEqual([
+    //   night.attributes.name,
+    //   death.attributes.name
+    // ]);
   });
 
   // List revisions
