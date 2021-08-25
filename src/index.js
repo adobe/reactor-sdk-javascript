@@ -57,7 +57,6 @@ export default class Reactor {
       ...userOptions.customHeaders
     };
     if (this.enableLogging) console.info(`Using Reactor at ${this.baseUrl}`);
-    console.log('IMS Org ID:', imsOrgId);
   }
 
   reactorHeaders(accessToken, imsOrgId) {
