@@ -45,22 +45,30 @@ function bodyIsJson(httpResponse) {
 }
 
 export default class Reactor {
-  constructor(accessToken, userOptions = {}) {
-    const options = Object.assign({}, defaultReactorOptions, userOptions);
+  constructor(accessToken, imsOrgId, userOptions = {}) {
+    const options = {
+      ...defaultReactorOptions,
+      ...userOptions
+    };
     this.baseUrl = removeTrailingSlash(options.reactorUrl);
     this.enableLogging = options.enableLogging;
-    this.headers = this.reactorHeaders(accessToken);
+    this.headers = {
+      ...this.reactorHeaders(accessToken, imsOrgId),
+      ...userOptions.customHeaders
+    };
     if (this.enableLogging) console.info(`Using Reactor at ${this.baseUrl}`);
+    console.log('IMS Org ID:', imsOrgId);
   }
 
-  reactorHeaders(accessToken) {
+  reactorHeaders(accessToken, imsOrgId) {
     return {
       Accept: 'application/vnd.api+json;revision=1',
       'Content-Type': 'application/vnd.api+json',
       'Cache-control': 'no-cache',
       Authorization: `Bearer ${accessToken}`,
       'X-Api-Key': 'Activation-DTM',
-      'User-Agent': `adobe/reactor-sdk/javascript/${version}`
+      'User-Agent': `adobe/reactor-sdk/javascript/${version}`,
+      'x-gw-ims-org-id': `${imsOrgId}`
     };
   }
 

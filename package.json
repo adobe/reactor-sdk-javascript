@@ -93,6 +93,7 @@
     "scripts"
   ],
   "dependencies": {
+    "@types/node": "^16.7.1",
     "node-fetch": "^2.6.1",
     "semver": "6.1.3"
   },

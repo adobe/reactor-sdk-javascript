@@ -17,7 +17,7 @@ var reactor = globals.reactor;
 if (!reactor) {
   const options = { reactorUrl: globals.REACTOR_URL, enableLogging: true };
 
-  reactor = new Reactor(globals.ACCESS_TOKEN, options);
+  reactor = new Reactor(globals.ACCESS_TOKEN, globals.ORG_ID, options);
   reactor.accessCode = globals.ACCESS_TOKEN;
   reactor.reactorUrl = globals.REACTOR_URL;
   reactor.myCompanyId = globals.COMPANY_ID;

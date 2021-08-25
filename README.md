@@ -1,3 +1,5 @@
+# JavaScript Reactor SDK
+
 [![Travis badge](
 https://travis-ci.com/adobe/reactor-sdk-javascript.svg?branch=master)](
 https://travis-ci.com/adobe/reactor-sdk-javascript/settings)
@@ -7,8 +9,6 @@ https://badge.fury.io/js/%40adobe%2Freactor-sdk)
 [![Greenkeeper badge](
 https://badges.greenkeeper.io/adobe/reactor-sdk-javascript.svg)](
 https://account.greenkeeper.io/account/adobe#repositories)
-
-# JavaScript Reactor SDK
 
 A Library for accessing the Adobe Experience Platform
 [Launch API][Launch API doc].
@@ -47,14 +47,17 @@ would go something like this:
 <script src="https://unpkg.com/@adobe/reactor-sdk/dist/reactor-sdk.min.js"></script>
 <script>
   const tok = 'Your Access Token';
+  const orgId = 'Your Org Id';
   const url = 'https://reactor.adobe.io';
-  const reactor = new window.Reactor(tok, { reactorUrl: url });
+  const reactor = new window.Reactor(tok, orgId, { reactorUrl: url });
   const acme = await reactor.getCompany('CO0123456789012345678901');
   ...
 </script>
 ```
 
 [How to retrieve your Access Token](#your-access-token).
+
+[How to retrieve your Org ID](#your-org-id).
 
 ## Usage
 
@@ -69,8 +72,9 @@ const Reactor = require('@adobe/reactor-sdk').default;
 
 (async function() {
   const accessToken = process.env['ACCESS_TOKEN'];
+  const orgId = process.env['ORG_ID'];
   const reactorUrl = 'https://reactor.adobe.io';
-  const reactor = new Reactor(accessToken, { reactorUrl: reactorUrl });
+  const reactor = new Reactor(accessToken, orgId, { reactorUrl: reactorUrl });
   // Example API call: list Companies for the authenticated organization
   const companyList = await reactor.listCompanies();
   for (var company of companyList.data) {
@@ -84,15 +88,33 @@ const Reactor = require('@adobe/reactor-sdk').default;
 })();
 ```
 
+You can optionally add custom headers that will be sent with each request as shown below.
+
+``` javascript
+const reactor = new window.Reactor(
+  tok,
+  orgId,
+  {
+    reactorUrl: url,
+    customHeaders: {
+      foo: "bar"
+    }
+  }
+);
+```
+
 Run it...
 
 ```bash
 export ACCESS_TOKEN=... # see instructions below
+export ORG_ID=... # see instructions belor
 chmod u+x ./list-properties.js
 ./list-properties.js
 ```
 
 [How to retrieve your Access Token](#your-access-token).
+
+[How to retrieve your Org ID](#your-org-id).
 
 ...and you should get output similar to:
 
@@ -172,10 +194,10 @@ npm link "$(pwd)"           # make this SDK available to tests
 npm run unit-tests          # run the tests in test/unit/**
 ```
 
-The integration tests need a current access token, and a provisioned Company.
+The integration tests need a current access token, a provisioned Company, and your provisioned Org ID.
 You are expected to provide them to the tests via the environment variables
-`ACCESS_TOKEN` and `COMPANY_ID`.  Instructions for getting [your Access Token](#your-access-token) and
-[your Company Id](#your-company-id) are given below.
+`ACCESS_TOKEN`, `COMPANY_ID`, and `ORG_ID`.  Instructions for getting [your Access Token](#your-access-token),
+[your Company Id](#your-company-id), and [your Org ID](#your-org-id) are given below.
 
 The in-browser integration tests require a local static-file web server, because
 loading their HTML using a `file://` URL is not effective: the browser
@@ -189,6 +211,7 @@ can run the integration tests:
 ```bash
 export ACCESS_TOKEN="your_reactor_access_token"
 export COMPANY_ID="your_reactor_test_company_id" # "CO" followed by 32 hex digits
+export ORG_ID="your_org_id" # 24 characters followed by "@AdobeOrg"
 NODE_TLS_REJECT_UNAUTHORIZED=0 scripts/static-server.js --dir ./tmp.tests/
 ```
 
@@ -238,19 +261,10 @@ npm run integration-watch
 npm run all-watch
 
 # Periodically, you'll want to remove the Properties created during integration tests
-script/delete-test-properties
+scripts/delete-test-properties
 ```
 
 ## Determining Your Personal Information
-
-### Your Company ID
-
-* Log in to `https://launch.adobe.com/companies`
-* While looking at your Properties page, the address bar will show a URL like
-  `https://launch.adobe.com/companies/CO81f8cb0aca3a4ab8927ee1798c0d4f8a/properties`.
-* Your Company ID is the 'CO' followed by 32 hexadecimal digits (i.e., from "CO"
-  up to the following slash). Copy that company ID to an environment variable:
-  * `export COMPANY_ID=CO81f8cb0aca3a4ab8927ee1798c0d4f8a`
 
 ### Your Access Token
 
@@ -261,6 +275,25 @@ script/delete-test-properties
 * Execute `copy(userData.imsAccessToken)`
 * The access token is now in your system clipboard. Paste it into an
   environment variable definition:
+  * `export ACCESS_TOKEN='<paste>'`
+
+### Your Company ID
+
+* Log in to `https://launch.adobe.com/companies`
+* While looking at your Properties page, the address bar will show a URL like
+  `https://launch.adobe.com/companies/CO81f8cb0aca3a4ab8927ee1798c0d4f8a/properties`.
+* Your Company ID is the 'CO' followed by 32 hexadecimal digits (i.e., from "CO"
+  up to the following slash). Copy that company ID to an environment variable:
+  * `export COMPANY_ID=CO81f8cb0aca3a4ab8927ee1798c0d4f8a`
+
+### Your Org ID
+
+* Log into `https://launch.adobe.com/companies`
+* Open the developer console
+* Change the JavaScript context from "top" to "Main Content" using the dropdown menu
+  ![Switch JavaScriptContext](./.readme-assets/switch-js-context.png)
+* Execute `copy(userData.profile.attributes.activeOrg)`
+* The Org ID is now in your system clipboard. Paste it into an environment variable definition:
   * `export ACCESS_TOKEN='<paste>'`
 
 ## Future Work
