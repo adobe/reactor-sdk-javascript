@@ -94,4 +94,4 @@ import './rules.test.js';
 
 // [Reactor Postman](https://github.com/adobe/reactor-postman),
 // re-imagined via the JavaScript SDK.
-// import './examples.test.js';
+import './examples.test.js';

@@ -243,7 +243,6 @@ open -a "Google Chrome" ./tmp.tests/integration-library-sdk/integration-tests-li
      --args --disable-web-security --user-data-dir="/tmp/chrome"
 ```
 
-
 While developing the Reactor SDK, these are handy for auto-building when you
 change the source code:
 

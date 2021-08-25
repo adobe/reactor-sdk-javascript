@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import Reactor from '@adobe/reactor-sdk';
+// import Reactor from '@adobe/reactor-sdk';
 
 const globals = jasmine.getEnv().reactorIntegrationTestGlobals;
 describe('Reactor SDK Example', function() {
@@ -114,7 +114,7 @@ function toLocalISOString(date) {
 
 const reactor =
   globals.reactor ||
-  (globals.reactor = new Reactor(globals.ACCESS_TOKEN, {
+  (globals.reactor = new Reactor(globals.ACCESS_TOKEN, globals.ORG_ID, {
     reactorUrl: globals.REACTOR_URL
   }));
 
