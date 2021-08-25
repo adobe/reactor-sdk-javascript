@@ -22,10 +22,13 @@
     "SDK"
   ],
   "default": "dist/reactor-sdk.min.js",
+  "browser": "dist/reactor-sdk-library.min.js",
+  "module": "dist/reactor-sdk-bundled.min.js",
   "main": "./lib/node/index.js",
   "targets": {
     "default": {
-      "context": "browser"
+      "context": "browser",
+      "includeNodeModules": true
     },
     "integrationTestBrowser": {
       "distDir": "tmp.tests/integration-library-sdk/"

@@ -196,19 +196,30 @@ Switch to another terminal window, since you want that server to keep running.
 
 ```bash
 npm run integration-tests   # run the tests in test/integration/**
-# Currently known to pass in MacOS Chrome Version 72.0.3626.121.
+# The library and bundled integration tests are currently not funcitoning,
+# but node ones are. Getting them all running is in the backlog. - CR
 ```
 
-[Update] As of 20 August 2019, current versions of Google Chrome _still_ won't
+[Update] As of 24 August 2021, current versions of Google Chrome _still_ won't
 allow the files to be loaded, even with the static server. Apparently,
 `localhost:5000` and `localhost:9010` are too different, and trigger CORS
 blocking. On MacOS, I've been able to get the tests to work by shutting down
 Chrome and relaunching with:
 
+* Bundled Library Test
+
 ```bash
-open -a "Google Chrome" ./tmp.tests/integration-bundled-sdk/index.html \
+open -a "Google Chrome" ./tmp.tests/integration-bundled-sdk/integration-tests-bundled-sdk.html \
      --args --disable-web-security --user-data-dir="/tmp/chrome"
 ```
+
+* Non-bundled Library Test
+
+```bash
+open -a "Google Chrome" ./tmp.tests/integration-library-sdk/integration-tests-library-sdk.html \
+     --args --disable-web-security --user-data-dir="/tmp/chrome"
+```
+
 
 While developing the Reactor SDK, these are handy for auto-building when you
 change the source code:
