@@ -166,9 +166,10 @@ These tests also provide you working examples for every library function.  [This
 isn't quite true yet.  We're almost there, but a few remain to be implemented.]
 
 For a complete and self-contained example program, see
-[examples.test.js](./test/integration/examples.test.js), which is included in
-the integration tests. It's a JavaScript implementation of the [Reactor
-Postman]( https://github.com/adobe/reactor-postman) query set.
+[test.spec.js](./examples/test.spec.js). This is also included in
+the integration tests, see [examples.test.js](./test/integration/examples.test.js). It's
+a JavaScript implementation of the [ReactorPostman]( https://github.com/adobe/reactor-postman)
+query set.
 
 ## Developer Setup
 
@@ -219,8 +220,8 @@ Switch to another terminal window, since you want that server to keep running.
 
 ```bash
 npm run integration-tests   # run the tests in test/integration/**
-# The library and bundled integration tests are currently not funcitoning,
-# but node ones are. Getting them all running is in the backlog. - CR
+# The library and bundled integration tests are not currently functioning,
+# but the node ones are. Getting them all running is in the backlog. - CR
 ```
 
 [Update] As of 24 August 2021, current versions of Google Chrome _still_ won't
