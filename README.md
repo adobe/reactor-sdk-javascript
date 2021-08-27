@@ -49,7 +49,10 @@ would go something like this:
   const tok = 'Your Access Token';
   const orgId = 'Your Org Id';
   const url = 'https://reactor.adobe.io';
-  const reactor = new window.Reactor(tok, orgId, { reactorUrl: url });
+  const reactor = new window.Reactor(tok, {
+    reactorUrl: url,
+    customHeaders: {orgId: orgId} // This is only required if you are provisioned for more than one org
+  });
   const acme = await reactor.getCompany('CO0123456789012345678901');
   ...
 </script>
@@ -74,7 +77,7 @@ const Reactor = require('@adobe/reactor-sdk').default;
   const accessToken = process.env['ACCESS_TOKEN'];
   const orgId = process.env['ORG_ID'];
   const reactorUrl = 'https://reactor.adobe.io';
-  const reactor = new Reactor(accessToken, orgId, { reactorUrl: reactorUrl });
+  const reactor = new Reactor(accessToken, { reactorUrl: reactorUrl, customHeaders: {orgId: orgId} });
   // Example API call: list Companies for the authenticated organization
   const companyList = await reactor.listCompanies();
   for (var company of companyList.data) {
@@ -88,16 +91,18 @@ const Reactor = require('@adobe/reactor-sdk').default;
 })();
 ```
 
-You can optionally add custom headers that will be sent with each request as shown below.
+**Note:** If you are provisioned for multiple orgs, you will need to specify your org ID under `customHeaders` as shown below.
+
+You can optionally add other custom headers that will be sent with each request by also
+specifying them in the `customHeaders` object.
 
 ``` javascript
 const reactor = new window.Reactor(
-  tok,
-  orgId,
-  {
+  tok, {
     reactorUrl: url,
     customHeaders: {
-      foo: "bar"
+      orgId: orgId,
+      anotherHeader: 42
     }
   }
 );

@@ -112,8 +112,9 @@ function toLocalISOString(date) {
 
 const reactor =
   globals.reactor ||
-  (globals.reactor = new Reactor(globals.ACCESS_TOKEN, globals.ORG_ID, {
-    reactorUrl: globals.REACTOR_URL
+  (globals.reactor = new Reactor(globals.ACCESS_TOKEN, {
+    reactorUrl: globals.REACTOR_URL,
+    customHeaders: globals.ORG_ID
   }));
 
 // Global variables holding object ID's. Variable names end in a two-letter code

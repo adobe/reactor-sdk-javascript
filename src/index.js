@@ -44,30 +44,45 @@ function bodyIsJson(httpResponse) {
   return thisContentType && thisContentType.includes(jsonContentType);
 }
 
+// Allows a user to use "orgId" in the custom header block rather than 'x-gw-ims-org-id'
+function formatOrgIdHeader(customHeaders) {
+  const finalHeaders = {
+    ...customHeaders,
+    'x-gw-ims-org-id': customHeaders.orgId
+  };
+  delete finalHeaders.orgId;
+
+  return finalHeaders;
+}
+
 export default class Reactor {
-  constructor(accessToken, imsOrgId, userOptions = {}) {
+  constructor(accessToken, userOptions = {}) {
     const options = {
       ...defaultReactorOptions,
       ...userOptions
     };
     this.baseUrl = removeTrailingSlash(options.reactorUrl);
     this.enableLogging = options.enableLogging;
+    this.customHeaders = options.customHeaders || {};
+
+    if (this.customHeaders && this.customHeaders.orgId) {
+      this.customHeaders = formatOrgIdHeader(this.customHeaders);
+    }
     this.headers = {
-      ...this.reactorHeaders(accessToken, imsOrgId),
-      ...userOptions.customHeaders
+      ...this.reactorHeaders(accessToken),
+      ...this.customHeaders
     };
     if (this.enableLogging) console.info(`Using Reactor at ${this.baseUrl}`);
   }
 
-  reactorHeaders(accessToken, imsOrgId) {
+  reactorHeaders(accessToken) {
     return {
       Accept: 'application/vnd.api+json;revision=1',
       'Content-Type': 'application/vnd.api+json',
       'Cache-control': 'no-cache',
       Authorization: `Bearer ${accessToken}`,
       'X-Api-Key': 'Activation-DTM',
-      'User-Agent': `adobe/reactor-sdk/javascript/${version}`,
-      'x-gw-ims-org-id': `${imsOrgId}`
+      'User-Agent': `adobe/reactor-sdk/javascript/${version}`
     };
   }
 
