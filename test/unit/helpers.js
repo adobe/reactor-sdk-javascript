@@ -21,7 +21,7 @@ const accessToken = 'No real token needed here because Launch calls are mocked';
 const orgId = 'AB123456789abcdefghi@adobe.com';
 const reactorUrl = 'https://reactor.sample.com';
 const reqheaders = Reactor.prototype.reactorHeaders(accessToken);
-const customHeaders = { orgId: orgId };
+const customHeaders = { 'x-gw-ims-org-id': orgId };
 
 function expectRequest(method, path, body) {
   const initializedNock = nock(reactorUrl, {
@@ -37,7 +37,7 @@ function expectRequest(method, path, body) {
 
 var reactor = new Reactor(accessToken, {
   reactorUrl: reactorUrl,
-  customHeaders: { orgId: orgId }
+  customHeaders: { 'x-gw-ims-org-id': orgId }
 });
 jasmine.getEnv().reactorContext = {
   reactorUrl: reactorUrl,

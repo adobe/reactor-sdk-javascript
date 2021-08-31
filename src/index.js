@@ -44,17 +44,6 @@ function bodyIsJson(httpResponse) {
   return thisContentType && thisContentType.includes(jsonContentType);
 }
 
-// Allows a user to use "orgId" in the custom header block rather than 'x-gw-ims-org-id'
-function formatOrgIdHeader(customHeaders) {
-  const finalHeaders = {
-    ...customHeaders,
-    'x-gw-ims-org-id': customHeaders.orgId
-  };
-  delete finalHeaders.orgId;
-
-  return finalHeaders;
-}
-
 export default class Reactor {
   constructor(accessToken, userOptions = {}) {
     const options = {
@@ -65,9 +54,6 @@ export default class Reactor {
     this.enableLogging = options.enableLogging;
     this.customHeaders = options.customHeaders || {};
 
-    if (this.customHeaders && this.customHeaders.orgId) {
-      this.customHeaders = formatOrgIdHeader(this.customHeaders);
-    }
     this.headers = {
       ...this.reactorHeaders(accessToken),
       ...this.customHeaders

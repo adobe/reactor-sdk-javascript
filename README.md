@@ -51,7 +51,7 @@ would go something like this:
   const url = 'https://reactor.adobe.io';
   const reactor = new window.Reactor(tok, {
     reactorUrl: url,
-    customHeaders: {orgId: orgId} // This is only required if you are provisioned for more than one org
+    customHeaders: {'x-gw-ims-org-id': orgId}
   });
   const acme = await reactor.getCompany('CO0123456789012345678901');
   ...
@@ -77,7 +77,7 @@ const Reactor = require('@adobe/reactor-sdk').default;
   const accessToken = process.env['ACCESS_TOKEN'];
   const orgId = process.env['ORG_ID'];
   const reactorUrl = 'https://reactor.adobe.io';
-  const reactor = new Reactor(accessToken, { reactorUrl: reactorUrl, customHeaders: {orgId: orgId} });
+  const reactor = new Reactor(accessToken, { reactorUrl: reactorUrl, customHeaders: {'x-gw-ims-org-id': orgId} });
   // Example API call: list Companies for the authenticated organization
   const companyList = await reactor.listCompanies();
   for (var company of companyList.data) {
@@ -101,8 +101,8 @@ const reactor = new window.Reactor(
   tok, {
     reactorUrl: url,
     customHeaders: {
-      orgId: orgId,
-      anotherHeader: 42
+      'x-gw-ims-org-id': orgId,
+      'another-header-example': 42
     }
   }
 );

@@ -18,7 +18,7 @@ if (!reactor) {
   const options = {
     reactorUrl: globals.REACTOR_URL,
     enableLogging: true,
-    customHeaders: { orgId: globals.ORG_ID }
+    customHeaders: { 'x-gw-ims-org-id': globals.ORG_ID }
   };
 
   reactor = new Reactor(globals.ACCESS_TOKEN, options);
