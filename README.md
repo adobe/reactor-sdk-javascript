@@ -299,7 +299,7 @@ scripts/delete-test-properties
   ![Switch JavaScriptContext](./.readme-assets/switch-js-context.png)
 * Execute `copy(userData.profile.attributes.activeOrg)`
 * The Org ID is now in your system clipboard. Paste it into an environment variable definition:
-  * `export ACCESS_TOKEN='<paste>'`
+  * `export ORG_ID='<paste>'`
 
 ## Future Work
 
