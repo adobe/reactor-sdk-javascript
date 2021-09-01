@@ -38,7 +38,6 @@ helpers.describe('Environment API', function() {
   // https://developer.adobelaunch.com/api/environments/create/
   helpers.it('creates a new Environment', async function() {
     const env = await newTestEnvironment('Emma');
-    console.log('env:', env);
     expect(env.id).toMatch(helpers.idEN);
     expect(env.attributes.name).toMatch(/emma/i);
   });

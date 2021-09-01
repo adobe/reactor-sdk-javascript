@@ -1,3 +1,5 @@
+# JavaScript Reactor SDK
+
 [![Travis badge](
 https://travis-ci.com/adobe/reactor-sdk-javascript.svg?branch=master)](
 https://travis-ci.com/adobe/reactor-sdk-javascript/settings)
@@ -7,8 +9,6 @@ https://badge.fury.io/js/%40adobe%2Freactor-sdk)
 [![Greenkeeper badge](
 https://badges.greenkeeper.io/adobe/reactor-sdk-javascript.svg)](
 https://account.greenkeeper.io/account/adobe#repositories)
-
-# JavaScript Reactor SDK
 
 A Library for accessing the Adobe Experience Platform
 [Launch API][Launch API doc].
@@ -47,14 +47,20 @@ would go something like this:
 <script src="https://unpkg.com/@adobe/reactor-sdk/dist/reactor-sdk.min.js"></script>
 <script>
   const tok = 'Your Access Token';
+  const orgId = 'Your Org Id';
   const url = 'https://reactor.adobe.io';
-  const reactor = new window.Reactor(tok, { reactorUrl: url });
+  const reactor = new window.Reactor(tok, {
+    reactorUrl: url,
+    customHeaders: {'x-gw-ims-org-id': orgId}
+  });
   const acme = await reactor.getCompany('CO0123456789012345678901');
   ...
 </script>
 ```
 
 [How to retrieve your Access Token](#your-access-token).
+
+[How to retrieve your Org ID](#your-org-id).
 
 ## Usage
 
@@ -69,8 +75,9 @@ const Reactor = require('@adobe/reactor-sdk').default;
 
 (async function() {
   const accessToken = process.env['ACCESS_TOKEN'];
+  const orgId = process.env['ORG_ID'];
   const reactorUrl = 'https://reactor.adobe.io';
-  const reactor = new Reactor(accessToken, { reactorUrl: reactorUrl });
+  const reactor = new Reactor(accessToken, { reactorUrl: reactorUrl, customHeaders: {'x-gw-ims-org-id': orgId} });
   // Example API call: list Companies for the authenticated organization
   const companyList = await reactor.listCompanies();
   for (var company of companyList.data) {
@@ -84,15 +91,35 @@ const Reactor = require('@adobe/reactor-sdk').default;
 })();
 ```
 
+**Note:** If you are provisioned for multiple orgs, you will need to specify your org ID under `customHeaders` as shown below.
+
+You can optionally add other custom headers that will be sent with each request by also
+specifying them in the `customHeaders` object.
+
+``` javascript
+const reactor = new window.Reactor(
+  tok, {
+    reactorUrl: url,
+    customHeaders: {
+      'x-gw-ims-org-id': orgId,
+      'another-header-example': 42
+    }
+  }
+);
+```
+
 Run it...
 
 ```bash
 export ACCESS_TOKEN=... # see instructions below
+export ORG_ID=... # see instructions belor
 chmod u+x ./list-properties.js
 ./list-properties.js
 ```
 
 [How to retrieve your Access Token](#your-access-token).
+
+[How to retrieve your Org ID](#your-org-id).
 
 ...and you should get output similar to:
 
@@ -144,9 +171,10 @@ These tests also provide you working examples for every library function.  [This
 isn't quite true yet.  We're almost there, but a few remain to be implemented.]
 
 For a complete and self-contained example program, see
-[examples.test.js](./test/integration/examples.test.js), which is included in
-the integration tests. It's a JavaScript implementation of the [Reactor
-Postman]( https://github.com/adobe/reactor-postman) query set.
+[test.spec.js](./examples/test.spec.js). This is also included in
+the integration tests, see [examples.test.js](./test/integration/examples.test.js). It's
+a JavaScript implementation of the [ReactorPostman]( https://github.com/adobe/reactor-postman)
+query set.
 
 ## Developer Setup
 
@@ -172,10 +200,10 @@ npm link "$(pwd)"           # make this SDK available to tests
 npm run unit-tests          # run the tests in test/unit/**
 ```
 
-The integration tests need a current access token, and a provisioned Company.
+The integration tests need a current access token, a provisioned Company, and your provisioned Org ID.
 You are expected to provide them to the tests via the environment variables
-`ACCESS_TOKEN` and `COMPANY_ID`.  Instructions for getting [your Access Token](#your-access-token) and
-[your Company Id](#your-company-id) are given below.
+`ACCESS_TOKEN`, `COMPANY_ID`, and `ORG_ID`.  Instructions for getting [your Access Token](#your-access-token),
+[your Company Id](#your-company-id), and [your Org ID](#your-org-id) are given below.
 
 The in-browser integration tests require a local static-file web server, because
 loading their HTML using a `file://` URL is not effective: the browser
@@ -189,6 +217,7 @@ can run the integration tests:
 ```bash
 export ACCESS_TOKEN="your_reactor_access_token"
 export COMPANY_ID="your_reactor_test_company_id" # "CO" followed by 32 hex digits
+export ORG_ID="your_org_id" # 24 characters followed by "@AdobeOrg"
 NODE_TLS_REJECT_UNAUTHORIZED=0 scripts/static-server.js --dir ./tmp.tests/
 ```
 
@@ -196,17 +225,27 @@ Switch to another terminal window, since you want that server to keep running.
 
 ```bash
 npm run integration-tests   # run the tests in test/integration/**
-# Currently known to pass in MacOS Chrome Version 72.0.3626.121.
+# The library and bundled integration tests are not currently functioning,
+# but the node ones are. Getting them all running is in the backlog. - CR
 ```
 
-[Update] As of 20 August 2019, current versions of Google Chrome _still_ won't
+[Update] As of 24 August 2021, current versions of Google Chrome _still_ won't
 allow the files to be loaded, even with the static server. Apparently,
 `localhost:5000` and `localhost:9010` are too different, and trigger CORS
 blocking. On MacOS, I've been able to get the tests to work by shutting down
 Chrome and relaunching with:
 
+* Bundled Library Test
+
 ```bash
-open -a "Google Chrome" ./tmp.tests/integration-bundled-sdk/index.html \
+open -a "Google Chrome" ./tmp.tests/integration-bundled-sdk/integration-tests-bundled-sdk.html \
+     --args --disable-web-security --user-data-dir="/tmp/chrome"
+```
+
+* Non-bundled Library Test
+
+```bash
+open -a "Google Chrome" ./tmp.tests/integration-library-sdk/integration-tests-library-sdk.html \
      --args --disable-web-security --user-data-dir="/tmp/chrome"
 ```
 
@@ -227,19 +266,10 @@ npm run integration-watch
 npm run all-watch
 
 # Periodically, you'll want to remove the Properties created during integration tests
-script/delete-test-properties
+scripts/delete-test-properties
 ```
 
 ## Determining Your Personal Information
-
-### Your Company ID
-
-* Log in to `https://launch.adobe.com/companies`
-* While looking at your Properties page, the address bar will show a URL like
-  `https://launch.adobe.com/companies/CO81f8cb0aca3a4ab8927ee1798c0d4f8a/properties`.
-* Your Company ID is the 'CO' followed by 32 hexadecimal digits (i.e., from "CO"
-  up to the following slash). Copy that company ID to an environment variable:
-  * `export COMPANY_ID=CO81f8cb0aca3a4ab8927ee1798c0d4f8a`
 
 ### Your Access Token
 
@@ -251,6 +281,25 @@ script/delete-test-properties
 * The access token is now in your system clipboard. Paste it into an
   environment variable definition:
   * `export ACCESS_TOKEN='<paste>'`
+
+### Your Company ID
+
+* Log in to `https://launch.adobe.com/companies`
+* While looking at your Properties page, the address bar will show a URL like
+  `https://launch.adobe.com/companies/CO81f8cb0aca3a4ab8927ee1798c0d4f8a/properties`.
+* Your Company ID is the 'CO' followed by 32 hexadecimal digits (i.e., from "CO"
+  up to the following slash). Copy that company ID to an environment variable:
+  * `export COMPANY_ID=CO81f8cb0aca3a4ab8927ee1798c0d4f8a`
+
+### Your Org ID
+
+* Log into `https://launch.adobe.com/companies`
+* Open the developer console
+* Change the JavaScript context from "top" to "Main Content" using the dropdown menu
+  ![Switch JavaScriptContext](./.readme-assets/switch-js-context.png)
+* Execute `copy(userData.profile.attributes.activeOrg)`
+* The Org ID is now in your system clipboard. Paste it into an environment variable definition:
+  * `export ORG_ID='<paste>'`
 
 ## Future Work
 

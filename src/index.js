@@ -46,10 +46,18 @@ function bodyIsJson(httpResponse) {
 
 export default class Reactor {
   constructor(accessToken, userOptions = {}) {
-    const options = Object.assign({}, defaultReactorOptions, userOptions);
+    const options = {
+      ...defaultReactorOptions,
+      ...userOptions
+    };
     this.baseUrl = removeTrailingSlash(options.reactorUrl);
     this.enableLogging = options.enableLogging;
-    this.headers = this.reactorHeaders(accessToken);
+    this.customHeaders = options.customHeaders || {};
+
+    this.headers = {
+      ...this.reactorHeaders(accessToken),
+      ...this.customHeaders
+    };
     if (this.enableLogging) console.info(`Using Reactor at ${this.baseUrl}`);
   }
 

@@ -11,7 +11,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { default: Reactor } = require('@adobe/reactor-sdk');
+const { default: Reactor } = require('../dist/reactor-sdk.min');
 
 const datePattern = '\\d\\d\\d\\d-\\d\\d-\\d\\d';
 const integrationTestingPropertyNameMatcher = RegExp(

@@ -22,10 +22,22 @@
     "SDK"
   ],
   "default": "dist/reactor-sdk.min.js",
+  "browser": "dist/reactor-sdk-library.min.js",
+  "module": "dist/reactor-sdk-bundled.min.js",
   "main": "./lib/node/index.js",
   "targets": {
     "default": {
-      "context": "browser"
+      "context": "browser",
+      "includeNodeModules": true
+    },
+    "integrationTestBrowser": {
+      "distDir": "tmp.tests/integration-library-sdk/"
+    },
+    "integrationTestBundled": {
+      "distDir": "tmp.tests/integration-bundled-sdk/"
+    },
+    "integrationTestNode": {
+      "distDir": "tmp.tests/integration-in-node/"
     },
     "main": false
   },
@@ -37,7 +49,7 @@
     "src:lint": "eslint --fix --parser-options=ecmaVersion:2018 'src/**/*.js'",
     "src:build:node": "babel src/ --out-dir lib/node/ --source-maps --presets latest-node",
     "src:build:browser": "babel src/ --out-dir lib/browser/ --source-maps --presets @babel/preset-env",
-    "src:build:browser.bundle": "parcel build --dist-dir dist src/index.js",
+    "src:build:browser.bundle": "parcel build src/index.js",
     "src:clean": "rm -rf dist lib",
     "src:build": "npm-run-all src:clean src:lint --print-label --parallel 'src:build:*'",
     "unit:lint": "eslint --fix --parser-options=ecmaVersion:2018 'test/unit/**/*.js'",
@@ -47,11 +59,11 @@
     "integration:lint": "eslint --fix --parser-options=ecmaVersion:2018 'test/integration/**/*.js'",
     "integration:build:environment": "node test/integration/write-reactor-environment.js",
     "integration:clean": "rm -rf tmp.tests/integration-{library,bundled}-sdk",
-    "integration:build:library": "parcel build --no-minify --public-url=. -d tmp.tests/integration-library-sdk/ -o index.html test/integration/integration-tests-library-sdk.html --target browser",
-    "integration:build:bundled": "parcel build --no-minify --public-url=. -d tmp.tests/integration-bundled-sdk/ -o index.html test/integration/integration-tests-bundled-sdk.html --target browser",
-    "integration:build:node": "parcel build --no-minify --public-url=. -d tmp.tests/integration-in-node/ -o index.js test/integration/integration-tests-library-sdk.js --target node",
+    "integration:build:library": "parcel build --no-optimize --public-url=. test/integration/integration-tests-library-sdk.html --target integrationTestBrowser",
+    "integration:build:bundled": "parcel build --no-optimize --public-url=. test/integration/integration-tests-bundled-sdk.html --target integrationTestBundled",
+    "integration:build:node": "parcel build --no-optimize --public-url=. test/integration/integration-tests-library-sdk.js --target integrationTestNode",
     "integration:build": "npm-run-all integration:clean integration:build:environment --print-label --parallel integration:build:*",
-    "integration:run": "node scripts/check-version && open http://localhost:5000/integration-library-sdk/ && open http://localhost:5000/integration-bundled-sdk && NODE_TLS_REJECT_UNAUTHORIZED=0 jasmine tmp.tests/integration-in-node/index.js",
+    "integration:run": "node scripts/check-version && open http://localhost:5000/integration-library-sdk/ && open http://localhost:5000/integration-bundled-sdk && NODE_TLS_REJECT_UNAUTHORIZED=0 jasmine tmp.tests/integration-in-node/integration-tests-library-sdk.js",
     "unit-tests": "npm-run-all unit:lint unit:build unit:run",
     "integration-tests": "npm-run-all integration:lint integration:build integration:run",
     "all-tests": "npm-run-all --print-label --parallel unit-tests integration-tests",

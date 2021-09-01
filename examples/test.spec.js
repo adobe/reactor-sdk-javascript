@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import Reactor from '@adobe/reactor-sdk';
+
 const globals = jasmine.getEnv().reactorIntegrationTestGlobals;
 describe('Reactor SDK Example', function() {
   if (!disableJasmineRandomStepOrder()) return;

@@ -15,7 +15,11 @@ var Reactor = globals.Reactor;
 
 var reactor = globals.reactor;
 if (!reactor) {
-  const options = { reactorUrl: globals.REACTOR_URL, enableLogging: true };
+  const options = {
+    reactorUrl: globals.REACTOR_URL,
+    enableLogging: true,
+    customHeaders: { 'x-gw-ims-org-id': globals.ORG_ID }
+  };
 
   reactor = new Reactor(globals.ACCESS_TOKEN, options);
   reactor.accessCode = globals.ACCESS_TOKEN;

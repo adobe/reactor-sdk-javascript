@@ -172,8 +172,8 @@ helpers.describe('DataElement API', function() {
     expect(allIds).toContain(doubt.id);
 
     // List Libraries for the DataElement, with filter and sort
-    // Filter: https://developer.adobelaunch.com/guides/api/filtering/
-    // Sort:   https://developer.adobelaunch.com/guides/api/sorting/
+    // Filter Docs: https://developer.adobelaunch.com/api/guides/filtering/
+    // Sort Docs:   https://developer.adobelaunch.com/api/guides/sorting/
     var filteredResponse = await reactor.listLibrariesForDataElement(jesse.id, {
       'filter[name]': 'CONTAINS P%(',
       sort: '-name'

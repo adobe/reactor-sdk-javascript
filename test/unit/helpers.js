@@ -18,8 +18,10 @@ function getEnv(varName, defaultValue) {
 }
 
 const accessToken = 'No real token needed here because Launch calls are mocked';
+const orgId = 'AB123456789abcdefghi@adobe.com';
 const reactorUrl = 'https://reactor.sample.com';
 const reqheaders = Reactor.prototype.reactorHeaders(accessToken);
+const customHeaders = { 'x-gw-ims-org-id': orgId };
 
 function expectRequest(method, path, body) {
   const initializedNock = nock(reactorUrl, {
@@ -33,11 +35,14 @@ function expectRequest(method, path, body) {
   initializedNock[method.toLowerCase()].apply(initializedNock, args).reply(200);
 }
 
-var reactor = new Reactor(accessToken, { reactorUrl: reactorUrl });
+var reactor = new Reactor(accessToken, {
+  reactorUrl: reactorUrl,
+  customHeaders: { 'x-gw-ims-org-id': orgId }
+});
 jasmine.getEnv().reactorContext = {
   reactorUrl: reactorUrl,
   accessToken: accessToken,
-  reqheaders: reqheaders,
+  reqheaders: { ...reqheaders, ...customHeaders },
   reactor: reactor,
   expectRequest: expectRequest
 };
