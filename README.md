@@ -11,7 +11,7 @@ https://badges.greenkeeper.io/adobe/reactor-sdk-javascript.svg)](
 https://account.greenkeeper.io/account/adobe#repositories)
 
 A Library for accessing the Adobe Experience Platform
-[Launch API][Launch API doc].
+[Reactor API][Reactor API doc].
 
 This API is fairly low-level.  The Reactor methods are one-to-one with the
 RESTful API endpoints, and they provide very little help in constructing your
@@ -141,25 +141,25 @@ A browser implementation of this functionality would differ in two ways:
 
 ## The SDK and the API
 
-The Adobe Experience Platform Launch API is a RESTful
+The Adobe Experience Platform Reactor API is a RESTful
 [`{json:api}`](https://jsonapi.org/)-compliant service.
 
-Each Launch endpoint has a corresponding function in this library.  For example,
+Each Reactor API endpoint has a corresponding function in this library.  For example,
 the ["Fetch a Profile"][FetchProfile doc] endpoint is accessed via the
 [`getProfile()`][FetchProfile impl] SDK function.
 
 Since the correspondence between API endpoints and SDK functions is one-to-one,
-the [Launch API documentation][ListCompanies doc] is the primary source of
+the [Reactor API documentation][ListCompanies doc] is the primary source of
 information.
 
 (In addition to the live API documentation, the code that builds that
 documentation is available under open source, at
-[`reactor-developer-docs`][Launch API doc repo].  For example, the source code
+[`reactor-developer-docs`][Reactor API doc repo].  For example, the source code
 of the ["Fetch a Profile"][FetchProfile doc] documentation is at
 [profiles/fetch.md][FetchProfile doc src].)
 
-[Launch API doc]: https://developer.adobelaunch.com/api/ 'Adobe Experience Platform Launch API'
-[Launch API doc repo]: https://github.com/adobe/reactor-developer-docs 'Launch API documentation repository'
+[Reactor API doc]: https://developer.adobelaunch.com/api/ 'The Adobe Experience Platform Reactor API'
+[Reactor API doc repo]: https://github.com/adobe/reactor-developer-docs 'Experience Platform Reactor API documentation repository'
 [FetchProfile doc]: https://developer.adobelaunch.com/api/reference/1.0/profiles/fetch/ 'Fetch a Profile'
 [FetchProfile impl]: https://github.com/adobe/reactor-sdk-javascript/blob/master/src/profiles.js#L13
 [FetchProfile doc src]: https://github.com/adobe/reactor-developer-docs/blob/master/api/reference/1.0/profiles/fetch.md 'Fetch a Profile'
