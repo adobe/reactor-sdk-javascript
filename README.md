@@ -273,6 +273,40 @@ scripts/delete-test-properties
 
 ### Your Access Token
 
+Here we provide instructions on two ways that you can retrieve your Access Token for use with the `reactor-sdk` project.
+
+#### Programmatically via Adobe's [jwt-auth](https://github.com/adobe/jwt-auth) project.
+
+```javascript
+#!/usr/bin/env node
+const fs = require('fs');
+const path = require('path');
+const jwtAuth = require('@adobe/jwt-auth');
+const Reactor = require('@adobe/reactor-sdk').default;
+
+(async function() {
+  const orgId = process.env['ORG_ID'];
+  // jwt-auth config object: https://github.com/adobe/jwt-auth#config-object
+  const config = {
+    orgId,
+    clientId: 'YOUR_CLIENT_ID',
+    technicalAccountId: "YOUR_TECHNICAL_ACCOUNT_ID",
+    clientSecret: "YOUR_CLIENT_SECRET",
+    metaScopes: ["YOUR_META_SCOPES"],
+  };
+  config.privateKey = fs.readFileSync(path.resolve(__dirname, "path to your private key file"));
+  const tokenResponse = await jwtAuth(config);
+  const accessToken = tokenResponse['access_token'];
+
+  const reactorUrl = 'https://reactor.adobe.io';
+  const reactor = new Reactor(accessToken, { reactorUrl: reactorUrl, customHeaders: {'x-gw-ims-org-id': orgId} });
+
+  // perform API calls here
+})();
+```
+
+#### Through the Adobe Tags user interface
+
 * Using Google Chrome, log in to `https://launch.adobe.com/companies`
 * Open the developer console
 * Change the JavaScript context from "top" to "Main Content" using the dropdown menu
