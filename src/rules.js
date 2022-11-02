@@ -57,8 +57,8 @@ export function listRulesForProperty(propertyId, queryParams) {
 
 // List revisions
 // https://developer.adobelaunch.com/api/rules/revisions/
-export function listRevisionsForRule(ruleId) {
-  return this.get(`/rules/${ruleId}/revisions`);
+export function listRevisionsForRule(ruleId, queryParams) {
+  return this.get(`/rules/${ruleId}/revisions`, queryParams);
 }
 
 // Revise a Rule
