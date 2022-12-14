@@ -231,6 +231,17 @@ helpers.describe('Rule API', function() {
     expect(ids).toContain(snowy2.id);
   });
 
+  // Test filter on listRevisionsForRule
+  helpers.it('gets a filtered rule revision', async function() {
+    await initializeSnowyRiver(2);
+    const revisionsList = await reactor.listRevisionsForRule(snowy.id, {
+      'filter[revision_number]': 'EQ 1'
+    });
+    const revisionIds = revisionsList.data.map(revision => revision.id);
+    expect(revisionIds).toContain(snowy1.id);
+    expect(revisionIds).not.toContain(snowy.id);
+  });
+
   // Revise a Rule
   // https://developer.adobelaunch.com/api/rules/revise/
   helpers.it('revises a Rule', async function() {
