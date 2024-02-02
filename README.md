@@ -117,10 +117,6 @@ chmod u+x ./list-properties.js
 ./list-properties.js
 ```
 
-[How to retrieve your Access Token](#your-access-token).
-
-[How to retrieve your Org ID](#your-org-id).
-
 ...and you should get output similar to:
 
 ```plain text
@@ -275,29 +271,26 @@ scripts/delete-test-properties
 
 Here we provide instructions on two ways that you can retrieve your Access Token for use with the `reactor-sdk` project.
 
-#### Programmatically via Adobe's [jwt-auth](https://github.com/adobe/jwt-auth) project.
+#### Programmatically via Adobe's [nodejs programmatic token](https://github.com/adobe/auth-token) project.
 
 ```javascript
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
-const jwtAuth = require('@adobe/jwt-auth');
+// The @adobe/auth-token project also supports import syntax natively.
+// here is a commonjs example.
+const getAuthToken = (...args) => import('@adobe/auth-token').then(({ auth: adobeAuth }) => adobeAuth(...args));
 const Reactor = require('@adobe/reactor-sdk').default;
 
 (async function() {
-  const orgId = process.env['ORG_ID'];
-  // jwt-auth config object: https://github.com/adobe/jwt-auth#config-object
+  // @adobe/auth-token config object: https://github.com/adobe/auth-token?tab=readme-ov-file#config-object
   const config = {
-    orgId,
     clientId: 'YOUR_CLIENT_ID',
-    technicalAccountId: "YOUR_TECHNICAL_ACCOUNT_ID",
     clientSecret: "YOUR_CLIENT_SECRET",
-    metaScopes: ["YOUR_META_SCOPES"],
+    scope: "your,scopes,here" // https://developer.adobe.com/developer-console/docs/guides/authentication/UserAuthentication/implementation/#oauth-20-scopes
   };
-  config.privateKey = fs.readFileSync(path.resolve(__dirname, "path to your private key file"));
-  const tokenResponse = await jwtAuth(config);
+  const tokenResponse = await getAuthToken(config);
   const accessToken = tokenResponse['access_token'];
 
+  const orgId = process.env['ORG_ID'];
   const reactorUrl = 'https://reactor.adobe.io';
   const reactor = new Reactor(accessToken, { reactorUrl: reactorUrl, customHeaders: {'x-gw-ims-org-id': orgId} });
 
@@ -339,9 +332,6 @@ const Reactor = require('@adobe/reactor-sdk').default;
 
 * Implement integration tests for the handful of functions not yet covered.
 * Include a section here on library function naming conventions.
-* Find or implement a JavaScript library for handling JWT token generation. The
-  current mechanism requires you to generate an access token yourself. Such
-  tokens time out after while, forcing you to generate a new one.
 * Describe how query parameters are passed in this SDK.
 
 ## Contributing
