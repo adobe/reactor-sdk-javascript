@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-describe('Environment:', function() {
+describe('Environment:', function () {
   const context = jasmine.getEnv().reactorContext;
   const reactor = context.reactor;
   const propertyId = 'PR00000000000000000000000000000000';
   const environmentId = 'EN00000000000000000000000000000000';
 
-  describe('createEnvironment', function() {
-    it('runs an http POST', async function() {
+  describe('createEnvironment', function () {
+    it('runs an http POST', async function () {
       const environment = {
         attributes: {
           name: `Environment ${new Date().getTime()}`
@@ -33,8 +33,8 @@ describe('Environment:', function() {
     });
   });
 
-  describe('updateEnvironment', function() {
-    it('runs an http PATCH', async function() {
+  describe('updateEnvironment', function () {
+    it('runs an http PATCH', async function () {
       const environmentPatch = {
         id: environmentId,
         attributes: {
@@ -51,20 +51,20 @@ describe('Environment:', function() {
     });
   });
 
-  describe('getEnvironment', function() {
-    it('runs an http GET', async function() {
+  describe('getEnvironment', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/environments/${environmentId}`);
       await reactor.getEnvironment(environmentId);
     });
   });
 
-  describe('listEnvironmentsForProperty', function() {
-    it('runs an http GET', async function() {
+  describe('listEnvironmentsForProperty', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/properties/${propertyId}/environments`);
       await reactor.listEnvironmentsForProperty(propertyId);
     });
 
-    it('runs an http GET with query parameters', async function() {
+    it('runs an http GET with query parameters', async function () {
       context.expectRequest(
         'get',
         `/properties/${propertyId}/environments?filter%5Bname%5D=EQ+Delta%2CEQ+Bravo&sort=-name`
@@ -76,8 +76,8 @@ describe('Environment:', function() {
     });
   });
 
-  describe('deleteEnvironment', function() {
-    it('runs an http DELETE', async function() {
+  describe('deleteEnvironment', function () {
+    it('runs an http DELETE', async function () {
       context.expectRequest('delete', `/environments/${environmentId}`);
       await reactor.deleteEnvironment(environmentId);
     });

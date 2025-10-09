@@ -15,7 +15,7 @@ import helpers from './helpers';
 
 // Hosts
 // https://developer.adobelaunch.com/api/hosts/
-helpers.describe('Host API', function() {
+helpers.describe('Host API', function () {
   var theTestProperty;
   async function makeOrReuseTheTestProperty() {
     if (!theTestProperty) {
@@ -31,14 +31,14 @@ helpers.describe('Host API', function() {
 
   // Create a Host
   // https://developer.adobelaunch.com/api/hosts/create/
-  helpers.it('creates a new Host', async function() {
+  helpers.it('creates a new Host', async function () {
     const host = await newHost('Diamond');
     expect(host.id).toMatch(helpers.idHT);
   });
 
   // Delete a Host
   // https://developer.adobelaunch.com/api/hosts/delete/
-  helpers.it('deletes a Host', async function() {
+  helpers.it('deletes a Host', async function () {
     const host = await newHost('Emerald');
     const deleteResponse = await reactor.deleteHost(host.id); //then delete
     expect(deleteResponse).toBe(null);
@@ -52,7 +52,7 @@ helpers.describe('Host API', function() {
 
   // Get a Host
   // https://developer.adobelaunch.com/api/hosts/fetch/
-  helpers.it('gets a Host', async function() {
+  helpers.it('gets a Host', async function () {
     const host = await newHost('Citrine');
     const response = await reactor.getHost(host.id);
     const found = response.data;
@@ -61,7 +61,7 @@ helpers.describe('Host API', function() {
 
   // Get the Property
   // https://developer.adobelaunch.com/api/hosts/property/
-  helpers.it("gets a Host's Property", async function() {
+  helpers.it("gets a Host's Property", async function () {
     const theProperty = await makeOrReuseTheTestProperty();
     const host = await newHost('Saphire');
     const response = await reactor.getPropertyForHost(host.id);
@@ -70,12 +70,12 @@ helpers.describe('Host API', function() {
 
   // List Hosts for a Property
   // https://developer.adobelaunch.com/api/hosts/list/
-  helpers.it('lists all Hosts', async function() {
+  helpers.it('lists all Hosts', async function () {
     const theProperty = await makeOrReuseTheTestProperty();
     const catseye = await newHost('Catseye');
     const apatite = await newHost('Apatite');
     const listResponse = await reactor.listHostsForProperty(theProperty.id);
-    const allIds = listResponse.data.map(resource => resource.id);
+    const allIds = listResponse.data.map((resource) => resource.id);
     expect(allIds).toContain(catseye.id);
     expect(allIds).toContain(apatite.id);
   });
@@ -84,7 +84,7 @@ helpers.describe('Host API', function() {
   // List:   https://developer.adobelaunch.com/api/hosts/list/
   // Filter: https://developer.adobelaunch.com/guides/api/filtering/
   // Sort:   https://developer.adobelaunch.com/guides/api/sorting/
-  helpers.it('lists filtered Hosts', async function() {
+  helpers.it('lists filtered Hosts', async function () {
     const theProperty = await makeOrReuseTheTestProperty();
     const larimar = await newHost('Larimar');
     const peridot = await newHost('Peridot');
@@ -94,7 +94,7 @@ helpers.describe('Host API', function() {
       sort: '-name'
     });
     const hostNames = filteredResponse.data.map(
-      resource => resource.attributes.name
+      (resource) => resource.attributes.name
     );
     expect(hostNames.length).toBe(2);
     expect(hostNames).toEqual([
@@ -105,7 +105,7 @@ helpers.describe('Host API', function() {
 
   // Update a Host
   // https://developer.adobelaunch.com/api/hosts/update/
-  helpers.it('updates a Host', async function() {
+  helpers.it('updates a Host', async function () {
     const host = await newHost('Verdite');
     let response = await reactor.updateHost({
       attributes: {

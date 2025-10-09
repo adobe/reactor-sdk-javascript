@@ -15,11 +15,11 @@ import helpers from './helpers';
 
 // AuditEvents
 // https://developer.adobelaunch.com/api/audit_events/
-helpers.describe('AuditEvent API', function() {
+helpers.describe('AuditEvent API', function () {
   var theProperty;
   var theHost;
 
-  beforeAll(async function() {
+  beforeAll(async function () {
     try {
       theProperty = await helpers.createTestProperty('AuditEvent-Testing Base');
       if (!theProperty) fail('could not create test property');
@@ -74,7 +74,7 @@ helpers.describe('AuditEvent API', function() {
   // Get an AuditEvent
   // https://developer.adobelaunch.com/api/AuditEvents/fetch/
   helpers
-    .xit('gets an AuditEvent', async function() {
+    .xit('gets an AuditEvent', async function () {
       //TODO: test getAuditEvent
       // This test of getAuditEvent needs to be re-enabled once we fix
       // [DTM-11356 "Cannot list audit events after page
@@ -84,7 +84,7 @@ helpers.describe('AuditEvent API', function() {
       // property"](https://jira.corp.adobe.com/browse/DTM-10098)
       if (!theProperty) return;
       const events = await auditEventsForProperty(theProperty.id);
-      const auditIds = events.map(resource => resource.id);
+      const auditIds = events.map((resource) => resource.id);
 
       const response = await reactor.getAuditEvent(auditIds[0]);
       const theAuditEvent = response.data;
@@ -101,7 +101,7 @@ helpers.describe('AuditEvent API', function() {
   // List AuditEvents for owned Properties
   // https://developer.adobelaunch.com/api/AuditEvents/list/
   helpers
-    .xit('lists all AuditEvents', async function() {
+    .xit('lists all AuditEvents', async function () {
       //TODO: test listAuditEvents
       // This test of listAuditEvents needs to be re-enabled once we fix
       // [DTM-11356 "Cannot list audit events after page
@@ -112,7 +112,7 @@ helpers.describe('AuditEvent API', function() {
       if (!theProperty) return;
       const events = await auditEventsForProperty(theProperty.id);
       function findAE(type_of, entityId) {
-        return events.find(ae => {
+        return events.find((ae) => {
           const attrs = ae.attributes;
           return attrs.type_of === type_of && attrs.entity.data.id === entityId;
         });

@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-describe('Rule:', function() {
+describe('Rule:', function () {
   const context = jasmine.getEnv().reactorContext;
   const reactor = context.reactor;
   const propertyId = 'PR123';
   const ruleId = 'RL123';
 
-  describe('createRule', function() {
-    it('runs an http POST', async function() {
+  describe('createRule', function () {
+    it('runs an http POST', async function () {
       const rule = {
         attributes: {
           name: `Rule ${new Date().getTime()}`
@@ -29,8 +29,8 @@ describe('Rule:', function() {
     });
   });
 
-  describe('updateRule', function() {
-    it('runs an http PATCH', async function() {
+  describe('updateRule', function () {
+    it('runs an http PATCH', async function () {
       const rulePatch = {
         id: ruleId,
         attributes: {
@@ -43,34 +43,34 @@ describe('Rule:', function() {
     });
   });
 
-  describe('reviseRule', function() {
-    it('runs an http PATCH', async function() {
+  describe('reviseRule', function () {
+    it('runs an http PATCH', async function () {
       const reviseBody = reactor.createReviseBody('rules', ruleId);
       context.expectRequest('patch', `/rules/${ruleId}`, reviseBody);
       await reactor.reviseRule(ruleId);
     });
   });
 
-  describe('listRevisionsForRule', function() {
-    it('runs an http GET', async function() {
+  describe('listRevisionsForRule', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/rules/${ruleId}/revisions`);
       await reactor.listRevisionsForRule(ruleId);
     });
   });
 
-  describe('getRule', function() {
-    it('runs an http GET', async function() {
+  describe('getRule', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/rules/${ruleId}`);
       await reactor.getRule(ruleId);
     });
   });
 
-  describe('listRulesForProperty', function() {
-    it('runs an http GET', async function() {
+  describe('listRulesForProperty', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/properties/${propertyId}/rules`);
       await reactor.listRulesForProperty(propertyId);
     });
-    it('runs an http GET with query parameters', async function() {
+    it('runs an http GET with query parameters', async function () {
       context.expectRequest(
         'get',
         `/properties/${propertyId}/rules?filter%5Bname%5D=EQ+Delta%2CEQ+Bravo&sort=-name`
@@ -82,15 +82,15 @@ describe('Rule:', function() {
     });
   });
 
-  describe('deleteRule', function() {
-    it('runs an http DELETE', async function() {
+  describe('deleteRule', function () {
+    it('runs an http DELETE', async function () {
       context.expectRequest('delete', `/rules/${ruleId}`);
       await reactor.deleteRule(ruleId);
     });
   });
 
-  describe('createRuleNote', function() {
-    it('runs an http POST', async function() {
+  describe('createRuleNote', function () {
+    it('runs an http POST', async function () {
       const post = {
         type: 'notes',
         attributes: {

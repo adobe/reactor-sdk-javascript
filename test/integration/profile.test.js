@@ -15,10 +15,10 @@ import helpers from './helpers';
 
 // Profiles
 // https://developer.adobelaunch.com/api/profiles
-helpers.describe('Profile API', function() {
+helpers.describe('Profile API', function () {
   // Get a Profile
   // https://developer.adobelaunch.com/api/profiles/fetch//
-  helpers.it('returns a User', async function() {
+  helpers.it('returns a User', async function () {
     const response = await reactor.getProfile();
     const user = response.data;
     expect(user.type).toBe('users');

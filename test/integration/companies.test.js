@@ -15,10 +15,10 @@ import helpers from './helpers';
 
 // Companies
 // https://developer.adobelaunch.com/api/companies
-helpers.describe('Company API', function() {
+helpers.describe('Company API', function () {
   // Get a Company
   // https://developer.adobelaunch.com/api/companies/fetch/
-  helpers.it('gets a Company', async function() {
+  helpers.it('gets a Company', async function () {
     const response = await reactor.getCompany(helpers.companyId);
     const prop = response.data;
     expect(prop.id).toBe(helpers.companyId);
@@ -26,7 +26,7 @@ helpers.describe('Company API', function() {
 
   // List Companies
   // https://developer.adobelaunch.com/api/companies/list/
-  helpers.it('lists all Companies', async function() {
+  helpers.it('lists all Companies', async function () {
     const companyIds = await getAllCompanyIds();
     for (const companyId of companyIds) {
       expect(companyId).toMatch(helpers.idCO);

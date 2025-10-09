@@ -15,7 +15,7 @@ import helpers from './helpers';
 
 // Environments
 // https://developer.adobelaunch.com/api/environments
-helpers.describe('Environment API', function() {
+helpers.describe('Environment API', function () {
   var theProperty;
   var theHost;
 
@@ -36,7 +36,7 @@ helpers.describe('Environment API', function() {
 
   // Create an Environment
   // https://developer.adobelaunch.com/api/environments/create/
-  helpers.it('creates a new Environment', async function() {
+  helpers.it('creates a new Environment', async function () {
     const env = await newTestEnvironment('Emma');
     expect(env.id).toMatch(helpers.idEN);
     expect(env.attributes.name).toMatch(/emma/i);
@@ -44,7 +44,7 @@ helpers.describe('Environment API', function() {
 
   // Delete an Environment
   // https://developer.adobelaunch.com/api/environments/delete/
-  helpers.it('deletes an Environment', async function() {
+  helpers.it('deletes an Environment', async function () {
     const [p, a] = [theProperty.id, theHost.id];
     const nonce = await helpers.createTestEnvironment(p, 'Mayfly', a);
     expect(nonce.attributes.name).toMatch(/mayfly/i);
@@ -62,7 +62,7 @@ helpers.describe('Environment API', function() {
 
   // Get an Environment
   // https://developer.adobelaunch.com/api/environments/fetch/
-  helpers.it('gets an Environment', async function() {
+  helpers.it('gets an Environment', async function () {
     const env = await newTestEnvironment('Liam');
     const response = await reactor.getEnvironment(env.id);
     expect(response.data.attributes.name).toBe(env.attributes.name);
@@ -70,7 +70,7 @@ helpers.describe('Environment API', function() {
 
   // Get the Host
   // https://developer.adobelaunch.com/api/environments/host/
-  helpers.it("gets an Environment's Host", async function() {
+  helpers.it("gets an Environment's Host", async function () {
     const env = await newTestEnvironment('Grady');
     const response = await reactor.getHostForEnvironment(env.id);
     expect(response.data).not.toBeUndefined();
@@ -80,7 +80,7 @@ helpers.describe('Environment API', function() {
 
   // Get the Host relationship
   // https://developer.adobelaunch.com/api/environments/host_relationship/
-  helpers.it("gets an Environment's Host relationship", async function() {
+  helpers.it("gets an Environment's Host relationship", async function () {
     const env = await newTestEnvironment('Kyrie');
     const response = await reactor.getHostRelationshipForEnvironment(env.id);
     expect(response.data).not.toBeUndefined();
@@ -91,7 +91,7 @@ helpers.describe('Environment API', function() {
 
   // Get the Library
   // https://developer.adobelaunch.com/api/environments/fetch_library/
-  helpers.it("gets the Environment's Library", async function() {
+  helpers.it("gets the Environment's Library", async function () {
     // create a library
     const createResponse = await reactor.createLibrary(theProperty.id, {
       attributes: { name: 'Olivia Get-Env Library' },
@@ -115,7 +115,7 @@ helpers.describe('Environment API', function() {
 
   // Get the Property
   // https://developer.adobelaunch.com/api/environments/property/
-  helpers.it("gets an Environment's Property", async function() {
+  helpers.it("gets an Environment's Property", async function () {
     const env = await newTestEnvironment('Noah');
     const response = await reactor.getPropertyForEnvironment(env.id);
     expect(response.data).not.toBeUndefined();
@@ -126,7 +126,7 @@ helpers.describe('Environment API', function() {
 
   // List Builds
   // https://developer.adobelaunch.com/api/environments/builds/
-  helpers.it("lists an Environment's builds", async function() {
+  helpers.it("lists an Environment's builds", async function () {
     // Create a library, host, environment
     const lib = await helpers.createTestLibrary(theProperty.id, 'Jack');
     const env = await helpers.makeLibraryEnvironment(lib, 'Jill', 'Akamai');
@@ -136,25 +136,25 @@ helpers.describe('Environment API', function() {
 
     // test listBuildsForEnvironment
     const response = await reactor.listBuildsForEnvironment(env.id);
-    const allIds = response.data.map(build => build.id);
+    const allIds = response.data.map((build) => build.id);
     expect(allIds).toContain(buildId);
   });
 
   // List Environments for a Property
   // https://developer.adobelaunch.com/api/environments/list/
-  helpers.it('lists all Environments', async function() {
+  helpers.it('lists all Environments', async function () {
     const logan = await newTestEnvironment('Logan');
     const mason = await newTestEnvironment('Mason');
     const james = await newTestEnvironment('James');
     const listResponse = await reactor.listEnvironmentsForProperty(
       theProperty.id
     );
-    const allIds = listResponse.data.map(resource => resource.id);
+    const allIds = listResponse.data.map((resource) => resource.id);
     expect(allIds).toContain(logan.id);
     expect(allIds).toContain(mason.id);
     expect(allIds).toContain(james.id);
   });
-  helpers.it('lists filtered Environments', async function() {
+  helpers.it('lists filtered Environments', async function () {
     const lucas = await newTestEnvironment('Lucas Alpha');
     const ethan = await newTestEnvironment('Ethan Bravo');
     const jacob = await newTestEnvironment('Jacob Alpha');
@@ -162,7 +162,7 @@ helpers.describe('Environment API', function() {
       theProperty.id,
       { 'filter[name]': 'CONTAINS alpha' }
     );
-    const twoIds = filteredResponse.data.map(resource => resource.id);
+    const twoIds = filteredResponse.data.map((resource) => resource.id);
     expect(twoIds).toContain(lucas.id);
     expect(twoIds).toContain(jacob.id);
     expect(twoIds).not.toContain(ethan.id);
@@ -170,7 +170,7 @@ helpers.describe('Environment API', function() {
 
   // Update an Environment
   // https://developer.adobelaunch.com/api/environments/update/
-  helpers.it('updates an Environment', async function() {
+  helpers.it('updates an Environment', async function () {
     const theEnvironment = await newTestEnvironment('Blick');
     let response = await reactor.updateEnvironment({
       attributes: {

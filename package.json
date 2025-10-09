@@ -2,6 +2,7 @@
   "name": "@adobe/reactor-sdk",
   "version": "1.2.0",
   "description": "JavaScript SDK for the Reactor API",
+  "type": "module",
   "author": {
     "name": "Adobe Systems",
     "url": "https://developer.adobelaunch.com/api/",
@@ -24,7 +25,13 @@
   "default": "dist/reactor-sdk.min.js",
   "browser": "dist/reactor-sdk-library.min.js",
   "module": "dist/reactor-sdk-bundled.min.js",
-  "main": "./lib/node/index.js",
+  "main": "./lib/cjs/index.js",
+  "exports": {
+    ".": {
+      "import": "./lib/node/index.js",
+      "require": "./lib/cjs/index.js"
+    }
+  },
   "targets": {
     "default": {
       "context": "browser",
@@ -47,14 +54,15 @@
     "build": "npm run src:build",
     "test": "npm-run-all build unit-tests",
     "src:lint": "eslint --fix --parser-options=ecmaVersion:2018 'src/**/*.js'",
-    "src:build:node": "babel src/ --out-dir lib/node/ --source-maps --presets latest-node",
-    "src:build:browser": "babel src/ --out-dir lib/browser/ --source-maps --presets @babel/preset-env",
+    "src:build:node": "babel src/ --out-dir lib/node/ --source-maps",
+    "src:build:cjs": "BABEL_ENV=cjs babel src/ --out-dir lib/cjs/ --source-maps",
+    "src:build:browser": "BABEL_ENV=browser babel src/ --out-dir lib/browser/ --source-maps",
     "src:build:browser.bundle": "parcel build src/index.js",
     "src:clean": "rm -rf dist lib",
     "src:build": "npm-run-all src:clean src:lint --print-label --parallel 'src:build:*'",
     "unit:lint": "eslint --fix --parser-options=ecmaVersion:2018 'test/unit/**/*.js'",
     "unit:clean": "rm -rf tmp.tests/unit",
-    "unit:build": "npm run unit:clean && babel test/unit --out-dir tmp.tests/unit/ --source-maps --presets latest-node",
+    "unit:build": "npm run unit:clean && babel test/unit --out-dir tmp.tests/unit/ --source-maps",
     "unit:run": "node scripts/check-version && jasmine tmp.tests/unit/index.js",
     "integration:lint": "eslint --fix --parser-options=ecmaVersion:2018 'test/integration/**/*.js'",
     "integration:build:environment": "node test/integration/write-reactor-environment.js",
@@ -97,23 +105,24 @@
     "@babel/cli": "^7.24.8",
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.4",
-    "babel-preset-latest-node": "3.2.1",
     "commander": "3.0.0",
     "dateformat": "3.0.3",
-    "eslint": "6.2.0",
-    "eslint-config-prettier": "6.1.0",
-    "eslint-plugin-prettier": "3.1.1",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
     "express": "^4.21.2",
     "genversion": "^2.1.1",
+    "glob": "^10.4.5",
     "husky": "^6.0.0",
     "jasmine": "3.5.0",
-    "mkdirp": "^0.5.1",
+    "mkdirp": "^3.0.1",
     "nock": "11.5.0",
     "nodemon": "^3.1.10",
     "npm-run-all": "^4.1.5",
     "parcel": "^2.16.0",
     "path": "0.12.7",
-    "prettier": "1.18.2"
+    "prettier": "^3.3.3",
+    "rimraf": "^5.0.10"
   },
   "engines": {
     "node": ">=v22.19.0"

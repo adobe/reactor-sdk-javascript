@@ -18,7 +18,7 @@ import helpers from './helpers';
 // the failure details to the console immediately, so you can start working on
 // debugging early failures while the rest of the tests run.
 var consoleReporter = {
-  specDone: function(result) {
+  specDone: function (result) {
     var passedCount = result.passedExpectations.length;
     var failedCount = result.failedExpectations.length;
     if (failedCount === 0) return;
@@ -56,7 +56,7 @@ function MsecsToHMS(totalMilliseconds) {
 // Cleans up any cobwebs from previous runs of the integration tests
 var startTime;
 beforeAll(
-  async function() {
+  async function () {
     // change default test timeout from 5 seconds to 5 minutes
     startTime = new Date();
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 5 * 60 * 1000;
@@ -67,7 +67,7 @@ beforeAll(
 );
 
 // Runs after all suites
-afterAll(function() {
+afterAll(function () {
   console.groupEnd('Reactor JavaScript SDK Integration Tests');
   var endTime = new Date();
   console.log('Total time to run tests:', MsecsToHMS(endTime - startTime));

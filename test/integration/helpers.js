@@ -98,7 +98,7 @@ const helpers = {
   },
 
   async sleep(milliseconds) {
-    return new Promise(resolve => setTimeout(resolve, milliseconds));
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
   },
 
   reportError(error) {
@@ -155,14 +155,14 @@ const helpers = {
       library.id,
       [{ id: revId, type: 'extensions' }]
     );
-    const addedIds = addResponse.data.map(resource => resource.id);
+    const addedIds = addResponse.data.map((resource) => resource.id);
     expect(addedIds).toContain(revId);
 
     // Check whether they all show up when extensions are listed
     const listResponse = await reactor.listExtensionRelationshipsForLibrary(
       library.id
     );
-    const listedIds = listResponse.data.map(resource => resource.id);
+    const listedIds = listResponse.data.map((resource) => resource.id);
     expect(listedIds).toContain(revId);
 
     // property.coreExRevision is set by helpers.coreExtensionRevisionId
@@ -473,14 +473,14 @@ const helpers = {
   },
 
   describe(description, suiteDefinition) {
-    describe(description, function() {
+    describe(description, function () {
       beforeAll(() => console.groupCollapsed(description));
       afterAll(() => console.groupEnd(description));
       suiteDefinition.apply(this);
     });
   },
   fdescribe(description, suiteDefinition) {
-    fdescribe(description, function() {
+    fdescribe(description, function () {
       beforeAll(() => console.groupCollapsed(description));
       afterAll(() => console.groupEnd(description));
       suiteDefinition.apply(this);
@@ -496,7 +496,7 @@ const helpers = {
   it(description, testFn, timeout) {
     var spec = it(
       description,
-      async function() {
+      async function () {
         console.groupCollapsed(description);
         try {
           helpers.specName = spec.getFullName();
@@ -513,7 +513,7 @@ const helpers = {
   fit(description, testFn, timeout) {
     var spec = fit(
       description,
-      async function() {
+      async function () {
         console.group(description);
         try {
           helpers.specName = spec.getFullName();
@@ -594,7 +594,7 @@ async function getExtensionPackageByName(epName, platform = 'web') {
   const eps = response.data;
   expectWithContext(eps, ctx).toBeDefined();
   // Find the EP named `epName`
-  const ep = eps.find(ep => ep.attributes.name === epName);
+  const ep = eps.find((ep) => ep.attributes.name === epName);
   return ep;
 }
 
@@ -626,7 +626,7 @@ async function getCoreExtension(property) {
   // Find the extension whose extension package is 'core'.
   const coreEpId = await getCoreExtensionPackageId();
   const coreEx = exs.find(
-    ep => ep.relationships.extension_package.data.id === coreEpId
+    (ep) => ep.relationships.extension_package.data.id === coreEpId
   );
   expectWithContext(coreEx, ctx).toBeDefined();
   expectWithContext(coreEx.id, ctx).toMatch(helpers.idEX);
@@ -675,15 +675,17 @@ async function findAnalyticsExtension(property) {
   expectWithContext(property.type, ctx).toBe('properties');
 
   // Get the all extensions on `property` named "adobe-analytics".
-  const extensions = (await reactor.listExtensionsForProperty(property.id, {
-    'filter[platform]': 'EQ web',
-    'filter[name]': 'EQ adobe-analytics'
-  })).data;
+  const extensions = (
+    await reactor.listExtensionsForProperty(property.id, {
+      'filter[platform]': 'EQ web',
+      'filter[name]': 'EQ adobe-analytics'
+    })
+  ).data;
   if (extensions && extensions.length > 0) {
     // Find an extension whose extension package is also named "adobe-analytics".
     const analyticsEpId = (await getAnalyticsExtensionPackage()).id;
     analyticsEx = extensions.find(
-      ex => ex.relationships.extension_package.data.id === analyticsEpId
+      (ex) => ex.relationships.extension_package.data.id === analyticsEpId
     );
   }
   if (analyticsEx) {
@@ -776,7 +778,7 @@ async function makeTestRule(property, ruleBaseName, theLibrary = null) {
     theLibrary.id,
     [{ id: revisedRule.id, type: 'rules' }]
   );
-  const libRules = addResponse.data.map(rule => rule.id);
+  const libRules = addResponse.data.map((rule) => rule.id);
   expect(libRules).toContain(revisedRule.id);
   return revisedRule;
 }

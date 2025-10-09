@@ -11,11 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import nock from 'nock';
-import Reactor from '../../lib/node/index';
-
-function getEnv(varName, defaultValue) {
-  return process.env[varName] || defaultValue;
-}
+import Reactor from '../../lib/node/index.js';
 
 const accessToken = 'No real token needed here because Launch calls are mocked';
 const orgId = 'AB123456789abcdefghi@adobe.com';
@@ -29,7 +25,9 @@ function expectRequest(method, path, body) {
   });
   const args = [path];
   if (body != null) {
-    body = !body.hasOwnProperty('data') ? { data: body } : body;
+    body = !Object.prototype.hasOwnProperty.call(body, 'data')
+      ? { data: body }
+      : body;
     args.push(body);
   }
   initializedNock[method.toLowerCase()].apply(initializedNock, args).reply(200);

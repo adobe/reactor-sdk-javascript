@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-describe('Callback:', function() {
+describe('Callback:', function () {
   const context = jasmine.getEnv().reactorContext;
   const reactor = context.reactor;
   const propertyId = 'PR123';
   const callbackId = 'CB123';
 
-  describe('createCallback', function() {
-    it('runs an http POST', async function() {
+  describe('createCallback', function () {
+    it('runs an http POST', async function () {
       const callback = {
         attributes: {
           url: 'https://www.example.com',
@@ -33,12 +33,12 @@ describe('Callback:', function() {
     });
   });
 
-  describe('listCallbacksForProperty', function() {
-    it('runs an http GET', async function() {
+  describe('listCallbacksForProperty', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/properties/${propertyId}/callbacks`);
       await reactor.listCallbacksForProperty(propertyId);
     });
-    it('runs an http GET with query parameters', async function() {
+    it('runs an http GET with query parameters', async function () {
       context.expectRequest(
         'get',
         `/properties/${propertyId}/callbacks?filter%5Bname%5D=EQ+Delta%2CEQ+Bravo&sort=-name`
@@ -50,15 +50,15 @@ describe('Callback:', function() {
     });
   });
 
-  describe('getCallback', function() {
-    it('runs an http GET', async function() {
+  describe('getCallback', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/callbacks/${callbackId}`);
       await reactor.getCallback(callbackId);
     });
   });
 
-  describe('updateCallback', function() {
-    it('runs an http PATCH', async function() {
+  describe('updateCallback', function () {
+    it('runs an http PATCH', async function () {
       const callbackPatch = {
         attributes: {
           url: 'https://www.example.net',
@@ -72,8 +72,8 @@ describe('Callback:', function() {
     });
   });
 
-  describe('deleteCallback', function() {
-    it('runs an http DELETE', async function() {
+  describe('deleteCallback', function () {
+    it('runs an http DELETE', async function () {
       context.expectRequest('delete', `/callbacks/${callbackId}`);
       await reactor.deleteCallback(callbackId);
     });

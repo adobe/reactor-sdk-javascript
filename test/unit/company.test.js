@@ -10,20 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-describe('Company:', function() {
+describe('Company:', function () {
   const context = jasmine.getEnv().reactorContext;
   const reactor = context.reactor;
   const companyId = 'CO123';
 
-  describe('listCompanies', function() {
-    it('list', async function() {
+  describe('listCompanies', function () {
+    it('list', async function () {
       context.expectRequest('get', '/companies');
       await reactor.listCompanies();
     });
   });
 
-  describe('listCompanies', function() {
-    it('list with query parameters', async function() {
+  describe('listCompanies', function () {
+    it('list with query parameters', async function () {
       context.expectRequest(
         'get',
         '/companies?filter%5Bname%5D=EQ+Delta%2CEQ+Bravo&sort=-name'
@@ -35,8 +35,8 @@ describe('Company:', function() {
     });
   });
 
-  describe('getCompany', function() {
-    it('get', async function() {
+  describe('getCompany', function () {
+    it('get', async function () {
       context.expectRequest('get', `/companies/${companyId}`);
       await reactor.getCompany(companyId);
     });

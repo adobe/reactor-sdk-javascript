@@ -122,7 +122,7 @@ export { globals as default };
 `;
 
 async function writeFile(fileName, fileContent) {
-  fs.writeFile(fileName, fileContent, function(err) {
+  fs.writeFile(fileName, fileContent, function (err) {
     if (err) {
       console.error(`Error writing to ${fileName}:`, err);
       process.exit(1);

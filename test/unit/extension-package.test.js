@@ -10,24 +10,24 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-describe('ExtensionPackage:', function() {
+describe('ExtensionPackage:', function () {
   const context = jasmine.getEnv().reactorContext;
   const reactor = context.reactor;
   const extensionPackageId = 'EP123';
 
-  describe('getExtensionPackage', function() {
-    it('runs an http GET', async function() {
+  describe('getExtensionPackage', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/extension_packages/${extensionPackageId}`);
       await reactor.getExtensionPackage(extensionPackageId);
     });
   });
 
-  describe('listExtensionPackages', function() {
-    it('runs an http GET', async function() {
+  describe('listExtensionPackages', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', '/extension_packages');
       await reactor.listExtensionPackages();
     });
-    it('runs an http GET with query parameters', async function() {
+    it('runs an http GET with query parameters', async function () {
       context.expectRequest(
         'get',
         '/extension_packages?filter%5Bname%5D=EQ+Delta%2CEQ+Bravo&sort=-name'
