@@ -10,11 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// Create and initialize jasmine.getEnv().reactorIntegrationTestGlobals
-import './globals-for-browser.js';
+// This file is loaded by the HTML page and runs in the browser context.
+// The HTML page loads:
+// 1. jasmine.js - Sets up the Jasmine testing framework
+// 2. jasmine-html.js - Sets up Jasmine HTML reporter
+// 3. boot.js - Initializes Jasmine
+// 4. This file (integration-tests-bundled-sdk.js) - Runs the tests
+//
+// The globals-for-browser.js file will be loaded by Parcel bundling and
+// will set up jasmine.getEnv().reactorIntegrationTestGlobals
+//
+// The reactor-class-bundled-sdk.js will be loaded by Parcel bundling and
+// will set up jasmine.getEnv().reactorIntegrationTestGlobals.Reactor
+//
+// The all-tests.js file will be loaded by Parcel bundling and
+// contains all the integration test specifications
 
-// Initialize jasmine.getEnv().reactorIntegrationTestGlobals.Reactor
-import './reactor-class-bundled-sdk.js';
-
-// Run the tests
-import './all-tests.js';
+console.log('Browser integration tests loaded - bundled SDK version');

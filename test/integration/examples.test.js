@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 const globals = jasmine.getEnv().reactorIntegrationTestGlobals;
+const Reactor = globals.Reactor;
 describe('Reactor SDK Example', function () {
   if (!disableJasmineRandomStepOrder()) return;
   beforeAll(() => console.group('Awesome Example'));
@@ -102,6 +103,13 @@ function toLocalISOString(date) {
   );
 }
 
+// Generate consistent test object names that match the cleanup patterns
+function makeNameForTestObject(objectType, baseName) {
+  const date = toLocalISOString(new Date());
+  const rand = (Number.MAX_SAFE_INTEGER * Math.random()).toString(16);
+  return `${'Property' === objectType ? 'Reactor SDK ' : ''}${baseName} (Integration Testing ${objectType} / ${date}) ${rand}`;
+}
+
 // The steps in this example build on each other, so they need to share a lot of
 // information. For example:
 //    - the reactor client object that provides the Reactor SDK
@@ -150,8 +158,7 @@ var buildBL; // set by makeBuildBL
 // Construct a Property to contain all the other objects created in this
 // example.
 async function makeNewAwesomePR() {
-  const dateString = toLocalISOString(new Date());
-  const propertyName = `An Awesome Property - ${dateString}`;
+  const propertyName = makeNameForTestObject('Property', 'An Awesome Property');
   const propertySpec = {
     attributes: { domains: ['adobe.com'], name: propertyName, platform: 'web' },
     type: 'properties'
@@ -201,15 +208,17 @@ async function findThreeEP() {
   // Locate the three extension packages we'll be using.
   const rc = eps.find((ep) => ep.name === 'core');
   const aa = eps.find((ep) => ep.name === 'adobe-analytics');
-  const fb = eps.find((ep) => ep.name === 'facebook-pixel');
+  const fb = eps.find(
+    (ep) => ep.name === 'facebook-pixel' || ep.name === 'meta-pixel'
+  );
 
   // Verify that we found what we needed.
   expect(rc).not.toBeNull();
   expect(aa).not.toBeNull();
   expect(fb).not.toBeNull();
-  expect(rc.name).toBe('core');
-  expect(aa.name).toBe('adobe-analytics');
   expect(fb.name).toBe('facebook-pixel');
+  expect(aa.name).toBe('adobe-analytics');
+  expect(['facebook-pixel', 'meta-pixel']).toContain(fb.name);
   expect(rc.id).toMatch(/^EP[0-9A-F]{32}$/i);
   expect(aa.id).toMatch(/^EP[0-9A-F]{32}$/i);
   expect(fb.id).toMatch(/^EP[0-9A-F]{32}$/i);
@@ -523,7 +532,9 @@ async function makeFacebookPixelEX() {
     /*eslint-disable camelcase*/
     attributes: {
       delegate_descriptor_id: 'facebook-pixel::extensionConfiguration::config',
-      settings: '{"pixelId": "123456789"}'
+      settings: JSON.stringify({
+        pixelId: 'test-pixel-id'
+      })
     },
     relationships: {
       extension_package: {
@@ -537,26 +548,29 @@ async function makeFacebookPixelEX() {
     /*eslint-enable camelcase*/
   };
 
-  // Create an Extension based on the Facebook Pixel Extension Package
+  // Create an Extension based on the Meta/Facebook Pixel Extension Package
   const response = await reactor.createExtension(awesomePR, data);
   const extension = response.data;
 
   facebookPixelEX = extension.id;
-
-  // Verify that we built what we expected.
   expect(facebookPixelEX).toMatch(/^EX[0-9A-F]{32}$/i);
-  expect(extension.attributes.name).toBe('facebook-pixel');
-  expect(extension.attributes.display_name).toBe('Facebook Pixel');
+  expect(['facebook-pixel', 'meta-pixel']).toContain(extension.attributes.name);
+  expect(['Facebook Pixel', 'Meta Pixel']).toContain(
+    extension.attributes.display_name
+  );
   expect(extension.relationships.extension_package.data.id).toBe(
     facebookPixelEP
   );
 }
 
 async function makeAddToCartRC() {
+  // Use appropriate delegate descriptor based on extension package name
+  const delegateDescriptor = 'facebook-pixel::actions::send-add-to-cart-event';
+
   const data = {
     /*eslint-disable camelcase*/
     attributes: {
-      delegate_descriptor_id: 'facebook-pixel::actions::send-add-to-cart-event',
+      delegate_descriptor_id: delegateDescriptor,
       name: 'facebook-event',
       order: 0,
       settings: '{"value":"%shopping_cart%","currency":"USD"}'

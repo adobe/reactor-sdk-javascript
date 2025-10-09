@@ -18,7 +18,7 @@ import helpers from './helpers';
 //// .then/.catch instead.
 
 helpers.describe('Heartbeat API', function () {
-  const spec = it('returns OK with no body', function (done) {
+  it('returns OK with no body', function (done) {
     reactor
       .heartbeat()
       .then((response) => {

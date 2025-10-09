@@ -13,10 +13,12 @@ governing permissions and limitations under the License.
 import reactor from './reactor';
 import helpers from './helpers';
 
+// Enable automatic cleanup of Reactor SDK properties
+helpers.setupReactorSDKCleanup();
+
 // Properties
 // https://developer.adobelaunch.com/api/properties
 helpers.describe('Property API', function () {
-  var originalTimeout;
   var newProperty;
 
   beforeAll(async function () {
@@ -30,10 +32,12 @@ helpers.describe('Property API', function () {
 
   // Create a Property
   // https://developer.adobelaunch.com/api/properties/create/
-  helpers.it('creates a new Property', function () {
+  it('creates a new Property', function () {
     // A Property should have been created in beforeAll().
     expect(newProperty.id).toMatch(helpers.idPR);
     expect(newProperty.attributes.name).toMatch(/NuProp/);
+    console.log(`✅ Successfully created property: ${newProperty.id}`);
+    console.log(`Property name: ${newProperty.attributes.name}`);
   });
 
   // Delete a Property
@@ -46,7 +50,7 @@ helpers.describe('Property API', function () {
     expect(deleteResponse).toBe(null);
 
     try {
-      const deadProp = await reactor.getProperty(ephemeralProperty.id);
+      await reactor.getProperty(ephemeralProperty.id);
       fail('getting a deleted property should fail');
     } catch (error) {
       expect(error.status).toBe(404);
@@ -81,13 +85,12 @@ helpers.describe('Property API', function () {
     const barstow = await helpers.createTestProperty('Barstow');
     const chicago = await helpers.createTestProperty('Chicago');
     const detroit = await helpers.createTestProperty('Detroit');
-    expect(atlanta.attributes.name).toMatch(/^atlanta/i);
-    expect(barstow.attributes.name).toMatch(/^barstow/i);
-    expect(chicago.attributes.name).toMatch(/^chicago/i);
-    expect(detroit.attributes.name).toMatch(/^detroit/i);
+    expect(atlanta.attributes.name).toMatch(/^Reactor SDK.*Atlanta/i);
+    expect(barstow.attributes.name).toMatch(/^Reactor SDK.*Barstow/i);
+    expect(chicago.attributes.name).toMatch(/^Reactor SDK.*Chicago/i);
+    expect(detroit.attributes.name).toMatch(/^Reactor SDK.*Detroit/i);
 
     // Make sure all four show up in the list of Properties on the company
-    const companyId = helpers.companyId;
     const allIds = [];
     await helpers.forEachEntityInList(
       (paging) => reactor.listPropertiesForCompany(helpers.companyId, paging),

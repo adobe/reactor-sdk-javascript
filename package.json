@@ -1,8 +1,7 @@
 {
   "name": "@adobe/reactor-sdk",
-  "version": "1.2.0",
+  "version": "2.0.0-beta.1",
   "description": "JavaScript SDK for the Reactor API",
-  "type": "module",
   "author": {
     "name": "Adobe Systems",
     "url": "https://developer.adobelaunch.com/api/",
@@ -22,20 +21,28 @@
     "tag manager",
     "SDK"
   ],
-  "default": "dist/reactor-sdk.min.js",
-  "browser": "dist/reactor-sdk-library.min.js",
-  "module": "dist/reactor-sdk-bundled.min.js",
-  "main": "./lib/cjs/index.js",
+  "type": "module",
+  "main": "./lib/cjs/index.cjs",
+  "module": "./lib/node/index.js",
+  "browser": "dist/reactor-sdk-.min.js",
   "exports": {
     ".": {
       "import": "./lib/node/index.js",
-      "require": "./lib/cjs/index.js"
+      "require": "./lib/cjs/index.cjs"
     }
   },
   "targets": {
     "default": {
       "context": "browser",
       "includeNodeModules": true
+    },
+    "browserGlobal": {
+      "context": "browser",
+      "distDir": "dist/",
+      "outputFormat": "global",
+      "isLibrary": true,
+      "sourceMap": false,
+      "publicUrl": "./"
     },
     "integrationTestBrowser": {
       "distDir": "tmp.tests/integration-library-sdk/"
@@ -44,42 +51,27 @@
       "distDir": "tmp.tests/integration-bundled-sdk/"
     },
     "integrationTestNode": {
-      "distDir": "tmp.tests/integration-in-node/"
+      "distDir": "tmp.tests/integration-in-node/",
+      "outputFormat": "esmodule"
     },
     "main": false
   },
   "scripts": {
-    "prepare": "npm run build && husky install",
+    "prepare": "npm run build:production && husky install",
     "postinstall": "node scripts/check-version.js",
-    "build": "npm run src:build",
-    "test": "npm-run-all build unit-tests",
-    "src:lint": "eslint --fix --parser-options=ecmaVersion:2018 'src/**/*.js'",
+    "build:production": "npm run clean && npm run lint && npm-run-all --parallel 'src:build:*'",
+    "test": "npm run build:production && npm-run-all --parallel test:unit test:integration",
+    "test:unit": "babel test/unit --out-dir tmp.tests/unit/ --source-maps && node scripts/check-version && jasmine tmp.tests/unit/index.js",
+    "test:integration": "npm run build:production && HEADLESS=true node test/integration/generate-access-token.cjs && parcel build --no-optimize --public-url=. test/integration/integration-tests-library-sdk.html --target integrationTestBrowser && parcel build --no-optimize --public-url=. test/integration/integration-tests-bundled-sdk.html --target integrationTestBundled && parcel build --no-optimize --public-url=. test/integration/integration-tests-library-sdk.js --target integrationTestNode && HEADLESS=true node scripts/run-integration-tests.js",
+    "lint": "eslint --fix 'src/**/*.js' 'test/**/*.js' 'scripts/**/*.js'",
+    "lint:check": "eslint 'src/**/*.js' 'test/**/*.js' 'scripts/**/*.js'",
+    "lint:staged": "lint-staged",
+    "clean": "rm -rf dist lib tmp.tests",
+    "version": "genversion --es6 --semi src/version.js && git add src/version.js",
     "src:build:node": "babel src/ --out-dir lib/node/ --source-maps",
-    "src:build:cjs": "BABEL_ENV=cjs babel src/ --out-dir lib/cjs/ --source-maps",
+    "src:build:cjs": "BABEL_ENV=cjs babel src/ --out-dir lib/cjs/ --source-maps --out-file-extension .cjs && node scripts/fix-cjs-paths.cjs",
     "src:build:browser": "BABEL_ENV=browser babel src/ --out-dir lib/browser/ --source-maps",
-    "src:build:browser.bundle": "parcel build src/index.js",
-    "src:clean": "rm -rf dist lib",
-    "src:build": "npm-run-all src:clean src:lint --print-label --parallel 'src:build:*'",
-    "unit:lint": "eslint --fix --parser-options=ecmaVersion:2018 'test/unit/**/*.js'",
-    "unit:clean": "rm -rf tmp.tests/unit",
-    "unit:build": "npm run unit:clean && babel test/unit --out-dir tmp.tests/unit/ --source-maps",
-    "unit:run": "node scripts/check-version && jasmine tmp.tests/unit/index.js",
-    "integration:lint": "eslint --fix --parser-options=ecmaVersion:2018 'test/integration/**/*.js'",
-    "integration:build:environment": "node test/integration/write-reactor-environment.js",
-    "integration:clean": "rm -rf tmp.tests/integration-{library,bundled}-sdk",
-    "integration:build:library": "parcel build --no-optimize --public-url=. test/integration/integration-tests-library-sdk.html --target integrationTestBrowser",
-    "integration:build:bundled": "parcel build --no-optimize --public-url=. test/integration/integration-tests-bundled-sdk.html --target integrationTestBundled",
-    "integration:build:node": "parcel build --no-optimize --public-url=. test/integration/integration-tests-library-sdk.js --target integrationTestNode",
-    "integration:build": "npm-run-all integration:clean integration:build:environment --print-label --parallel integration:build:*",
-    "integration:run": "node scripts/check-version && open http://localhost:5000/integration-library-sdk/ && open http://localhost:5000/integration-bundled-sdk && NODE_TLS_REJECT_UNAUTHORIZED=0 jasmine tmp.tests/integration-in-node/integration-tests-library-sdk.js",
-    "unit-tests": "npm-run-all unit:lint unit:build unit:run",
-    "integration-tests": "npm-run-all integration:lint integration:build integration:run",
-    "all-tests": "npm-run-all --print-label --parallel unit-tests integration-tests",
-    "src-watch": "nodemon --watch src/ --watch package.json --exec npm-run-all src:lint src:build",
-    "unit-watch": "nodemon --watch lib/node --watch test/unit/ --exec npm run unit-tests",
-    "integration-watch": "nodemon --watch lib/browser --watch test/integration/ --exec npm run integration-tests",
-    "all-watch": "npm-run-all --print-label --parallel src-watch unit-watch integration-watch",
-    "version": "genversion --es6 --semi src/version.js && git add src/version.js"
+    "src:build:browser.bundle": "parcel build src/index.js --target browserGlobal && mv dist/index.js dist/reactor-sdk.min.js"
   },
   "browserslist": [
     "last 2 chrome versions",
@@ -87,11 +79,6 @@
     "last 2 safari versions",
     "last 2 edge versions"
   ],
-  "nodemonConfig": {
-    "ignore": [
-      "test/integration/globals-for-browser.js"
-    ]
-  },
   "files": [
     "dist",
     "lib",
@@ -102,11 +89,13 @@
     "semver": "^6.3.1"
   },
   "devDependencies": {
+    "@adobe/auth-token": "^1.0.1",
     "@babel/cli": "^7.24.8",
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.4",
     "commander": "3.0.0",
     "dateformat": "3.0.3",
+    "dotenv": "^17.2.3",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
@@ -115,14 +104,26 @@
     "glob": "^10.4.5",
     "husky": "^6.0.0",
     "jasmine": "3.5.0",
+    "jsdom": "^27.0.0",
+    "lint-staged": "^16.2.3",
     "mkdirp": "^3.0.1",
     "nock": "11.5.0",
-    "nodemon": "^3.1.10",
     "npm-run-all": "^4.1.5",
     "parcel": "^2.16.0",
     "path": "0.12.7",
     "prettier": "^3.3.3",
     "rimraf": "^5.0.10"
+  },
+  "lint-staged": {
+    "src/**/*.js": [
+      "eslint --fix"
+    ],
+    "test/**/*.js": [
+      "eslint --fix"
+    ],
+    "scripts/**/*.js": [
+      "eslint --fix"
+    ]
   },
   "engines": {
     "node": ">=v22.19.0"

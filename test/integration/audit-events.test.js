@@ -42,7 +42,7 @@ helpers.describe('AuditEvent API', function () {
   });
 
   // get all the AuditEvents for the identified Property
-  async function auditEventsForProperty(propertyId) {
+  async function auditEventsForProperty() {
     /*eslint-disable camelcase*/
     const theAuditEvents = [];
     let pagination = { next_page: 1 };

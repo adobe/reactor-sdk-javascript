@@ -1,0 +1,13 @@
+{
+  "extends": ["../../.eslintrc"],
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-undef": "warn",
+    "no-redeclare": "warn"
+  },
+  "globals": {
+    "deleteExtensionPackage": "readonly",
+    "Reactor": "readonly"
+  }
+}
+

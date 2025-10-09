@@ -86,7 +86,6 @@ helpers.describe('Host API', function () {
   // Sort:   https://developer.adobelaunch.com/guides/api/sorting/
   helpers.it('lists filtered Hosts', async function () {
     const theProperty = await makeOrReuseTheTestProperty();
-    const larimar = await newHost('Larimar');
     const peridot = await newHost('Peridot');
     const kunzite = await newHost('Kunzite');
     var filteredResponse = await reactor.listHostsForProperty(theProperty.id, {

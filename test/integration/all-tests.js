@@ -79,6 +79,7 @@ import './profile.test.js';
 
 // Launch Types
 import './audit-events.test.js';
+import './browser-umd-build.test.js';
 import './builds.test.js';
 import './callbacks.test.js';
 import './companies.test.js';

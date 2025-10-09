@@ -196,6 +196,9 @@ Object.assign(
   rules
 );
 
-if (typeof window !== 'undefined' && typeof window.document !== 'undefined') {
+// Add version property to the prototype
+Reactor.prototype.version = version;
+
+if (typeof window !== 'undefined') {
   window.Reactor = Reactor;
 }

@@ -43,7 +43,7 @@ helpers.describe('Callback API', function () {
   // https://developer.adobelaunch.com/api/callbacks/create/
   helpers.it('creates a new Callback', async function () {
     // all the expectations are in createTestCallback()
-    const theCallback = await createTestCallback('https://example.com', [
+    await createTestCallback('https://example.com', [
       'rule.created',
       'data_element.created'
     ]);
@@ -58,7 +58,7 @@ helpers.describe('Callback API', function () {
     expect(deleteResponse).toBe(null);
 
     try {
-      const deadCB = await reactor.getCallback(theCallback.id);
+      await reactor.getCallback(theCallback.id);
       fail('getting a deleted callback should fail');
     } catch (error) {
       expect(error.status).toBe(404);

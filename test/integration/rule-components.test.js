@@ -42,7 +42,7 @@ helpers.describe('RuleComponent API', function () {
   // https://developer.adobelaunch.com/api/rule_components/create/
   helpers.it('creates a new RuleComponent', async function () {
     // all the expectations are in createTestRuleComponent
-    const rcOrem = await makeTestRC('Orem', 1);
+    await makeTestRC('Orem', 1);
   });
 
   // Delete a RuleComponent

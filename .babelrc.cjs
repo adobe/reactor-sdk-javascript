@@ -1,6 +1,11 @@
 module.exports = function (api) {
   api.cache(true);
 
+  // Skip Babel config if Parcel is running (Parcel has its own transpilation)
+  if (process.env.PARCEL_WORKER_ID || process.env.NODE_ENV === 'test') {
+    return {};
+  }
+
   const presets = [];
   const env = process.env.BABEL_ENV || process.env.NODE_ENV;
 
@@ -16,7 +21,7 @@ module.exports = function (api) {
       }
     ]);
   } else if (env === 'browser') {
-    // Browser build
+    // Browser build (not Parcel)
     presets.push([
       '@babel/preset-env',
       {

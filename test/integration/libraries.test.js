@@ -166,10 +166,9 @@ helpers.describe('Library API', function () {
   helpers.it("lists Library's Extensions", async function () {
     const d = await buildLibraryWithResources();
     const aRev = await helpers.analyticsExtensionRevision(theProperty);
-    const addResponse = await reactor.addExtensionRelationshipsToLibrary(
-      d.library.id,
-      [{ id: aRev.id, type: 'extensions' }]
-    );
+    await reactor.addExtensionRelationshipsToLibrary(d.library.id, [
+      { id: aRev.id, type: 'extensions' }
+    ]);
 
     const lsResponse = await reactor.listExtensionsForLibrary(d.library.id);
     const lsIds = lsResponse.data.map((r) => r.id);
@@ -187,10 +186,9 @@ helpers.describe('Library API', function () {
   helpers.it('lists Library/Extension relationships', async function () {
     const d = await buildLibraryWithResources();
     const aRev = await helpers.analyticsExtensionRevision(theProperty);
-    const addResponse = await reactor.addExtensionRelationshipsToLibrary(
-      d.library.id,
-      [{ id: aRev.id, type: 'extensions' }]
-    );
+    await reactor.addExtensionRelationshipsToLibrary(d.library.id, [
+      { id: aRev.id, type: 'extensions' }
+    ]);
 
     const response = await reactor.listExtensionRelationshipsForLibrary(
       d.library.id
@@ -288,9 +286,7 @@ helpers.describe('Library API', function () {
     expect(rmIds).toContain(d.dataElements[1].id);
     expect(rmIds).toContain(d.dataElements[2].id);
 
-    const lsResponse = await reactor.listDataElementRelationshipsForLibrary(
-      d.library.id
-    );
+    await reactor.listDataElementRelationshipsForLibrary(d.library.id);
     const lsIds = rmResponse.data.map((r) => r.id);
     expect(lsIds).not.toContain(d.dataElements[0].id);
     expect(lsIds).toContain(d.dataElements[1].id);
@@ -330,10 +326,9 @@ helpers.describe('Library API', function () {
     const lsIds = lsResponse.data.map((r) => r.id);
     expect(lsIds).toContain(aRev.id);
 
-    const rmResponse = await reactor.removeExtensionRelationshipsFromLibrary(
-      testLib.id,
-      [{ id: aRev.id, type: 'extensions' }]
-    );
+    await reactor.removeExtensionRelationshipsFromLibrary(testLib.id, [
+      { id: aRev.id, type: 'extensions' }
+    ]);
 
     const lsResponse2 = await reactor.listExtensionRelationshipsForLibrary(
       testLib.id

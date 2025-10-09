@@ -6,17 +6,20 @@ name: ci
 on:
   pull_request:
     branches: [master]
+  push:
+    branches: [master]
 
 jobs:
   build:
-    name: 'Unit Test'
+    name: 'Test'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 14.x
-      - uses: actions/cache@v2
+          node-version: 'lts/jod'
+          registry-url: https://registry.npmjs.org/
+      - uses: actions/cache@v4
         id: npm-cache
         with:
           path: '**/node_modules'
@@ -24,4 +27,27 @@ jobs:
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
-      - run: npm test # test runs build to ensure the latest code is bundled for tests.
+      - name: Lint code
+        run: npm run lint:check
+      - name: Create .env file for integration tests
+        run: |
+          cat > .env << EOF
+          # GitHub Actions environment - integration tests will use mock/test values
+          RSDK_ADOBE_CLIENT_ID=${{ secrets.RSDK_ADOBE_CLIENT_ID  }}
+          RSDK_ADOBE_CLIENT_SECRET=${{ secrets.RSDK_ADOBE_CLIENT_SECRET }}
+          RSDK_ADOBE_SCOPES=${{ secrets.RSDK_ADOBE_SCOPES }}
+          RSDK_ADOBE_ORG_ID=${{ secrets.RSDK_ADOBE_ORG_ID }}
+          RSDK_ADOBE_REACTOR_COMPANY_ID=${{ secrets.RSDK_ADOBE_REACTOR_COMPANY_ID }}
+          RSDK_ADOBE_REACTOR_URL=${{ secrets.RSDK_ADOBE_REACTOR_URL }}
+          RSDK_ADOBE_ENVIRONMENT=${{ secrets.RSDK_ADOBE_ENVIRONMENT }}
+          EOF
+      - name: Build project
+        run: npm run build:production
+      - name: Run unit tests
+        run: npm run test:unit
+        env:
+          NODE_ENV: test
+      - name: Run integration tests
+        run: npm run test:integration
+        env:
+          NODE_ENV: test

@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import reactor from './reactor';
 import helpers from './helpers';
 
 //TODO: test the build endpoints once Library tests have been written
@@ -21,7 +20,6 @@ helpers.describe('Build API', function () {
   // Create a Build
   // https://developer.adobelaunch.com/api/builds/create/
   helpers.xit('creates a new Build', async function () {
-    const theProperty = await helpers.findOrMakeTestingProperty('Build');
     //TODO: test createBuild
   });
 

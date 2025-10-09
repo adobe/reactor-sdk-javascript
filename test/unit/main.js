@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 
 import './helpers.js';
+import './package-exports.test.js';
 import './audit-event.test.js';
 import './build.test.js';
 import './callback.test.js';

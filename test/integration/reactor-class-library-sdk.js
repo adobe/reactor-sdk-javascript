@@ -14,7 +14,19 @@ governing permissions and limitations under the License.
 This package exports nothing. However, loading it has the side effect of loading
 the Reactor class into `jasmine.getEnv().reactorIntegrationTestGlobals.Reactor`.
 */
-import Reactor from '../../dist/reactor-sdk-library.min.js';
+import Reactor from '../../lib/node/index.js';
 
-var globals = jasmine.getEnv().reactorIntegrationTestGlobals;
-globals.Reactor = Reactor;
+// Check if jasmine is available before using it
+if (typeof jasmine !== 'undefined') {
+  var globals = jasmine.getEnv().reactorIntegrationTestGlobals;
+  if (globals) {
+    globals.Reactor = Reactor;
+  }
+} else {
+  // If jasmine is not available, we'll export Reactor directly
+  if (typeof globalThis !== 'undefined') {
+    globalThis.Reactor = Reactor;
+  } else if (typeof global !== 'undefined') {
+    global.Reactor = Reactor;
+  }
+}
