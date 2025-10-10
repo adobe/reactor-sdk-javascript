@@ -1,5 +1,6 @@
 name: CI notify
 
+# Trigger on manual dispatch OR when Node.js Package workflow succeeds
 on:
   workflow_dispatch:
     inputs:
@@ -14,9 +15,12 @@ on:
       - completed
 
 jobs:
-  notify:
+  check-should-notify:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    outputs:
+      notify: ${{ steps.should-notify.outputs.notify }}
+      tag: ${{ steps.check-tag.outputs.tag }}
     steps:
       - name: Echo reason
         if: ${{ github.event_name == 'workflow_dispatch' }}
@@ -25,6 +29,98 @@ jobs:
         env:
           REASON: ${{ github.event.inputs.reason }}
 
-      - name: Echo success
+      # Check if the workflow was triggered with 'latest' tag by examining the workflow run
+      - name: Check if latest tag was used
+        id: check-tag
         if: ${{ github.event_name == 'workflow_run' }}
-        run: echo "CI notify triggered by successful 'Node.js Package' workflow"
+        run: |
+          # Get the workflow run details to check if it was triggered with latest tag
+          WORKFLOW_ID="${{ github.event.workflow_run.id }}"
+
+          # Fetch workflow run details using GitHub API
+          WORKFLOW_DETAILS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${WORKFLOW_ID}")
+
+          # Check if this was a workflow_dispatch event (manual trigger)
+          EVENT_TYPE=$(echo "$WORKFLOW_DETAILS" | jq -r '.event')
+
+          if [ "$EVENT_TYPE" = "workflow_dispatch" ]; then
+            # Extract the actual tag input from the workflow run
+            TAG_INPUT=$(echo "$WORKFLOW_DETAILS" | jq -r '.inputs.tag // empty')
+            if [ -n "$TAG_INPUT" ]; then
+              echo "tag=$TAG_INPUT" >> $GITHUB_OUTPUT
+              echo "Found tag input: $TAG_INPUT"
+            else
+              echo "tag=unknown" >> $GITHUB_OUTPUT
+              echo "No tag input found in workflow_dispatch event"
+            fi
+          elif [ "$EVENT_TYPE" = "release" ]; then
+            # For release events, it always uses latest
+            echo "tag=latest" >> $GITHUB_OUTPUT
+            echo "Release event detected, using latest"
+          else
+            echo "tag=unknown" >> $GITHUB_OUTPUT
+            echo "Unknown event type: $EVENT_TYPE"
+          fi
+
+      # Determine if we should notify: always for manual dispatch, only for 'latest' tag on workflow_run
+      - name: Should notify
+        id: should-notify
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "notify=true" >> $GITHUB_OUTPUT
+            echo "Manual dispatch - will notify"
+          elif [ "${{ github.event_name }}" = "workflow_run" ]; then
+            if [ "${{ steps.check-tag.outputs.tag }}" = "latest" ]; then
+              echo "notify=true" >> $GITHUB_OUTPUT
+              echo "Workflow run with 'latest' tag - will notify"
+            else
+              echo "notify=false" >> $GITHUB_OUTPUT
+              echo "Workflow run with '${{ steps.check-tag.outputs.tag }}' tag - will NOT notify"
+            fi
+          else
+            echo "notify=false" >> $GITHUB_OUTPUT
+            echo "Unknown event type - will NOT notify"
+          fi
+
+  notify-slack:
+    runs-on: ubuntu-latest
+    needs: check-should-notify
+    if: ${{ needs.check-should-notify.outputs.notify == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get latest tag
+        uses: oprypin/find-latest-tag@v1
+        with:
+          repository: '${{ github.repository }}'
+          releases-only: true
+        id: repoTag
+
+      - name: Show ENV
+        run: env
+
+      - name: Notify Slack of Release
+        uses: tokorom/action-slack-incoming-webhook@main
+        env:
+          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          text: 'A new version of ${{ github.event.repository.full_name }}[${{ steps.repoTag.outputs.tag }}] has been released'
+          attachments: |
+            [
+              {
+                "color": "good",
+                "author_name": "${{ github.actor }}",
+                "author_icon": "${{ github.event.sender.avatar_url }}",
+                "fields": [
+                  {
+                    "title": "Repo URL",
+                    "value": "${{ github.event.repository.html_url }}"
+                  },
+                  {
+                    "title": "See Releases",
+                    "value": "${{ github.event.repository.html_url }}/releases"
+                  }
+               ]
+              }
+            ]

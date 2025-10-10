@@ -45,6 +45,10 @@ jobs:
         run: npm run test:unit
         env:
           NODE_ENV: test
+      - name: Clean Sensitive Files
+        run: |
+          npm run clean:integration:setup
+          rm -rf .env
       - uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}

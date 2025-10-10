@@ -1,6 +1,6 @@
 {
   "name": "@adobe/reactor-sdk",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "description": "JavaScript SDK for the Reactor API",
   "author": {
     "name": "Adobe Systems",
@@ -66,7 +66,8 @@
     "lint": "eslint --fix 'src/**/*.js' 'test/**/*.js' 'scripts/**/*.js'",
     "lint:check": "eslint 'src/**/*.js' 'test/**/*.js' 'scripts/**/*.js'",
     "lint:staged": "lint-staged",
-    "clean": "rm -rf dist lib tmp.tests",
+    "clean": "rm -rf dist lib && npm run clean:integration:setup",
+    "clean:integration:setup": "rm -rf tmp.tests",
     "version": "genversion --es6 --semi src/version.js && git add src/version.js",
     "src:build:node": "babel src/ --out-dir lib/node/ --source-maps",
     "src:build:cjs": "BABEL_ENV=cjs babel src/ --out-dir lib/cjs/ --source-maps --out-file-extension .cjs && node scripts/fix-cjs-paths.cjs",
