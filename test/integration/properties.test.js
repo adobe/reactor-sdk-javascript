@@ -32,12 +32,10 @@ helpers.describe('Property API', function () {
 
   // Create a Property
   // https://developer.adobelaunch.com/api/properties/create/
-  it('creates a new Property', function () {
+  helpers.it('creates a new Property', function () {
     // A Property should have been created in beforeAll().
     expect(newProperty.id).toMatch(helpers.idPR);
     expect(newProperty.attributes.name).toMatch(/NuProp/);
-    console.log(`✅ Successfully created property: ${newProperty.id}`);
-    console.log(`Property name: ${newProperty.attributes.name}`);
   });
 
   // Delete a Property

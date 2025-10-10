@@ -15,46 +15,43 @@ cp .env.example .env
 
 ### 2. Get Your Credentials
 
-#### Access Token
+Refer to your tech account integration for your Client ID and Client Secret. You can get your company by logging into the
+the Adobe Tags Launch UI and navigating to Data Collection.
 
-1. Go to [Adobe Developer Console](https://developer.adobe.com/console)
-2. Create or select your project
-3. Add the "Adobe Experience Platform Launch API"
-4. Generate a JWT or OAuth token
-5. Copy the access token
-
-#### Organization ID
+#### Client ID, Client Secret, and Organization ID
 
 - Found in Adobe Admin Console under your organization profile
-- Format: `ORG123456789@AdobeOrg`
+- Organization ID Format: `ORG123456789@AdobeOrg`
 
 #### Company ID
 
-- Use the Reactor API to list companies: `GET /companies`
-- Or found in the Launch UI URL when viewing properties
+- You can get your company by logging into the the Adobe Tags Launch UI and navigating to Data Collection.
 - Format: `CO1234567890abcdef1234567890abcdef`
 
 ### 3. Configure Your .env File
 
 ```bash
-ACCESS_TOKEN=your_jwt_or_oauth_token_here
-ORG_ID=your_org_id@AdobeOrg
-COMPANY_ID=CO1234567890abcdef1234567890abcdef
-REACTOR_URL=https://reactor.adobe.io  # Optional, defaults to production
+RSDK_ADOBE_CLIENT_ID=your_client_id
+RSDK_ADOBE_CLIENT_SECRET=your_client_secret
+RSDK_ADOBE_SCOPES=sane_defaults_in_.env.example
+RSDK_ADOBE_ORG_ID=your_org_id@AdobeOrg
+RSDK_ADOBE_REACTOR_COMPANY_ID=your_company_CO12345678...
+RSDK_ADOBE_REACTOR_URL=https://reactor-stage.adobe.io
+RSDK_ADOBE_ENVIRONMENT=stage
 ```
 
 ### 4. Run Integration Tests
 
 ```bash
-npm run integration-tests
+npm run test:integration
 ```
 
 ## Security Notes
 
 - ✅ `.env` files are automatically excluded from version control
 - ✅ Use `.env.example` to document required variables without exposing values
-- ✅ Credentials are loaded at runtime, never hardcoded
-- ⚠️ Keep your access tokens secure and rotate them regularly
+- ✅ Access Token is fetched at runtime, and temporarily stored in tmp.tests/.env.access-token
+- ⚠️ Keep your Client ID and Client Secret secure
 - ⚠️ Never commit actual credentials to the repository
 
 ## CI/CD Setup
@@ -63,20 +60,8 @@ For continuous integration, set environment variables in your CI platform:
 
 ### GitHub Actions
 
-```yaml
-env:
-  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-  ORG_ID: ${{ secrets.ORG_ID }}
-  COMPANY_ID: ${{ secrets.COMPANY_ID }}
-```
-
-### Other CI Platforms
-
-Set the same environment variables in your CI configuration.
+- Ensure that everything from .env is placed in respository secrets
 
 ## Staging vs Production
 
-- **Production**: `REACTOR_URL=https://reactor.adobe.io` (default)
-- **Staging**: `REACTOR_URL=https://reactor-stage.adobe.io`
-
-Use staging for development and testing to avoid affecting production data.
+- You'll need a tech account for each environment and then adjust RSDK_ADOBE_ENVIRONMENT and RSDK_ADOBE_REACTOR_URL accordingly.

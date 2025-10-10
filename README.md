@@ -1,6 +1,6 @@
 # JavaScript Reactor SDK
 
-[![Travis badge](https://travis-ci.com/adobe/reactor-sdk-javascript.svg?branch=master)](https://travis-ci.com/adobe/reactor-sdk-javascript/settings)
+[![CI](https://github.com/adobe/reactor-sdk-javascript/actions/workflows/dev.yaml/badge.svg?branch=master)](https://github.com/adobe/reactor-sdk-javascript/actions/workflows/dev.yaml)
 [![npm version](https://badge.fury.io/js/%40adobe%2Freactor-sdk.svg)](https://badge.fury.io/js/%40adobe%2Freactor-sdk)
 [![Greenkeeper badge](https://badges.greenkeeper.io/adobe/reactor-sdk-javascript.svg)](https://account.greenkeeper.io/account/adobe#repositories)
 
@@ -189,7 +189,6 @@ The build process generates four versions of the library:
 2. `./lib/cjs/*.cjs` - CommonJS modules for Node.js projects
 3. `./lib/browser/*.js` - Individual transpiled files for bundlers in browser projects
 4. `./dist/reactor-sdk.min.js` (15.84 kB) - Single bundled file for direct browser inclusion
-5. `./dist/reactor-sdk-bundled.min.js` (50.75 kB) - Larger bundled file with additional features
 
 With the SDK built, you can run its nodejs unit tests:
 
