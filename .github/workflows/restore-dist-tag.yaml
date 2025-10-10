@@ -30,16 +30,8 @@ jobs:
         with:
           node-version: 'lts/jod'
 
-      - name: Authenticate with npm
-        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-        env:
-          NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
-
       - name: Restore dist-tag
-        run: npm dist-tag add @adobe/reactor-sdk@${{ github.event.inputs.version }} ${{ github.event.inputs.tag }}
+        run: npm dist-tag add @adobe/reactor-sdk@${{ github.event.inputs.version }} ${{ github.event.inputs.tag }} --//registry.npmjs.org/:_authToken=${{ secrets.ADOBE_BOT_NPM_TOKEN }}
 
       - name: Show updated dist-tags
-        run: npm dist-tag ls @adobe/reactor-sdk
-
-      - name: Clean up .npmrc
-        run: rm -f ~/.npmrc
+        run: npm dist-tag ls @adobe/reactor-sdk --//registry.npmjs.org/:_authToken=${{ secrets.ADOBE_BOT_NPM_TOKEN }}
