@@ -24,7 +24,7 @@
   "type": "module",
   "main": "./lib/cjs/index.cjs",
   "module": "./lib/node/index.js",
-  "browser": "dist/reactor-sdk-.min.js",
+  "browser": "dist/reactor-sdk.min.js",
   "exports": {
     ".": {
       "import": "./lib/node/index.js",
@@ -42,7 +42,8 @@
       "outputFormat": "global",
       "isLibrary": true,
       "sourceMap": false,
-      "publicUrl": "./"
+      "publicUrl": "./",
+      "optimize": true
     },
     "integrationTestBrowser": {
       "distDir": "tmp.tests/integration-library-sdk/"
@@ -72,7 +73,7 @@
     "src:build:node": "babel src/ --out-dir lib/node/ --source-maps",
     "src:build:cjs": "BABEL_ENV=cjs babel src/ --out-dir lib/cjs/ --source-maps --out-file-extension .cjs && node scripts/fix-cjs-paths.cjs",
     "src:build:browser": "BABEL_ENV=browser babel src/ --out-dir lib/browser/ --source-maps",
-    "src:build:browser.bundle": "parcel build src/index.js --target browserGlobal && mv dist/index.js dist/reactor-sdk.min.js"
+    "src:build:browser.bundle": "parcel build src/index.js --target browserGlobal --no-source-maps && mv dist/index.js dist/reactor-sdk.min.js"
   },
   "browserslist": [
     "last 2 chrome versions",
@@ -82,8 +83,7 @@
   ],
   "files": [
     "dist",
-    "lib",
-    "scripts"
+    "lib"
   ],
   "dependencies": {
     "node-fetch": "^2.6.7",
