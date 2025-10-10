@@ -20,11 +20,11 @@ jobs:
     steps:
       - name: Echo reason
         if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: echo "Manual dispatch reason: $REASON"
+        run: |
+          echo "Manual dispatch reason: $REASON"
         env:
           REASON: ${{ github.event.inputs.reason }}
 
       - name: Echo success
         if: ${{ github.event_name == 'workflow_run' }}
         run: echo "CI notify triggered by successful 'Node.js Package' workflow"
-
