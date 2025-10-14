@@ -1,6 +1,6 @@
 {
   "name": "@adobe/reactor-sdk",
-  "version": "2.0.0-beta.4",
+  "version": "2.0.0-beta.5",
   "description": "JavaScript SDK for the Reactor API",
   "author": {
     "name": "Adobe Systems",
@@ -83,7 +83,8 @@
   ],
   "files": [
     "dist",
-    "lib"
+    "lib",
+    "scripts"
   ],
   "dependencies": {
     "node-fetch": "^2.6.7",
