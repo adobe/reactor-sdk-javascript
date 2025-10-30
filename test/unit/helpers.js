@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import nock from 'nock';
+import { setupServer } from 'msw/node';
+import { http, HttpResponse } from 'msw';
 import Reactor from '../../lib/node/index.js';
 
 const accessToken = 'No real token needed here because Launch calls are mocked';
@@ -19,28 +20,46 @@ const reactorUrl = 'https://reactor.sample.com';
 const reqheaders = Reactor.prototype.reactorHeaders(accessToken);
 const customHeaders = { 'x-gw-ims-org-id': orgId };
 
+const server = setupServer();
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
 function expectRequest(method, path, body) {
-  const initializedNock = nock(reactorUrl, {
-    reqheaders: reqheaders
-  });
-  const args = [path];
+  let normalizedBody;
   if (body != null) {
-    body = !Object.prototype.hasOwnProperty.call(body, 'data')
+    normalizedBody = !Object.prototype.hasOwnProperty.call(body, 'data')
       ? { data: body }
       : body;
-    args.push(body);
   }
-  initializedNock[method.toLowerCase()].apply(initializedNock, args).reply(200);
+
+  // msw expects the matchers to not have the query params.
+  const [cleanPath] = path.split('?');
+  const fullUrl = `${reactorUrl}${cleanPath}`;
+
+  // Register an MSW handler for this expected call
+  server.use(
+    http[method.toLowerCase()](fullUrl, async ({ request }) => {
+      if (normalizedBody != null) {
+        const json = await request.json().catch(() => ({}));
+        expect(json).toEqual(normalizedBody);
+      }
+
+      return HttpResponse.json({ ok: true }, { status: 200 });
+    })
+  );
 }
 
-var reactor = new Reactor(accessToken, {
-  reactorUrl: reactorUrl,
+const reactor = new Reactor(accessToken, {
+  reactorUrl,
   customHeaders: { 'x-gw-ims-org-id': orgId }
 });
+
 jasmine.getEnv().reactorContext = {
-  reactorUrl: reactorUrl,
-  accessToken: accessToken,
+  reactorUrl,
+  accessToken,
   reqheaders: { ...reqheaders, ...customHeaders },
-  reactor: reactor,
-  expectRequest: expectRequest
+  reactor,
+  expectRequest
 };

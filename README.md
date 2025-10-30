@@ -68,7 +68,7 @@ Put this text in a file named `list-properties.js`:
 ```javascript
 #!/usr/bin/env node
 import Reactor from '@adobe/reactor-sdk';
-// Or for CommonJS: const { default: Reactor } = require('@adobe/reactor-sdk');
+// Or for CommonJS: const { default: Reactor } = require('@adobe/reactor-sdk').default;
 
 (async function () {
   const accessToken = process.env['ACCESS_TOKEN'];
@@ -129,7 +129,7 @@ success
 A browser implementation of this functionality would differ in two ways:
 
 1. it would use the pre-initialized `window.Reactor` rather than
-   `import Reactor` or `require('@adobe/reactor-sdk')`
+   `import Reactor` or `require('@adobe/reactor-sdk').default`
 2. providing your access token needs a different approach, since `process.env`
    is not available in browsers.
    Note: you _don't_ want to inline the text of your access token, unless you
@@ -182,6 +182,8 @@ cd reactor-sdk-javascript
 npm ci           # install dependencies
 npm run build:production    # build the Reactor SDK library
 ```
+
+To get integration testing running, see [the integration testing setup instructions](./docs/INTEGRATION_TESTING.md).
 
 The build process generates four versions of the library:
 

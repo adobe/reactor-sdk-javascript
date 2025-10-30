@@ -41,7 +41,7 @@
       "distDir": "dist/",
       "outputFormat": "global",
       "isLibrary": true,
-      "sourceMap": false,
+      "sourceMap": true,
       "publicUrl": "./",
       "optimize": true
     },
@@ -87,7 +87,6 @@
     "scripts"
   ],
   "dependencies": {
-    "node-fetch": "^2.6.7",
     "semver": "^6.3.1"
   },
   "devDependencies": {
@@ -109,12 +108,12 @@
     "jsdom": "^27.0.0",
     "lint-staged": "^16.2.3",
     "mkdirp": "^3.0.1",
+    "msw": "^2.11.6",
     "nock": "11.5.0",
     "npm-run-all": "^4.1.5",
     "parcel": "^2.16.0",
     "path": "0.12.7",
-    "prettier": "^3.3.3",
-    "rimraf": "^5.0.10"
+    "prettier": "^3.3.3"
   },
   "lint-staged": {
     "src/**/*.js": [

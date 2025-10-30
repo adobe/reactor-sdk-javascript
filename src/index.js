@@ -10,8 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import fetch from 'node-fetch';
-
 import { version } from './version.js';
 import * as hosts from './hosts.js';
 import * as auditEvents from './audit-events.js';
@@ -65,7 +63,6 @@ export default class Reactor {
     return {
       Accept: 'application/vnd.api+json;revision=1',
       'Content-Type': 'application/vnd.api+json',
-      'Cache-control': 'no-cache',
       Authorization: `Bearer ${accessToken}`,
       'X-Api-Key': 'Activation-DTM',
       'User-Agent': `adobe/reactor-sdk/javascript/${version}`
