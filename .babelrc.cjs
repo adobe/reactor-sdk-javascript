@@ -14,7 +14,7 @@ module.exports = function (api) {
   api.cache(true);
 
   // Skip Babel config if Parcel is running (Parcel has its own transpilation)
-  if (process.env.PARCEL_WORKER_ID || process.env.NODE_ENV === 'test') {
+  if (process.env.PARCEL_WORKER_ID) {
     return {};
   }
 

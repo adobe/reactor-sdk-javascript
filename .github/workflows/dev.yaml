@@ -43,8 +43,6 @@ jobs:
           EOF
       - name: Build:Production && Run Tests
         run: npm test
-        env:
-          NODE_ENV: test
       - name: Clean Sensitive Files
         if: always()
         run: |
