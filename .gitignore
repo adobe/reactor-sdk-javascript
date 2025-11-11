@@ -12,9 +12,9 @@ node_modules
 .parcel-cache/
 
 # Environment variables (contains sensitive credentials)
-.env
-.env.local
-.env.*.local
+**/.env*
+!**/.env.example
+**/.*access-token.*
 
 ## Directory-based project format
 .idea/

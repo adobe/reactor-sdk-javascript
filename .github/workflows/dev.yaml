@@ -41,14 +41,8 @@ jobs:
           RSDK_ADOBE_REACTOR_URL=${{ secrets.RSDK_ADOBE_REACTOR_URL }}
           RSDK_ADOBE_ENVIRONMENT=${{ secrets.RSDK_ADOBE_ENVIRONMENT }}
           EOF
-      - name: Build project
-        run: npm run build:production
-      - name: Run unit tests
-        run: npm run test:unit
-        env:
-          NODE_ENV: test
-      - name: Run integration tests
-        run: npm run test:integration
+      - name: Build:Production && Run Tests
+        run: npm test
         env:
           NODE_ENV: test
       - name: Clean Sensitive Files

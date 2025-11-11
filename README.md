@@ -341,6 +341,13 @@ const Reactor = require('@adobe/reactor-sdk').default;
 Contributions are welcomed! Read the [Contributing Guide](https://github.com/adobe/reactor-sdk-javascript/blob/master/CONTRIBUTING.md)
 for more information.
 
+To get started:
+
+1. Install [node.js](https://nodejs.org/).
+1. Clone the repository.
+1. After navigating into the project directory, install project dependencies by running `npm install`.
+1. `cp .env-example .env` and modify the environment variables as needed.
+
 Before submitting your PR
 
 ```bash

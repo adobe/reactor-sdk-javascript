@@ -39,9 +39,7 @@ jobs:
         run: npm ci
       - name: Lint code
         run: npm run lint:check
-      - name: Build for production
-        run: npm run build:production
-      - name: Run unit tests
+      - name: Build:Production and run unit tests
         run: npm run test:unit
         env:
           NODE_ENV: test
