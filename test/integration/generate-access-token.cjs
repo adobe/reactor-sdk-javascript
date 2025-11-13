@@ -10,14 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const fs = require('fs');
 const path = require('path');
 const { auth } = require('@adobe/auth-token');
 
 // load main env for client id/secret, etc
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+require('dotenv').config({
+  path: path.resolve(__dirname, '../../.env'),
+  quiet: true
+});
 
-async function generateAccessToken() {
+(async function generateAccessToken() {
   if (
     !process.env.RSDK_ADOBE_CLIENT_ID ||
     !process.env.RSDK_ADOBE_CLIENT_SECRET ||
@@ -39,32 +41,9 @@ async function generateAccessToken() {
     };
 
     const { access_token: freshToken } = await auth(config);
-    return freshToken;
+    process.stdout.write(freshToken);
   } catch (error) {
     console.error('Failed to generate access token:', error.message);
     process.exit(1);
   }
-}
-
-async function main() {
-  const accessToken = await generateAccessToken();
-
-  const tmpDir = path.resolve(__dirname, '../../tmp.tests');
-  if (!fs.existsSync(tmpDir)) {
-    fs.mkdirSync(tmpDir, { recursive: true });
-  }
-
-  const accessTokenEnvPath = path.join(tmpDir, '.env.access-token');
-
-  const content = `RSDK_ACCESS_TOKEN=${accessToken}\n`;
-
-  fs.writeFileSync(accessTokenEnvPath, content, 'utf-8');
-  console.log(`✅ Wrote fresh ACCESS_TOKEN to ${accessTokenEnvPath}`);
-
-  process.exit(0);
-}
-
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+})();

@@ -150,7 +150,7 @@ async function runIntegrationTests() {
     await new Promise((resolve, reject) => {
       const jasmine = spawn(
         'jasmine',
-        ['tmp.tests/integration-in-node/integration-tests-library-sdk.js'],
+        ['tmp.tests/integration-in-node/index.js'],
         {
           stdio: 'inherit'
         }

@@ -12,14 +12,11 @@ governing permissions and limitations under the License.
 
 import dotenv from 'dotenv';
 import path from 'path';
+// esmodules version of Reactor
+import Reactor from '../../../../lib/node/index.js';
 
 // Load main .env (client id/secret etc)
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
-
-// Load fresh access token from tmp.tests/.env.access-token
-dotenv.config({
-  path: path.resolve(__dirname, '../../tmp.tests/.env.access-token')
-});
+dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
 
 // Now set up Jasmine globals
 let globals = jasmine.getEnv().reactorIntegrationTestGlobals;
@@ -33,4 +30,4 @@ if (!globals) {
   jasmine.getEnv().reactorIntegrationTestGlobals = globals;
 }
 
-export { globals as default };
+globals.Reactor = Reactor;

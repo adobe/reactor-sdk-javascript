@@ -45,12 +45,6 @@
       "publicUrl": "./",
       "optimize": true
     },
-    "integrationTestBrowser": {
-      "distDir": "tmp.tests/integration-library-sdk/"
-    },
-    "integrationTestBundled": {
-      "distDir": "tmp.tests/integration-bundled-sdk/"
-    },
     "integrationTestNode": {
       "distDir": "tmp.tests/integration-in-node/",
       "outputFormat": "esmodule"
@@ -65,7 +59,8 @@
     "test:unit": "npm run build:production && npm run execute-unit-tests",
     "test:integration": "npm run build:production && npm run execute-integration-tests",
     "execute-unit-tests": "babel test/unit --out-dir tmp.tests/unit/ --source-maps && node scripts/check-version && jasmine tmp.tests/unit/index.js",
-    "execute-integration-tests": "HEADLESS=true node test/integration/generate-access-token.cjs && parcel build --no-optimize --public-url=. test/integration/integration-tests-library-sdk.html --target integrationTestBrowser && parcel build --no-optimize --public-url=. test/integration/integration-tests-bundled-sdk.html --target integrationTestBundled && parcel build --no-optimize --public-url=. test/integration/integration-tests-library-sdk.js --target integrationTestNode && HEADLESS=true node scripts/run-integration-tests.js",
+    "execute-integration-tests": "export RSDK_ACCESS_TOKEN=$(node test/integration/generate-access-token.cjs) && npm run integration:parcel:bundles && HEADLESS=true node scripts/run-integration-tests.js",
+    "integration:parcel:bundles": "parcel build --no-optimize --public-url=. test/integration/setup/esmodules/index.js --target integrationTestNode",
     "lint": "eslint --fix 'src/**/*.js' 'test/**/*.js' 'scripts/**/*.js'",
     "lint:check": "eslint 'src/**/*.js' 'test/**/*.js' 'scripts/**/*.js'",
     "lint:staged": "lint-staged",
@@ -111,7 +106,6 @@
     "lint-staged": "^16.2.3",
     "mkdirp": "^3.0.1",
     "msw": "^2.11.6",
-    "nock": "11.5.0",
     "npm-run-all": "^4.1.5",
     "parcel": "^2.16.0",
     "path": "0.12.7",
