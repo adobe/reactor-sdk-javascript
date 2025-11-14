@@ -145,30 +145,145 @@ async function runIntegrationTests() {
       console.log('🤖 Skipping browser opening (CI/headless mode)');
     }
 
-    // Step 5: Run Node.js integration tests
-    console.log('🚀 Running Node.js integration tests...');
-    await new Promise((resolve, reject) => {
-      const jasmine = spawn('jasmine', ['tmp.tests/commonjs/index.cjs'], {
-        stdio: 'inherit'
-      });
+    // Step 5: Run Node.js integration tests in parallel with immediate termination on failure
+    console.log('🚀 Running Node.js integration tests in parallel...');
 
-      jasmine.on('close', (code) => {
-        if (code === 0) {
-          console.log('✅ Node.js integration tests completed successfully');
-          resolve();
-        } else {
-          console.error(
-            `❌ Node.js integration tests failed with exit code ${code}`
-          );
-          reject(new Error(`Tests failed with exit code ${code}`));
-        }
-      });
+    let commonJSProcess = null;
+    let esModuleProcess = null;
+    let testsFailed = false;
 
-      jasmine.on('error', (error) => {
-        console.error('❌ Failed to start jasmine:', error.message);
-        reject(error);
+    const killAllTestProcesses = async () => {
+      if (testsFailed) return; // Already cleaning up
+      testsFailed = true;
+
+      console.log('🛑 Terminating all test processes immediately...');
+
+      if (commonJSProcess && !commonJSProcess.killed) {
+        console.log('🛑 Killing CommonJS test process...');
+        commonJSProcess.kill('SIGTERM');
+        // Force kill if it doesn't respond quickly
+        setTimeout(() => {
+          if (!commonJSProcess.killed) {
+            commonJSProcess.kill('SIGKILL');
+          }
+        }, 2000);
+      }
+
+      if (esModuleProcess && !esModuleProcess.killed) {
+        console.log('🛑 Killing ES Module test process...');
+        esModuleProcess.kill('SIGTERM');
+        // Force kill if it doesn't respond quickly
+        setTimeout(() => {
+          if (!esModuleProcess.killed) {
+            esModuleProcess.kill('SIGKILL');
+          }
+        }, 2000);
+      }
+
+      // Wait for processes to terminate
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+    };
+
+    const runCommonJSTests = () => {
+      return new Promise((resolve, reject) => {
+        console.log('📦 Starting CommonJS tests...');
+        commonJSProcess = spawn('jasmine', ['tmp.tests/commonjs/index.cjs'], {
+          stdio: ['inherit', 'pipe', 'pipe']
+        });
+
+        commonJSProcess.stdout.on('data', (data) => {
+          if (!testsFailed) {
+            console.log(`[CommonJS] ${data.toString().trim()}`);
+          }
+        });
+
+        commonJSProcess.stderr.on('data', (data) => {
+          if (!testsFailed) {
+            console.error(`[CommonJS Error] ${data.toString().trim()}`);
+          }
+        });
+
+        commonJSProcess.on('close', (code) => {
+          if (testsFailed) return;
+
+          if (code === 0) {
+            console.log('✅ CommonJS integration tests completed successfully');
+            resolve();
+          } else {
+            console.error(
+              `❌ CommonJS integration tests failed with exit code ${code}`
+            );
+            killAllTestProcesses();
+            reject(new Error(`CommonJS tests failed with exit code ${code}`));
+          }
+        });
+
+        commonJSProcess.on('error', (error) => {
+          if (testsFailed) return;
+
+          console.error('❌ Failed to start CommonJS jasmine:', error.message);
+          killAllTestProcesses();
+          reject(error);
+        });
       });
-    });
+    };
+
+    const runESModuleTests = () => {
+      return new Promise((resolve, reject) => {
+        console.log('📦 Starting ES Module tests...');
+        esModuleProcess = spawn('jasmine', ['tmp.tests/esmodule/index.js'], {
+          stdio: ['inherit', 'pipe', 'pipe']
+        });
+
+        esModuleProcess.stdout.on('data', (data) => {
+          if (!testsFailed) {
+            console.log(`[ESModule] ${data.toString().trim()}`);
+          }
+        });
+
+        esModuleProcess.stderr.on('data', (data) => {
+          if (!testsFailed) {
+            console.error(`[ESModule Error] ${data.toString().trim()}`);
+          }
+        });
+
+        esModuleProcess.on('close', (code) => {
+          if (testsFailed) return;
+
+          if (code === 0) {
+            console.log(
+              '✅ ES Module integration tests completed successfully'
+            );
+            resolve();
+          } else {
+            console.error(
+              `❌ ES Module integration tests failed with exit code ${code}`
+            );
+            killAllTestProcesses();
+            reject(new Error(`ES Module tests failed with exit code ${code}`));
+          }
+        });
+
+        esModuleProcess.on('error', (error) => {
+          if (testsFailed) return;
+
+          console.error('❌ Failed to start ES Module jasmine:', error.message);
+          killAllTestProcesses();
+          reject(error);
+        });
+      });
+    };
+
+    // Run both test suites in parallel with immediate failure handling
+    try {
+      await Promise.all([runCommonJSTests(), runESModuleTests()]);
+      console.log('🎉 All integration tests completed successfully!');
+    } catch (error) {
+      console.error('❌ One or more test suites failed:', error.message);
+      // Ensure all processes are terminated
+      await killAllTestProcesses();
+      throw error;
+    }
 
     // Step 6: Graceful shutdown and cleanup
     console.log('🧹 Tests completed, shutting down server and cleaning up...');
