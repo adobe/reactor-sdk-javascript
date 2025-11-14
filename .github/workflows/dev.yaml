@@ -29,22 +29,16 @@ jobs:
         run: npm ci
       - name: Lint code
         run: npm run lint:check
-      - name: Create .env file for integration tests
-        run: |
-          cat > .env << EOF
-          # GitHub Actions environment - integration tests will use mock/test values
-          RSDK_ADOBE_CLIENT_ID=${{ secrets.RSDK_ADOBE_CLIENT_ID  }}
-          RSDK_ADOBE_CLIENT_SECRET=${{ secrets.RSDK_ADOBE_CLIENT_SECRET }}
-          RSDK_ADOBE_SCOPES=${{ secrets.RSDK_ADOBE_SCOPES }}
-          RSDK_ADOBE_ORG_ID=${{ secrets.RSDK_ADOBE_ORG_ID }}
-          RSDK_ADOBE_REACTOR_COMPANY_ID=${{ secrets.RSDK_ADOBE_REACTOR_COMPANY_ID }}
-          RSDK_ADOBE_REACTOR_URL=${{ secrets.RSDK_ADOBE_REACTOR_URL }}
-          RSDK_ADOBE_ENVIRONMENT=${{ secrets.RSDK_ADOBE_ENVIRONMENT }}
-          EOF
       - name: Build:Production && Run Tests
         run: npm test
+        env:
+          RSDK_ADOBE_CLIENT_ID: ${{ secrets.RSDK_ADOBE_CLIENT_ID  }}
+          RSDK_ADOBE_CLIENT_SECRET: ${{ secrets.RSDK_ADOBE_CLIENT_SECRET }}
+          RSDK_ADOBE_SCOPES: ${{ secrets.RSDK_ADOBE_SCOPES }}
+          RSDK_ADOBE_ORG_ID: ${{ secrets.RSDK_ADOBE_ORG_ID }}
+          RSDK_ADOBE_REACTOR_COMPANY_ID: ${{ secrets.RSDK_ADOBE_REACTOR_COMPANY_ID }}
+          RSDK_ADOBE_REACTOR_URL: ${{ secrets.RSDK_ADOBE_REACTOR_URL }}
+          RSDK_ADOBE_ENVIRONMENT: ${{ secrets.RSDK_ADOBE_ENVIRONMENT }}
       - name: Clean Sensitive Files
         if: always()
-        run: |
-          npm run clean:integration:setup
-          rm -rf .env
+        run: npm run clean:integration:setup

@@ -16,7 +16,12 @@ import path from 'path';
 import Reactor from '../../../../lib/node/index.js';
 
 // Load main .env (client id/secret etc)
-dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
+if (!process.env.CI && !process.env.GITHUB_ACTIONS) {
+  dotenv.config({
+    path: path.resolve(__dirname, '../../../../.env'),
+    quiet: true
+  });
+}
 
 // Now set up Jasmine globals
 let globals = jasmine.getEnv().reactorIntegrationTestGlobals;

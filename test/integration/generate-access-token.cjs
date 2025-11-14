@@ -14,10 +14,12 @@ const path = require('path');
 const { auth } = require('@adobe/auth-token');
 
 // load main env for client id/secret, etc
-require('dotenv').config({
-  path: path.resolve(__dirname, '../../.env'),
-  quiet: true
-});
+if (!process.env.CI && !process.env.GITHUB_ACTIONS) {
+  require('dotenv').config({
+    path: path.resolve(__dirname, '../../.env'),
+    quiet: true
+  });
+}
 
 (async function generateAccessToken() {
   if (

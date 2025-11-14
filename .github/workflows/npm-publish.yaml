@@ -43,9 +43,7 @@ jobs:
         run: npm run test:unit
       - name: Clean Sensitive Files
         if: always()
-        run: |
-          npm run clean:integration:setup
-          rm -rf .env
+        run: npm run clean:integration:setup
       - uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}

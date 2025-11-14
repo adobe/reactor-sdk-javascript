@@ -20,12 +20,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load main .env (client id/secret etc)
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
-
-// Load fresh access token from tmp.tests/.env.access-token
-dotenv.config({
-  path: path.resolve(__dirname, '../tmp.tests/.env.access-token')
-});
+if (!process.env.CI && !process.env.GITHUB_ACTIONS) {
+  dotenv.config({ path: path.resolve(__dirname, '../.env'), quiet: true });
+}
 
 const integrationTestingPropertyNameMatcher = RegExp(
   `(?:An Awesome Property|Reactor SDK: .+ \\(Integration Testing Property.*)`
