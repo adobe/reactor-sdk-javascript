@@ -30,6 +30,8 @@ the Adobe Tags Launch UI and navigating to Data Collection.
 
 ### 3. Configure Your .env File
 
+see `.env.example` for reference. Fill in the values you obtained in the previous step.
+
 ```bash
 RSDK_ADOBE_CLIENT_ID=your_client_id
 RSDK_ADOBE_CLIENT_SECRET=your_client_secret
@@ -50,17 +52,13 @@ npm run test:integration
 
 - ✅ `.env` files are automatically excluded from version control
 - ✅ Use `.env.example` to document required variables without exposing values
-- ✅ Access Token is fetched at runtime, and temporarily stored in tmp.tests/.env.access-token
+- ✅ Access Token is fetched at runtime, and exported as an process ENV variable
 - ⚠️ Keep your Client ID and Client Secret secure
 - ⚠️ Never commit actual credentials to the repository
 
 ## CI/CD Setup
 
-For continuous integration, set environment variables in your CI platform:
-
-### GitHub Actions
-
-- Ensure that everything from .env is placed in respository secrets
+- Ensure that everything from .env is placed in repository secrets
 
 ## Staging vs Production
 

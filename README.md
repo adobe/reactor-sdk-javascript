@@ -221,29 +221,8 @@ npm run test:integration   # run the tests in test/integration/**
 The integration test script will automatically:
 - Start a local web server on port 5000
 - Build the integration test files
-- Run Node.js integration tests with Jasmine
-- Open browser tests (unless in CI/headless mode)
+- Run Node.js integration tests for Es Module and CommonJs versions with Jasmine
 - Clean up the server when done
-
-[Update] As of 24 August 2021, current versions of Google Chrome _still_ won't
-allow the files to be loaded, even with the static server. Apparently,
-`localhost:5000` and `localhost:9010` are too different, and trigger CORS
-blocking. On MacOS, I've been able to get the tests to work by shutting down
-Chrome and relaunching with:
-
-- Bundled Library Test
-
-```bash
-open -a "Google Chrome" ./tmp.tests/integration-bundled-sdk/integration-tests-bundled-sdk.html \
-     --args --disable-web-security --user-data-dir="/tmp/chrome"
-```
-
-- Non-bundled Library Test
-
-```bash
-open -a "Google Chrome" ./tmp.tests/integration-library-sdk/integration-tests-library-sdk.html \
-     --args --disable-web-security --user-data-dir="/tmp/chrome"
-```
 
 ### Available Development Scripts
 
