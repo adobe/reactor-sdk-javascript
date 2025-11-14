@@ -148,13 +148,9 @@ async function runIntegrationTests() {
     // Step 5: Run Node.js integration tests
     console.log('🚀 Running Node.js integration tests...');
     await new Promise((resolve, reject) => {
-      const jasmine = spawn(
-        'jasmine',
-        ['tmp.tests/integration-in-node/index.js'],
-        {
-          stdio: 'inherit'
-        }
-      );
+      const jasmine = spawn('jasmine', ['tmp.tests/esmodule/index.js'], {
+        stdio: 'inherit'
+      });
 
       jasmine.on('close', (code) => {
         if (code === 0) {

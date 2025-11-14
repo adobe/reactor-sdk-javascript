@@ -16,4 +16,4 @@ import './global-setup.js';
 // Import the actual test specifications
 import '../../all-tests.js';
 
-console.log('esmodule tests loaded');
+console.log('commonjs tests loaded');

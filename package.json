@@ -45,8 +45,12 @@
       "publicUrl": "./",
       "optimize": true
     },
-    "integrationTestNode": {
-      "distDir": "tmp.tests/integration-in-node/",
+    "integrationTestCommonJS": {
+      "distDir": "tmp.tests/commonjs/",
+      "outputFormat": "commonjs"
+    },
+    "integrationTestEsModule": {
+      "distDir": "tmp.tests/esmodule/",
       "outputFormat": "esmodule"
     },
     "main": false
@@ -60,7 +64,7 @@
     "test:integration": "npm run build:production && npm run execute-integration-tests",
     "execute-unit-tests": "babel test/unit --out-dir tmp.tests/unit/ --source-maps && node scripts/check-version && jasmine tmp.tests/unit/index.js",
     "execute-integration-tests": "export RSDK_ACCESS_TOKEN=$(node test/integration/generate-access-token.cjs) && npm run integration:parcel:bundles && HEADLESS=true node scripts/run-integration-tests.js",
-    "integration:parcel:bundles": "parcel build --no-optimize --public-url=. test/integration/setup/esmodules/index.js --target integrationTestNode",
+    "integration:parcel:bundles": "parcel build --no-optimize --public-url=. test/integration/setup/esmodules/index.js --target integrationTestCommonJS && parcel build --no-optimize --public-url=. test/integration/setup/esmodules/index.js --target integrationTestEsModule",
     "lint": "eslint --fix 'src/**/*.js' 'test/**/*.js' 'scripts/**/*.js'",
     "lint:check": "eslint 'src/**/*.js' 'test/**/*.js' 'scripts/**/*.js'",
     "lint:staged": "lint-staged",
