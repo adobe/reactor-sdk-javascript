@@ -145,12 +145,18 @@ async function runIntegrationTests() {
       console.log('🤖 Skipping browser opening (CI/headless mode)');
     }
 
-    // Step 5: Run Node.js integration tests in parallel with immediate termination on failure
+    // Step 5: Run Node.js integration tests in parallel with synchronized reporting
     console.log('🚀 Running Node.js integration tests in parallel...');
 
     let commonJSProcess = null;
     let esModuleProcess = null;
     let testsFailed = false;
+
+    // Buffer output for synchronized reporting
+    let commonJSOutput = '';
+    let esModuleOutput = '';
+    let commonJSResult = null;
+    let esModuleResult = null;
 
     const killAllTestProcesses = async () => {
       if (testsFailed) return; // Already cleaning up
@@ -193,7 +199,21 @@ async function runIntegrationTests() {
 
         commonJSProcess.stdout.on('data', (data) => {
           if (!testsFailed) {
-            console.log(`[CommonJS] ${data.toString().trim()}`);
+            const output = data.toString();
+            commonJSOutput += output;
+            // Only show real-time output, not the summary
+            const lines = output.split('\n');
+            lines.forEach((line) => {
+              line = line.trim();
+              if (
+                line &&
+                !line.match(/^\d+ specs?, \d+ failures?/) &&
+                !line.match(/^Finished in \d+/) &&
+                !line.match(/^Pending:$/)
+              ) {
+                console.log(`[CommonJS] ${line}`);
+              }
+            });
           }
         });
 
@@ -205,6 +225,8 @@ async function runIntegrationTests() {
 
         commonJSProcess.on('close', (code) => {
           if (testsFailed) return;
+
+          commonJSResult = { code, output: commonJSOutput };
 
           if (code === 0) {
             console.log('✅ CommonJS integration tests completed successfully');
@@ -237,7 +259,21 @@ async function runIntegrationTests() {
 
         esModuleProcess.stdout.on('data', (data) => {
           if (!testsFailed) {
-            console.log(`[ESModule] ${data.toString().trim()}`);
+            const output = data.toString();
+            esModuleOutput += output;
+            // Only show real-time output, not the summary
+            const lines = output.split('\n');
+            lines.forEach((line) => {
+              line = line.trim();
+              if (
+                line &&
+                !line.match(/^\d+ specs?, \d+ failures?/) &&
+                !line.match(/^Finished in \d+/) &&
+                !line.match(/^Pending:$/)
+              ) {
+                console.log(`[ESModule] ${line}`);
+              }
+            });
           }
         });
 
@@ -249,6 +285,8 @@ async function runIntegrationTests() {
 
         esModuleProcess.on('close', (code) => {
           if (testsFailed) return;
+
+          esModuleResult = { code, output: esModuleOutput };
 
           if (code === 0) {
             console.log(
@@ -274,12 +312,72 @@ async function runIntegrationTests() {
       });
     };
 
+    const displaySynchronizedResults = () => {
+      console.log('\n' + '='.repeat(80));
+      console.log('📊 SYNCHRONIZED TEST RESULTS');
+      console.log('='.repeat(80));
+
+      // Extract and display summary information for both
+      if (commonJSResult && esModuleResult) {
+        const extractSummary = (output, label) => {
+          const lines = output.split('\n');
+          const summaryLine = lines.find((line) =>
+            line.match(/^\d+ specs?, \d+ failures?/)
+          );
+          const timeLine = lines.find((line) => line.match(/^Finished in \d+/));
+
+          console.log(`\n${label}:`);
+          if (summaryLine) console.log(`  ${summaryLine.trim()}`);
+          if (timeLine) console.log(`  ${timeLine.trim()}`);
+        };
+
+        extractSummary(commonJSResult.output, '📦 CommonJS Results');
+        extractSummary(esModuleResult.output, '📦 ES Module Results');
+
+        // Show pending tests if any
+        const showPending = (output, label) => {
+          const lines = output.split('\n');
+          const pendingIndex = lines.findIndex(
+            (line) => line.trim() === 'Pending:'
+          );
+          if (pendingIndex !== -1) {
+            console.log(`\n${label} Pending Tests:`);
+            for (let i = pendingIndex + 1; i < lines.length; i++) {
+              const line = lines[i].trim();
+              if (
+                line &&
+                !line.match(/^\d+ specs?, \d+ failures?/) &&
+                !line.match(/^Finished in \d+/)
+              ) {
+                console.log(`  ${line}`);
+              }
+            }
+          }
+        };
+
+        showPending(commonJSResult.output, '📦 CommonJS');
+        showPending(esModuleResult.output, '📦 ES Module');
+      }
+
+      console.log('\n' + '='.repeat(80));
+    };
+
     // Run both test suites in parallel with immediate failure handling
     try {
       await Promise.all([runCommonJSTests(), runESModuleTests()]);
+
+      // Display synchronized results
+      displaySynchronizedResults();
+
       console.log('🎉 All integration tests completed successfully!');
     } catch (error) {
       console.error('❌ One or more test suites failed:', error.message);
+
+      // Still show results if we have them
+      if (commonJSResult || esModuleResult) {
+        displaySynchronizedResults();
+      }
+
       // Ensure all processes are terminated
       await killAllTestProcesses();
       throw error;
