@@ -39,6 +39,8 @@ jobs:
         run: npm ci
       - name: Lint code
         run: npm run lint:check
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
       - name: Build:Production and run unit tests
         run: npm run test:unit
       - name: Clean Sensitive Files

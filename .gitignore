@@ -8,6 +8,7 @@ node_modules
 **/lib
 **/tmp.tests
 .parcel-cache/
+**/test-results
 
 # Environment variables (contains sensitive credentials)
 **/.env*
