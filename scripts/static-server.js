@@ -72,7 +72,26 @@ app.get('/', (req, res) => {
   `);
 });
 
-app.listen(port, host, () => {
+const server = app.listen(port, host, () => {
   log(`Static server listening on http://${host}:${port}`);
   log(`Serving files from: ${root}`);
 });
+
+function gracefulShutdown(signal) {
+  console.log(`\n🛑 Express received ${signal}, shutting down gracefully...`);
+
+  const timeout = setTimeout(function forceKillServer() {
+    console.error('✋ Express force-shutdown of the server after 5 seconds.');
+    process.exit(1);
+  }, 5000);
+
+  server.close(() => {
+    clearTimeout(timeout);
+    console.log('✅ Express server closed itself.');
+    process.exit(0);
+  });
+  server.closeAllConnections();
+}
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));

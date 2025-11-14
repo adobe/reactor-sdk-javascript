@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
-Copyright 2019 Adobe. All rights reserved.
+Copyright 2025 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -18,96 +18,172 @@ import path from 'path';
 const execAsync = promisify(exec);
 
 let serverProcess = null;
+let commonJSProcess = null;
+let esModuleProcess = null;
+
 let cleanupRan = false;
+let stoppingTestProcesses = false;
+let isShuttingDown = false;
 
 // Cleanup function that runs the delete-test-properties.js script
 async function runDeleteTestProperties() {
-  if (cleanupRan) return; // prevent multiple runs
+  // prevent multiple runs
+  if (cleanupRan) {
+    return;
+  }
   cleanupRan = true;
 
   try {
-    console.log(
-      '🧹 Cleaning up test properties (delete-test-properties.js)...'
-    );
+    console.log('Cleaning up test properties (delete-test-properties.js)...');
     const scriptPath = path.resolve(
       process.cwd(),
       'scripts/delete-test-properties.js'
     );
     const { stdout } = await execAsync(`node ${scriptPath}`);
-    if (stdout) console.log(stdout.trim());
+    if (stdout) {
+      console.log(stdout.trim());
+    }
     console.log('✅ Cleanup completed');
   } catch (error) {
     console.error('❌ Cleanup failed:', error.message);
   }
 }
 
-// Graceful shutdown handler (also runs cleanup)
-async function shutdown() {
-  await runDeleteTestProperties();
+/**
+ * Handle the spawned test processes
+ * @returns {Promise<void>}
+ */
+const killAllTestProcesses = async () => {
+  // Already cleaning up
+  if (stoppingTestProcesses) {
+    return;
+  }
+  stoppingTestProcesses = true;
 
-  if (serverProcess) {
-    console.log('🛑 Shutting down web server...');
-    serverProcess.kill('SIGTERM');
-
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    if (!serverProcess.killed) {
-      console.log('⚡ Force killing web server...');
-      serverProcess.kill('SIGKILL');
+  // invoke once per child test process
+  const terminateProcess = (proc, label) => {
+    if (!proc || proc.exitCode !== null) {
+      return Promise.resolve();
     }
 
-    console.log('✅ Web server stopped');
+    return new Promise((resolve) => {
+      console.log(`🛑 Killing ${label} test process...`);
+
+      const forceKillTimeout = setTimeout(() => {
+        if (proc.exitCode === null) {
+          console.log(`⚡ Forcing kill of ${label} test process...`);
+          proc.kill('SIGKILL');
+        }
+      }, 5000);
+
+      // calling SIGTERM or SIGKILL invokes this handler
+      proc.once('exit', () => {
+        console.log(`✅ ${label} test process exited.`);
+        clearTimeout(forceKillTimeout);
+        resolve();
+      });
+
+      proc.kill('SIGTERM');
+    });
+  };
+
+  console.log('🛑 Terminating all test processes immediately...');
+  await Promise.all([
+    terminateProcess(commonJSProcess, 'CommonJS'),
+    terminateProcess(esModuleProcess, 'ES Module')
+  ]);
+};
+
+/**
+ * Kill the server and the test processes. Run cleanup script.
+ * @returns {Promise<void>}
+ */
+async function shutdown() {
+  if (isShuttingDown) {
+    return Promise.resolve();
+  }
+  isShuttingDown = true;
+
+  await killAllTestProcesses();
+  await runDeleteTestProperties();
+
+  if (serverProcess && serverProcess.exitCode === null) {
+    console.log('🛑 Script asking to shut down the web server...');
+
+    const waitForExpressToStop = new Promise((resolve) => {
+      const childProcessHanging = setTimeout(() => {
+        if (serverProcess.exitCode === null) {
+          console.log('⚡ Parent process must force-kill the web server...');
+          serverProcess.kill('SIGKILL');
+          resolve();
+        }
+      }, 5000);
+
+      serverProcess.once('exit', () => {
+        clearTimeout(childProcessHanging);
+        console.log('✅ Parent got the server to stop with Graceful shutdown');
+        resolve();
+      });
+    });
+
+    serverProcess.kill('SIGTERM');
+    await waitForExpressToStop;
   }
 }
 
-// Register shutdown handlers
+// Register process handlers
 process.on('SIGINT', async () => {
-  console.log('\n🔄 Received SIGINT - cleaning up...');
-  await shutdown();
-  process.exit(0);
-});
-
-process.on('SIGTERM', async () => {
-  console.log('\n🔄 Received SIGTERM - cleaning up...');
-  await shutdown();
-  process.exit(0);
-});
-
-// Make sure cleanup runs on process exit (normal or error)
-process.on('exit', async (code) => {
-  // Don't await in exit handler, just run sync cleanup or ignore
-  if (!cleanupRan) {
-    console.log(`Process exiting with code ${code}, running cleanup...`);
-    await runDeleteTestProperties();
+  if (isShuttingDown) {
+    console.log('⚠️ Shutdown already in progress, please wait...');
+    return;
   }
-});
 
+  console.log('\nReceived SIGINT - cleaning up...');
+  await shutdown();
+  process.exit(0);
+});
+process.on('SIGTERM', async () => {
+  if (isShuttingDown) {
+    console.log('⚠️ Shutdown already in progress, please wait...');
+    return;
+  }
+
+  console.log('\nReceived SIGTERM - cleaning up...');
+  await shutdown();
+  process.exit(0);
+});
 process.on('uncaughtException', async (err) => {
   console.error('Uncaught exception:', err);
   await shutdown();
   process.exit(1);
 });
-
 process.on('unhandledRejection', async (reason) => {
   console.error('Unhandled rejection:', reason);
   await shutdown();
   process.exit(1);
 });
+// Register process handlers
 
+/**
+ * Spin up the test server. Spin up multiple processes to run the tests in parallel.
+ * @returns {Promise<void>}
+ */
 async function runIntegrationTests() {
   try {
     // Step 1: Run version check
     console.log('🔍 Running version check...');
     try {
       const { stdout } = await execAsync('node scripts/check-version.js');
-      if (stdout) console.log(stdout.trim());
+      if (stdout) {
+        console.log(stdout.trim());
+      }
     } catch (error) {
       console.error('Version check failed:', error.message);
       throw error;
     }
 
     // Step 2: Start web server
-    console.log('🌐 Starting web server on port 5000...');
+    console.log('Starting web server on port 5000...');
     serverProcess = spawn(
       'node',
       ['scripts/static-server.js', '--port', '5000', '--dir', 'tmp.tests'],
@@ -116,41 +192,27 @@ async function runIntegrationTests() {
       }
     );
 
+    // Handles spawning the server
+    serverProcess.on('error', async (err) => {
+      console.error('❌ Failed to start web server:', err);
+      await shutdown();
+      process.exit(1);
+    });
+
+    // listen to server messages
     serverProcess.stdout.on('data', (data) => {
       console.log(`Server: ${data.toString().trim()}`);
     });
-
     serverProcess.stderr.on('data', (data) => {
       console.error(`Server error: ${data.toString().trim()}`);
     });
 
     // Step 3: Wait for server to be ready
-    console.log('⏳ Waiting for server to start...');
+    console.log('Waiting for server to start...');
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    // Step 4: Open browsers (only if not in CI environment)
-    if (!process.env.CI && !process.env.HEADLESS) {
-      console.log('🌐 Opening browsers...');
-      try {
-        await execAsync('open http://localhost:5000/integration-library-sdk/');
-      } catch (error) {
-        console.warn('Could not open library SDK browser:', error.message);
-      }
-      try {
-        await execAsync('open http://localhost:5000/integration-bundled-sdk/');
-      } catch (error) {
-        console.warn('Could not open bundled SDK browser:', error.message);
-      }
-    } else {
-      console.log('🤖 Skipping browser opening (CI/headless mode)');
-    }
-
-    // Step 5: Run Node.js integration tests in parallel with synchronized reporting
+    // Step 4: Run Node.js integration tests in parallel with synchronized reporting
     console.log('🚀 Running Node.js integration tests in parallel...');
-
-    let commonJSProcess = null;
-    let esModuleProcess = null;
-    let testsFailed = false;
 
     // Buffer output for synchronized reporting
     let commonJSOutput = '';
@@ -158,47 +220,15 @@ async function runIntegrationTests() {
     let commonJSResult = null;
     let esModuleResult = null;
 
-    const killAllTestProcesses = async () => {
-      if (testsFailed) return; // Already cleaning up
-      testsFailed = true;
-
-      console.log('🛑 Terminating all test processes immediately...');
-
-      if (commonJSProcess && !commonJSProcess.killed) {
-        console.log('🛑 Killing CommonJS test process...');
-        commonJSProcess.kill('SIGTERM');
-        // Force kill if it doesn't respond quickly
-        setTimeout(() => {
-          if (!commonJSProcess.killed) {
-            commonJSProcess.kill('SIGKILL');
-          }
-        }, 2000);
-      }
-
-      if (esModuleProcess && !esModuleProcess.killed) {
-        console.log('🛑 Killing ES Module test process...');
-        esModuleProcess.kill('SIGTERM');
-        // Force kill if it doesn't respond quickly
-        setTimeout(() => {
-          if (!esModuleProcess.killed) {
-            esModuleProcess.kill('SIGKILL');
-          }
-        }, 2000);
-      }
-
-      // Wait for processes to terminate
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-    };
-
     const runCommonJSTests = () => {
       return new Promise((resolve, reject) => {
-        console.log('📦 Starting CommonJS tests...');
+        console.log('Starting CommonJS tests...');
         commonJSProcess = spawn('jasmine', ['tmp.tests/commonjs/index.cjs'], {
           stdio: ['inherit', 'pipe', 'pipe']
         });
 
         commonJSProcess.stdout.on('data', (data) => {
-          if (!testsFailed) {
+          if (!stoppingTestProcesses) {
             const output = data.toString();
             commonJSOutput += output;
             // Only show real-time output, not the summary
@@ -218,13 +248,14 @@ async function runIntegrationTests() {
         });
 
         commonJSProcess.stderr.on('data', (data) => {
-          if (!testsFailed) {
+          if (!stoppingTestProcesses) {
             console.error(`[CommonJS Error] ${data.toString().trim()}`);
           }
         });
-
         commonJSProcess.on('close', (code) => {
-          if (testsFailed) return;
+          if (stoppingTestProcesses) {
+            return;
+          }
 
           commonJSResult = { code, output: commonJSOutput };
 
@@ -239,9 +270,10 @@ async function runIntegrationTests() {
             reject(new Error(`CommonJS tests failed with exit code ${code}`));
           }
         });
-
         commonJSProcess.on('error', (error) => {
-          if (testsFailed) return;
+          if (stoppingTestProcesses) {
+            return;
+          }
 
           console.error('❌ Failed to start CommonJS jasmine:', error.message);
           killAllTestProcesses();
@@ -252,13 +284,13 @@ async function runIntegrationTests() {
 
     const runESModuleTests = () => {
       return new Promise((resolve, reject) => {
-        console.log('📦 Starting ES Module tests...');
+        console.log('Starting ES Module tests...');
         esModuleProcess = spawn('jasmine', ['tmp.tests/esmodule/index.js'], {
           stdio: ['inherit', 'pipe', 'pipe']
         });
 
         esModuleProcess.stdout.on('data', (data) => {
-          if (!testsFailed) {
+          if (!stoppingTestProcesses) {
             const output = data.toString();
             esModuleOutput += output;
             // Only show real-time output, not the summary
@@ -278,13 +310,14 @@ async function runIntegrationTests() {
         });
 
         esModuleProcess.stderr.on('data', (data) => {
-          if (!testsFailed) {
+          if (!stoppingTestProcesses) {
             console.error(`[ESModule Error] ${data.toString().trim()}`);
           }
         });
-
         esModuleProcess.on('close', (code) => {
-          if (testsFailed) return;
+          if (stoppingTestProcesses) {
+            return;
+          }
 
           esModuleResult = { code, output: esModuleOutput };
 
@@ -301,9 +334,10 @@ async function runIntegrationTests() {
             reject(new Error(`ES Module tests failed with exit code ${code}`));
           }
         });
-
         esModuleProcess.on('error', (error) => {
-          if (testsFailed) return;
+          if (stoppingTestProcesses) {
+            return;
+          }
 
           console.error('❌ Failed to start ES Module jasmine:', error.message);
           killAllTestProcesses();
@@ -383,10 +417,8 @@ async function runIntegrationTests() {
     }
 
     // Step 6: Graceful shutdown and cleanup
-    console.log('🧹 Tests completed, shutting down server and cleaning up...');
+    console.log('✅ Tests completed, shutting down server and cleaning up...');
     await shutdown();
-
-    console.log('🎉 Integration tests completed successfully!');
     process.exit(0);
   } catch (error) {
     console.error('❌ Integration tests failed:', error.message);
