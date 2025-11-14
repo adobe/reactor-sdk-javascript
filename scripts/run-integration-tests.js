@@ -313,10 +313,6 @@ async function runIntegrationTests() {
     };
 
     const displaySynchronizedResults = () => {
-      console.log('\n' + '='.repeat(80));
-      console.log('📊 SYNCHRONIZED TEST RESULTS');
-      console.log('='.repeat(80));
-
       // Extract and display summary information for both
       if (commonJSResult && esModuleResult) {
         const extractSummary = (output, label) => {
@@ -331,8 +327,11 @@ async function runIntegrationTests() {
           if (timeLine) console.log(`  ${timeLine.trim()}`);
         };
 
+        console.log('\n' + '='.repeat(80));
+        console.log('📊 SYNCHRONIZED TEST RESULTS\n');
         extractSummary(commonJSResult.output, '📦 CommonJS Results');
         extractSummary(esModuleResult.output, '📦 ES Module Results');
+        console.log('='.repeat(80));
 
         // Show pending tests if any
         const showPending = (output, label) => {
