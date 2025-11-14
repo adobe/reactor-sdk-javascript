@@ -34,15 +34,29 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
-      - name: Install dependencies
+      - name: Install dependencies (skip Playwright browsers)
         if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: |
+          export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+          npm ci
       - name: Lint code
         run: npm run lint:check
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       - name: Build:Production and run unit tests
         run: npm run test:unit
+      - name: Run PlayWright Smoke Tests
+        run: |
+          export RSDK_ACCESS_TOKEN=$(node test/integration/generate-access-token.cjs)
+          npm run integration:playwright:run
+        env:
+          RSDK_ADOBE_CLIENT_ID: ${{ secrets.RSDK_ADOBE_CLIENT_ID  }}
+          RSDK_ADOBE_CLIENT_SECRET: ${{ secrets.RSDK_ADOBE_CLIENT_SECRET }}
+          RSDK_ADOBE_SCOPES: ${{ secrets.RSDK_ADOBE_SCOPES }}
+          RSDK_ADOBE_ORG_ID: ${{ secrets.RSDK_ADOBE_ORG_ID }}
+          RSDK_ADOBE_REACTOR_COMPANY_ID: ${{ secrets.RSDK_ADOBE_REACTOR_COMPANY_ID }}
+          RSDK_ADOBE_REACTOR_URL: ${{ secrets.RSDK_ADOBE_REACTOR_URL }}
+          RSDK_ADOBE_ENVIRONMENT: ${{ secrets.RSDK_ADOBE_ENVIRONMENT }}
       - name: Clean Sensitive Files
         if: always()
         run: npm run clean:integration:setup

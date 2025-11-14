@@ -24,13 +24,15 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
-      - name: Install dependencies
+      - name: Install dependencies (skip Playwright browsers)
         if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: |
+          export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+          npm ci
       - name: Lint code
         run: npm run lint:check
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        run: npx playwright install
       - name: Build:Production && Run Tests
         run: npm test
         env:
