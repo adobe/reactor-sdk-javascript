@@ -10,10 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import dotenv from 'dotenv';
-import path from 'path';
-// commonjs version of Reactor
-import Reactor from '../../../../lib/cjs/index.js';
+const dotenv = require('dotenv');
+const path = require('path');
+const Reactor = require('../../../../lib/cjs/index.cjs').default;
 
 // Load main .env (client id/secret etc)
 dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });

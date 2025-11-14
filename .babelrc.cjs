@@ -14,8 +14,10 @@ module.exports = function (api) {
   api.cache(true);
 
   // Skip Babel config if Parcel is running (Parcel has its own transpilation)
-  if (process.env.PARCEL_WORKER_ID) {
-    return {};
+  // NOTE: there will be a warning when running this, but you can't suppress it
+  // when you have a .babelrc file that isn't a static json file.
+  if (process.env.PARCEL_NODE) {
+    return { presets: [] };
   }
 
   const presets = [];

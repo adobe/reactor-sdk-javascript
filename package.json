@@ -47,11 +47,13 @@
     },
     "integrationTestCommonJS": {
       "distDir": "tmp.tests/commonjs/",
-      "outputFormat": "commonjs"
+      "outputFormat": "commonjs",
+      "sourceMap": false
     },
     "integrationTestEsModule": {
       "distDir": "tmp.tests/esmodule/",
-      "outputFormat": "esmodule"
+      "outputFormat": "esmodule",
+      "sourceMap": false
     },
     "main": false
   },
@@ -63,8 +65,9 @@
     "test:unit": "npm run build:production && npm run execute-unit-tests",
     "test:integration": "npm run build:production && npm run execute-integration-tests",
     "execute-unit-tests": "babel test/unit --out-dir tmp.tests/unit/ --source-maps && node scripts/check-version && jasmine tmp.tests/unit/index.js",
-    "execute-integration-tests": "export RSDK_ACCESS_TOKEN=$(node test/integration/generate-access-token.cjs) && npm run integration:parcel:bundles && HEADLESS=true node scripts/run-integration-tests.js",
-    "integration:parcel:bundles": "parcel build --no-optimize --public-url=. test/integration/setup/esmodules/index.js --target integrationTestCommonJS && parcel build --no-optimize --public-url=. test/integration/setup/esmodules/index.js --target integrationTestEsModule",
+    "execute-integration-tests": "export RSDK_ACCESS_TOKEN=$(node test/integration/generate-access-token.cjs) && npm-run-all --parallel 'integration:parcel-build:*' && HEADLESS=true node scripts/run-integration-tests.js",
+    "integration:parcel-build:esm": "PARCEL_NODE=true parcel build --no-optimize --public-url=. test/integration/setup/esmodules/index.js --target integrationTestEsModule",
+    "integration:parcel-build:commonjs": "PARCEL_NODE=true parcel build --no-optimize --public-url=. test/integration/setup/commonjs/index.cjs --target integrationTestCommonJS && mv tmp.tests/commonjs/index.js tmp.tests/commonjs/index.cjs ",
     "lint": "eslint --fix 'src/**/*.js' 'test/**/*.js' 'scripts/**/*.js'",
     "lint:check": "eslint 'src/**/*.js' 'test/**/*.js' 'scripts/**/*.js'",
     "lint:staged": "lint-staged",

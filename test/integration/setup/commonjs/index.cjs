@@ -11,9 +11,9 @@ governing permissions and limitations under the License.
 */
 
 // This must be imported to hoist it above the hoisted import of all-tests.js
-import './global-setup.js';
+require('./global-setup.js');
 
 // Import the actual test specifications
-import '../../all-tests.js';
+require('../../all-tests.js');
 
 console.log('commonjs tests loaded');
