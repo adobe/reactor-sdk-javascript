@@ -659,7 +659,7 @@ function makeNameForTestObject(objectType, baseName) {
   // But keep the date, because sometimes it's helpful to know when an entity
   // was created.
   const date = toLocalISOString(new Date());
-  const rand = (Number.MAX_SAFE_INTEGER * Math.random()).toString(16);
+  const rand = crypto.randomUUID().replace(/-/g, '_');
 
   // Examples:
   // Reactor SDK AuditEvent-Testing Base (Integration Testing Property / 2025-10-09T14:23:17.456-07:00) 1a2b3c4d5e6f7890

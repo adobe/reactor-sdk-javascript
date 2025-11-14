@@ -106,7 +106,7 @@ function toLocalISOString(date) {
 // Generate consistent test object names that match the cleanup patterns
 function makeNameForTestObject(objectType, baseName) {
   const date = toLocalISOString(new Date());
-  const rand = (Number.MAX_SAFE_INTEGER * Math.random()).toString(16);
+  const rand = crypto.randomUUID().replace(/-/g, '_');
   return `${'Property' === objectType ? 'Reactor SDK ' : ''}${baseName} (Integration Testing ${objectType} / ${date}) ${rand}`;
 }
 
