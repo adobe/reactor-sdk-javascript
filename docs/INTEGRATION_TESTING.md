@@ -63,3 +63,18 @@ npm run test:integration
 ## Staging vs Production
 
 - You'll need a tech account for each environment and then adjust RSDK_ADOBE_ENVIRONMENT and RSDK_ADOBE_REACTOR_URL accordingly.
+
+## Integration Test Layout
+
+`test/integration/real-browser-tests` houses playwright tests to smoke-test that the SDK can be loaded and used in a browser.
+
+`test/integration/setup/commonjs` and `test/integration/setup/esmodules` contain `index.js` files that import their own
+respective global setup, then load the shared test entry point of `all-tests.js`. The global setup for `common.js` imports `lib/cjs/index.cjs` and the global setup for `esmodules` imports `lib/node/index.js`.
+
+In package.json, the files at `test/integration/setup/commonjs/index.js` and `test/integration/setup/esmodules/index.js`
+are used by parcel build commands, which have a named form of `integration:parcel-build:*`. Parcel places bundles ready
+to test within `tmp.tests/commonjs` and `tmp.tests/esmodule` respectively.
+
+The `npm run test:integration` script first executes the playwright tests inside `test/integration/real-browser-tests`,
+then runs the `scripts/run-integration-tests.js` file to spawn multiple jasmine processes that run the entire integration
+test suite in parallel for the `tmp.tests/commonjs/index.js` and `tmp.tests/esmodules/index.js` builds.
