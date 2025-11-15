@@ -23,8 +23,6 @@ jobs:
         run: npm ci
       - name: Lint code
         run: npm run lint:check
-      - name: Install Playwright browsers
-        run: npx playwright install
       - name: Build:Production && Run Tests
         run: npm test
         env:
