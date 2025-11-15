@@ -29,20 +29,10 @@ jobs:
         with:
           node-version: 'lts/jod'
           registry-url: https://registry.npmjs.org/
-      - uses: actions/cache@v4
-        id: npm-cache
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
-      - name: Install dependencies (skip Playwright browsers)
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: |
-          export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
-          npm ci
+      - name: Install dependencies
+        run: npm ci
       - name: Lint code
         run: npm run lint:check
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
       - name: Build:Production and run unit tests
         run: npm run test:unit
       - name: Run PlayWright Smoke Tests
