@@ -77,4 +77,4 @@ to test within `tmp.tests/commonjs` and `tmp.tests/esmodule` respectively.
 
 The `npm run test:integration` script first executes the playwright tests inside `test/integration/real-browser-tests`,
 then runs the `scripts/run-integration-tests.js` file to spawn multiple jasmine processes that run the entire integration
-test suite in parallel for the `tmp.tests/commonjs/index.js` and `tmp.tests/esmodules/index.js` builds.
+test suite for the `tmp.tests/commonjs/index.js` and `tmp.tests/esmodules/index.js` builds.

@@ -18,12 +18,13 @@ when using --out-file-extension .cjs
 
 const fs = require('fs');
 const path = require('path');
-const glob = require('glob');
 
 const cjsDir = path.join(__dirname, '../lib/cjs');
 
 // Find all .cjs files in the lib/cjs directory
-const cjsFiles = glob.sync('**/*.cjs', { cwd: cjsDir });
+const cjsFiles = fs
+  .readdirSync(cjsDir, { recursive: true })
+  .filter((file) => file.endsWith('.cjs'));
 
 console.log(`Found ${cjsFiles.length} .cjs files to process`);
 
@@ -45,3 +46,4 @@ cjsFiles.forEach((file) => {
 });
 
 console.log('CommonJS require path fixing complete!');
+
