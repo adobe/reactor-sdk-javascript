@@ -108,14 +108,40 @@ export default class Reactor {
     return responseData;
   }
 
-  async request(method, url, requestData = null) {
+  async request(method, url, requestData = null, retryCount = 0) {
+    const maxRetries = 3;
     const requestBodyJson = requestData && JSON.stringify(requestData);
     const requestInfo = {
       method: method,
       headers: this.headers,
       body: requestBodyJson
     };
-    return await this.requestAndLog(url, requestInfo, requestData);
+
+    try {
+      return await this.requestAndLog(url, requestInfo, requestData);
+    } catch (error) {
+      // Retry on 429 (Too Many Requests) with respect to retry-after header
+      if (
+        error instanceof FetchError &&
+        error.status === 429 &&
+        retryCount < maxRetries
+      ) {
+        // Get retry-after header (in seconds)
+        const retryAfter = error.traceData.response.headers.get('retry-after');
+        const retryAfterSeconds = retryAfter ? parseInt(retryAfter, 10) : 5;
+        // Add 1 second buffer as requested
+        const waitSeconds = retryAfterSeconds + 1;
+        const waitMs = waitSeconds * 1000;
+
+        console.info(
+          `[Blacksmith API] --------------- The API has asked us to wait ${waitSeconds} seconds before making calls again. ---------------`
+        );
+
+        await new Promise((resolve) => setTimeout(resolve, waitMs));
+        return await this.request(method, url, requestData, retryCount + 1);
+      }
+      throw error;
+    }
   }
 
   async sendMultipartFile(method, url, fileObject) {
