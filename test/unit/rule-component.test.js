@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-describe('RuleComponent:', function() {
+describe('RuleComponent:', function () {
   const context = jasmine.getEnv().reactorContext;
   const reactor = context.reactor;
   const propertyId = 'PR001';
   const ruleId = 'RL123';
   const ruleComponentId = 'RC123';
 
-  describe('createRuleComponent', function() {
-    it('runs an http POST', async function() {
+  describe('createRuleComponent', function () {
+    it('runs an http POST', async function () {
       const ruleComponent = {
         attributes: {
           name: `RuleComponent ${new Date().getTime()}`
@@ -34,8 +34,8 @@ describe('RuleComponent:', function() {
     });
   });
 
-  describe('updateRuleComponent', function() {
-    it('runs an http PATCH', async function() {
+  describe('updateRuleComponent', function () {
+    it('runs an http PATCH', async function () {
       const ruleComponentPatch = {
         id: ruleComponentId,
         attributes: {
@@ -52,19 +52,19 @@ describe('RuleComponent:', function() {
     });
   });
 
-  describe('getRuleComponent', function() {
-    it('runs an http GET', async function() {
+  describe('getRuleComponent', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/rule_components/${ruleComponentId}`);
       await reactor.getRuleComponent(ruleComponentId);
     });
   });
 
-  describe('listRuleComponentsForRule', function() {
-    it('runs an http GET', async function() {
+  describe('listRuleComponentsForRule', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/rules/${ruleId}/rule_components`);
       await reactor.listRuleComponentsForRule(ruleId);
     });
-    it('runs an http GET with query parameters', async function() {
+    it('runs an http GET with query parameters', async function () {
       context.expectRequest(
         'get',
         `/rules/${ruleId}/rule_components?filter%5Bname%5D=EQ+Delta%2CEQ+Bravo&sort=-name`
@@ -76,22 +76,22 @@ describe('RuleComponent:', function() {
     });
   });
 
-  describe('listRulesForRuleComponent', function() {
-    it('runs an http GET', async function() {
+  describe('listRulesForRuleComponent', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/rule_components/${ruleComponentId}/rules`);
       await reactor.listRulesForRuleComponent(ruleComponentId);
     });
   });
 
-  describe('deleteRuleComponent', function() {
-    it('runs an http DELETE', async function() {
+  describe('deleteRuleComponent', function () {
+    it('runs an http DELETE', async function () {
       context.expectRequest('delete', `/rule_components/${ruleComponentId}`);
       await reactor.deleteRuleComponent(ruleComponentId);
     });
   });
 
-  describe('createRuleComponentNote', function() {
-    it('runs an http POST', async function() {
+  describe('createRuleComponentNote', function () {
+    it('runs an http POST', async function () {
       const post = {
         type: 'notes',
         attributes: {

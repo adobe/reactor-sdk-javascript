@@ -4,11 +4,16 @@
 .npmrc
 .cache
 node_modules
-dist
-lib
-tmp.tests
-test/integration/globals-for-browser.js
+**/dist
+**/lib
+**/tmp.tests
 .parcel-cache/
+**/test-results
+
+# Environment variables (contains sensitive credentials)
+**/.env*
+!**/.env.example
+**/.*access-token.*
 
 ## Directory-based project format
 .idea/

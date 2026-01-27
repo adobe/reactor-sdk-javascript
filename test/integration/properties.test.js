@@ -13,13 +13,15 @@ governing permissions and limitations under the License.
 import reactor from './reactor';
 import helpers from './helpers';
 
+// Enable automatic cleanup of Reactor SDK properties
+helpers.setupReactorSDKCleanup();
+
 // Properties
 // https://developer.adobelaunch.com/api/properties
-helpers.describe('Property API', function() {
-  var originalTimeout;
+helpers.describe('Property API', function () {
   var newProperty;
 
-  beforeAll(async function() {
+  beforeAll(async function () {
     try {
       newProperty = await helpers.createTestProperty('NuProp');
     } catch (error) {
@@ -30,7 +32,7 @@ helpers.describe('Property API', function() {
 
   // Create a Property
   // https://developer.adobelaunch.com/api/properties/create/
-  helpers.it('creates a new Property', function() {
+  helpers.it('creates a new Property', function () {
     // A Property should have been created in beforeAll().
     expect(newProperty.id).toMatch(helpers.idPR);
     expect(newProperty.attributes.name).toMatch(/NuProp/);
@@ -38,7 +40,7 @@ helpers.describe('Property API', function() {
 
   // Delete a Property
   // https://developer.adobelaunch.com/api/properties/delete/
-  helpers.it('deletes a Property', async function() {
+  helpers.it('deletes a Property', async function () {
     const ephemeralProperty = await helpers.createTestProperty('deletable');
     expect(ephemeralProperty.attributes.name).toMatch(/deletable/);
 
@@ -46,7 +48,7 @@ helpers.describe('Property API', function() {
     expect(deleteResponse).toBe(null);
 
     try {
-      const deadProp = await reactor.getProperty(ephemeralProperty.id);
+      await reactor.getProperty(ephemeralProperty.id);
       fail('getting a deleted property should fail');
     } catch (error) {
       expect(error.status).toBe(404);
@@ -55,7 +57,7 @@ helpers.describe('Property API', function() {
 
   // Get a Property
   // https://developer.adobelaunch.com/api/properties/fetch/
-  helpers.it('gets a Property', async function() {
+  helpers.it('gets a Property', async function () {
     const response = await reactor.getProperty(newProperty.id);
     const oldProperty = response.data;
     expect(oldProperty.attributes.name).toMatch(/NuProp/);
@@ -63,14 +65,14 @@ helpers.describe('Property API', function() {
 
   // Get the Company
   // https://developer.adobelaunch.com/api/properties/company/
-  helpers.it("gets a Property's Company", async function() {
+  helpers.it("gets a Property's Company", async function () {
     const response = await reactor.getCompanyForProperty(newProperty.id);
     expect(response.data.id).toBe(helpers.companyId);
   });
 
   // List Properties for a Company
   // https://developer.adobelaunch.com/api/properties/list/
-  helpers.it('lists all Properties', async function() {
+  helpers.it('lists all Properties', async function () {
     async function getPropertyByIdAndCheckName(id, name) {
       const response = await reactor.getProperty(id);
       expect(response.data.attributes.name).toMatch(name);
@@ -81,17 +83,16 @@ helpers.describe('Property API', function() {
     const barstow = await helpers.createTestProperty('Barstow');
     const chicago = await helpers.createTestProperty('Chicago');
     const detroit = await helpers.createTestProperty('Detroit');
-    expect(atlanta.attributes.name).toMatch(/^atlanta/i);
-    expect(barstow.attributes.name).toMatch(/^barstow/i);
-    expect(chicago.attributes.name).toMatch(/^chicago/i);
-    expect(detroit.attributes.name).toMatch(/^detroit/i);
+    expect(atlanta.attributes.name).toMatch(/^Reactor SDK.*Atlanta/i);
+    expect(barstow.attributes.name).toMatch(/^Reactor SDK.*Barstow/i);
+    expect(chicago.attributes.name).toMatch(/^Reactor SDK.*Chicago/i);
+    expect(detroit.attributes.name).toMatch(/^Reactor SDK.*Detroit/i);
 
     // Make sure all four show up in the list of Properties on the company
-    const companyId = helpers.companyId;
     const allIds = [];
     await helpers.forEachEntityInList(
-      paging => reactor.listPropertiesForCompany(helpers.companyId, paging),
-      property => allIds.push(property.id)
+      (paging) => reactor.listPropertiesForCompany(helpers.companyId, paging),
+      (property) => allIds.push(property.id)
     );
     expect(allIds).toContain(atlanta.id, 'Atlanta is missing');
     expect(allIds).toContain(barstow.id, 'Barstow is missing');
@@ -109,12 +110,12 @@ helpers.describe('Property API', function() {
     const idsForBarstowAndDetroit = [];
     const query = { 'filter[name]': 'CONTAINS Detroit,CONTAINS Barstow' };
     await helpers.forEachEntityInList(
-      paging =>
+      (paging) =>
         reactor.listPropertiesForCompany(
           helpers.companyId,
           Object.assign(query, paging)
         ),
-      property => idsForBarstowAndDetroit.push(property.id)
+      (property) => idsForBarstowAndDetroit.push(property.id)
     );
     expect(idsForBarstowAndDetroit).not.toContain(atlanta.id);
     expect(idsForBarstowAndDetroit).toContain(barstow.id);
@@ -125,7 +126,7 @@ helpers.describe('Property API', function() {
 
   // Update a Property
   // https://developer.adobelaunch.com/api/properties/update/
-  helpers.it('updates a Property', async function() {
+  helpers.it('updates a Property', async function () {
     let response = await reactor.updateProperty({
       attributes: {
         name: newProperty.attributes.name.replace('NuProp', 'Updated NuProp'),

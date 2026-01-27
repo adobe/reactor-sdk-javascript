@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-describe('Profile:', function() {
+describe('Profile:', function () {
   const context = jasmine.getEnv().reactorContext;
   const reactor = context.reactor;
 
-  describe('getProfile', function() {
-    it('runs an http GET', async function() {
+  describe('getProfile', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', '/profile');
       await reactor.getProfile();
     });

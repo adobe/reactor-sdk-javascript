@@ -15,7 +15,7 @@ import helpers from './helpers';
 
 // DataElements
 // https://developer.adobelaunch.com/api/data_elements
-helpers.describe('DataElement API', function() {
+helpers.describe('DataElement API', function () {
   var theProperty;
 
   async function makeDataElement(baseName) {
@@ -29,13 +29,13 @@ helpers.describe('DataElement API', function() {
 
   // Create a DataElement
   // https://developer.adobelaunch.com/api/data_elements/create/
-  helpers.it('creates a new DataElement', async function() {
+  helpers.it('creates a new DataElement', async function () {
     await makeDataElement('create'); // all the expect()'s are in createTestDataElement
   });
 
   // Delete a DataElement
   // https://developer.adobelaunch.com/api/data_elements/delete/
-  helpers.it('deletes a DataElement', async function() {
+  helpers.it('deletes a DataElement', async function () {
     const theDataElement = await makeDataElement('delete');
 
     const deleteResponse = await reactor.deleteDataElement(theDataElement.id);
@@ -48,7 +48,7 @@ helpers.describe('DataElement API', function() {
 
   // Get a DataElement
   // https://developer.adobelaunch.com/api/data_elements/fetch/
-  helpers.it('gets a DataElement', async function() {
+  helpers.it('gets a DataElement', async function () {
     const myName = 'extra special';
     const theDataElement = await makeDataElement(myName);
 
@@ -58,7 +58,7 @@ helpers.describe('DataElement API', function() {
 
   // Get the Extension
   // https://developer.adobelaunch.com/api/data_elements/extension/
-  helpers.it("gets a DataElement's Extension", async function() {
+  helpers.it("gets a DataElement's Extension", async function () {
     const theDataElement = await makeDataElement('get_extension');
     const response = await reactor.getExtensionForDataElement(
       theDataElement.id
@@ -69,7 +69,7 @@ helpers.describe('DataElement API', function() {
 
   // Get the Property
   // https://developer.adobelaunch.com/api/data_elements/property/
-  helpers.it("gets a DataElement's Property", async function() {
+  helpers.it("gets a DataElement's Property", async function () {
     const theDataElement = await makeDataElement('get_property');
     const response = await reactor.getPropertyForDataElement(theDataElement.id);
     expect(response.data.id).toBe(theProperty.id);
@@ -77,7 +77,7 @@ helpers.describe('DataElement API', function() {
 
   // Get the origin
   // https://developer.adobelaunch.com/api/data_elements/origin/
-  helpers.it("gets a DataElement's origin", async function() {
+  helpers.it("gets a DataElement's origin", async function () {
     // The origin of a newly-created DataElement is itself
     const theDataElement = await makeDataElement('get_origin');
     let response = await reactor.getOriginForDataElement(theDataElement.id);
@@ -103,7 +103,7 @@ helpers.describe('DataElement API', function() {
 
   // List DataElements for a Property
   // https://developer.adobelaunch.com/api/data_elements/list/
-  helpers.it('lists DataElements for a Property', async function() {
+  helpers.it('lists DataElements for a Property', async function () {
     // Create four DataElements
     const jamie = await makeDataElement('jamie_reagan');
     const danny = await makeDataElement('danny_reagan');
@@ -114,7 +114,7 @@ helpers.describe('DataElement API', function() {
     const listResponse = await reactor.listDataElementsForProperty(
       theProperty.id
     );
-    const allIds = listResponse.data.map(resource => resource.id);
+    const allIds = listResponse.data.map((resource) => resource.id);
     expect(allIds).toContain(jamie.id);
     expect(allIds).toContain(danny.id);
     expect(allIds).toContain(henry.id);
@@ -125,7 +125,7 @@ helpers.describe('DataElement API', function() {
       theProperty.id,
       { 'filter[name]': 'CONTAINS y_reag' }
     );
-    const twoIds = filteredResponse.data.map(resource => resource.id);
+    const twoIds = filteredResponse.data.map((resource) => resource.id);
     expect(twoIds).not.toContain(jamie.id);
     expect(twoIds).toContain(danny.id);
     expect(twoIds).toContain(henry.id);
@@ -134,7 +134,7 @@ helpers.describe('DataElement API', function() {
 
   // List Libraries for a DataElement
   // https://developer.adobelaunch.com/api/data_elements/libraries/
-  helpers.it("lists a DataElement's Libraries", async function() {
+  helpers.it("lists a DataElement's Libraries", async function () {
     const theDataElement = await makeDataElement('jesse_stone');
     const reviseResponse = await reactor.reviseDataElement(theDataElement.id, {
       meta: { action: 'revise' }
@@ -165,7 +165,7 @@ helpers.describe('DataElement API', function() {
 
     // List all Libraries for the DataElement
     const listResponse = await reactor.listLibrariesForDataElement(jesse.id);
-    const allIds = listResponse.data.map(library => library.id);
+    const allIds = listResponse.data.map((library) => library.id);
     expect(allIds).toContain(stone.id);
     expect(allIds).toContain(night.id);
     expect(allIds).toContain(death.id);
@@ -178,7 +178,9 @@ helpers.describe('DataElement API', function() {
       'filter[name]': 'CONTAINS P%(',
       sort: '-name'
     });
-    const libraryNames = filteredResponse.data.map(lib => lib.attributes.name);
+    const libraryNames = filteredResponse.data.map(
+      (lib) => lib.attributes.name
+    );
     expect(libraryNames.length).toBe(2);
     expect(libraryNames).toEqual([
       night.attributes.name,
@@ -188,7 +190,7 @@ helpers.describe('DataElement API', function() {
 
   // List revisions
   // https://developer.adobelaunch.com/api/data_elements/revisions/
-  helpers.it('lists revisions of a DataElement', async function() {
+  helpers.it('lists revisions of a DataElement', async function () {
     // This endpoint is tested below, at the end of the 'revises a DataElement'
     // test. It creates a DataElement and revises it twice.
     expect(null).toBeNull();
@@ -198,7 +200,7 @@ helpers.describe('DataElement API', function() {
   // https://developer.adobelaunch.com/api/data_elements/revise/
   helpers.it(
     'revises a DataElement',
-    async function() {
+    async function () {
       // The origin of a new DataElement is that DataElement itself
       const theDataElement = await makeDataElement('revise');
       expect(theDataElement.attributes.revision_number).toBe(0);
@@ -259,7 +261,7 @@ helpers.describe('DataElement API', function() {
       expect(origin0again.attributes.revision_number).toBe(0);
 
       response = await reactor.listRevisionsForDataElement(theDataElement.id);
-      const revisionIds = response.data.map(rev => rev.id);
+      const revisionIds = response.data.map((rev) => rev.id);
       expect(revisionIds).toContain(theDataElement.id);
       expect(revisionIds).toContain(revision1.id);
       expect(revisionIds).toContain(revision2.id);
@@ -271,7 +273,7 @@ helpers.describe('DataElement API', function() {
   // https://developer.adobelaunch.com/api/data_elements/update/
   helpers.it(
     'updates a DataElement',
-    async function() {
+    async function () {
       const theDataElement = await makeDataElement('update');
       let response = await reactor.updateDataElement({
         attributes: {

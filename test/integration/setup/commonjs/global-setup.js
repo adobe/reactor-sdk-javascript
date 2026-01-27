@@ -10,21 +10,28 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// This package exports nothing.
-// However, loading it has the side effect of copying environment variable
-// values into jasmine.getEnv().reactorIntegrationTestGlobals.
-//
-// Tests intended to run in nodejs _could_ just access these values directly
-// from `process.env`, but putting them in Jasmine's environment means that the
-// same source code can be used for both the in-browser and in-Node tests.
+const dotenv = require('dotenv');
+const path = require('path');
+const Reactor = require('../../../../lib/cjs/index.cjs').default;
+
+// Load main .env (client id/secret etc)
+if (!process.env.CI && !process.env.GITHUB_ACTIONS) {
+  dotenv.config({
+    path: path.resolve(__dirname, '../../../../.env'),
+    quiet: true
+  });
+}
+
+// Now set up Jasmine globals
 let globals = jasmine.getEnv().reactorIntegrationTestGlobals;
 if (!globals) {
   globals = {
-    ORG_ID: process.env.ORG_ID,
-    ACCESS_TOKEN: process.env.ACCESS_TOKEN,
-    REACTOR_URL: process.env.REACTOR_URL,
-    COMPANY_ID: process.env.COMPANY_ID
+    ORG_ID: process.env.RSDK_ADOBE_ORG_ID,
+    ACCESS_TOKEN: process.env.RSDK_ACCESS_TOKEN,
+    REACTOR_URL: process.env.RSDK_ADOBE_REACTOR_URL,
+    COMPANY_ID: process.env.RSDK_ADOBE_REACTOR_COMPANY_ID
   };
   jasmine.getEnv().reactorIntegrationTestGlobals = globals;
 }
-export { globals as default };
+
+globals.Reactor = Reactor;

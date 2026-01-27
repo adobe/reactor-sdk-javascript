@@ -15,7 +15,7 @@ import helpers from './helpers';
 
 // Rules
 // https://developer.adobelaunch.com/api/rules
-helpers.describe('Rule API', function() {
+helpers.describe('Rule API', function () {
   var theProperty;
 
   async function makeTestRule(baseName) {
@@ -50,11 +50,11 @@ helpers.describe('Rule API', function() {
     const addResponse = await reactor.addRuleRelationshipsToLibrary(lib.id, [
       { id: rule.id, type: 'rules' }
     ]);
-    const allIds = addResponse.data.map(resource => resource.id);
+    const allIds = addResponse.data.map((resource) => resource.id);
     expect(allIds).toContain(rule.id);
   }
 
-  beforeAll(async function() {
+  beforeAll(async function () {
     try {
       const base = 'Rule-Testing Base';
       theProperty = await helpers.createTestProperty(base);
@@ -122,14 +122,14 @@ helpers.describe('Rule API', function() {
 
   // Create a Rule
   // https://developer.adobelaunch.com/api/rules/create/
-  helpers.it('creates a new Rule', async function() {
+  helpers.it('creates a new Rule', async function () {
     // all the expectations are in initializeSnowyRiver().
     await initializeSnowyRiver(0);
   });
 
   // Delete a Rule
   // https://developer.adobelaunch.com/api/rules/delete/
-  helpers.it('deletes a Rule', async function() {
+  helpers.it('deletes a Rule', async function () {
     const tooms = await makeTestRule('Tooms');
     const deleteResponse = await reactor.deleteRule(tooms.id);
     expect(deleteResponse).toBe(null);
@@ -141,7 +141,7 @@ helpers.describe('Rule API', function() {
 
   // Get a Rule
   // https://developer.adobelaunch.com/api/rules/fetch/
-  helpers.it('gets a Rule', async function() {
+  helpers.it('gets a Rule', async function () {
     await initializeSnowyRiver(0);
     const gotten = await reactor.getRule(snowy.id);
     expect(gotten.data.id).toBe(snowy.id);
@@ -150,7 +150,7 @@ helpers.describe('Rule API', function() {
 
   // Get a Rule's Property
   // https://developer.adobelaunch.com/api/rules/property/
-  helpers.it("gets a Rule's Property", async function() {
+  helpers.it("gets a Rule's Property", async function () {
     await initializeSnowyRiver(0);
     const response = await reactor.getPropertyForRule(snowy.id);
     expect(response.data.id).toBe(theProperty.id);
@@ -158,11 +158,11 @@ helpers.describe('Rule API', function() {
 
   // List Libraries that use a Rule
   // https://developer.adobelaunch.com/api/rules/libraries/
-  helpers.it("gets a Rule's Libraries", async function() {
+  helpers.it("gets a Rule's Libraries", async function () {
     await initializeInfrastructure();
     // Wyong is in Queensland and Victoria, but not Tasmania
     const listResponse = await reactor.listLibrariesForRule(wyong1.id);
-    const allIds = listResponse.data.map(resource => resource.id);
+    const allIds = listResponse.data.map((resource) => resource.id);
     expect(allIds).toContain(queensland.id);
     expect(allIds).toContain(victoria.id);
     expect(allIds).not.toContain(tasmania.id);
@@ -172,13 +172,13 @@ helpers.describe('Rule API', function() {
   // https://developer.adobelaunch.com/api/builds/rules/
   helpers.it(
     'gets Rules for a Build',
-    async function() {
+    async function () {
       const buildId = await createVictoriaBuild();
       if (buildId == null) return;
 
       // Make sure three revised Rules are in the Rules on the Build
       let rules = await reactor.listRulesForBuild(buildId);
-      let ids = rules.data.map(resource => resource.id);
+      let ids = rules.data.map((resource) => resource.id);
       expect(ids).toContain(snowy1.id);
       expect(ids).toContain(wyong1.id);
       expect(ids).toContain(yango1.id);
@@ -188,7 +188,7 @@ helpers.describe('Rule API', function() {
       rules = await reactor.listRulesForBuild(buildId, {
         'filter[name]': 'CONTAINS snowy,CONTAINS wyong'
       });
-      ids = rules.data.map(resource => resource.id);
+      ids = rules.data.map((resource) => resource.id);
       expect(ids).toContain(snowy1.id);
       expect(ids).toContain(wyong1.id);
       expect(ids).not.toContain(yango1.id);
@@ -199,12 +199,12 @@ helpers.describe('Rule API', function() {
 
   // List Rules for Property
   // https://developer.adobelaunch.com/api/rules/list/
-  helpers.it('gets Rules for the Property', async function() {
+  helpers.it('gets Rules for the Property', async function () {
     await initializeInfrastructure();
 
     // Make sure all four unrevised rules are in Rules for the Property
     let rules = await reactor.listRulesForProperty(theProperty.id);
-    let ids = rules.data.map(resource => resource.id);
+    let ids = rules.data.map((resource) => resource.id);
     for (const r of [snowy, wyong, yango, tarra]) {
       expect(ids).toContain(r.id);
     }
@@ -213,7 +213,7 @@ helpers.describe('Rule API', function() {
     rules = await reactor.listRulesForProperty(theProperty.id, {
       'filter[name]': 'CONTAINS wyong,CONTAINS tarra'
     });
-    ids = rules.data.map(resource => resource.id);
+    ids = rules.data.map((resource) => resource.id);
     expect(ids).toContain(wyong.id);
     expect(ids).toContain(tarra.id);
     expect(ids).not.toContain(snowy.id);
@@ -222,29 +222,29 @@ helpers.describe('Rule API', function() {
 
   // List revisions
   // https://developer.adobelaunch.com/api/rules/revisions/
-  helpers.it("gets a Rule's revisions", async function() {
+  helpers.it("gets a Rule's revisions", async function () {
     await initializeSnowyRiver(2);
     const listResponse = await reactor.listRevisionsForRule(snowy.id);
-    const ids = listResponse.data.map(x => x.id);
+    const ids = listResponse.data.map((x) => x.id);
     expect(ids).toContain(snowy.id);
     expect(ids).toContain(snowy1.id);
     expect(ids).toContain(snowy2.id);
   });
 
   // Test filter on listRevisionsForRule
-  helpers.it('gets a filtered rule revision', async function() {
+  helpers.it('gets a filtered rule revision', async function () {
     await initializeSnowyRiver(2);
     const revisionsList = await reactor.listRevisionsForRule(snowy.id, {
       'filter[revision_number]': 'EQ 1'
     });
-    const revisionIds = revisionsList.data.map(revision => revision.id);
+    const revisionIds = revisionsList.data.map((revision) => revision.id);
     expect(revisionIds).toContain(snowy1.id);
     expect(revisionIds).not.toContain(snowy.id);
   });
 
   // Revise a Rule
   // https://developer.adobelaunch.com/api/rules/revise/
-  helpers.it('revises a Rule', async function() {
+  helpers.it('revises a Rule', async function () {
     const paroo = await makeTestRule('Paroo');
     const reviseResponse = await reactor.reviseRule(paroo.id);
     const revisedRule = reviseResponse.data;
@@ -255,7 +255,7 @@ helpers.describe('Rule API', function() {
 
   // Shows a Rule's Origin
   // https://developer.adobelaunch.com/api/rules/origin/
-  helpers.it("gets a Rule's origin", async function() {
+  helpers.it("gets a Rule's origin", async function () {
     await initializeSnowyRiver(2);
     const o0 = await reactor.getOriginForRule(snowy.id);
     const o1 = await reactor.getOriginForRule(snowy1.id);
@@ -267,7 +267,7 @@ helpers.describe('Rule API', function() {
 
   // Update a Rule
   // https://developer.adobelaunch.com/api/rules/update/
-  helpers.it('updates a Rule', async function() {
+  helpers.it('updates a Rule', async function () {
     const geery = await makeTestRule('Geery');
     let response = await reactor.updateRule({
       attributes: {

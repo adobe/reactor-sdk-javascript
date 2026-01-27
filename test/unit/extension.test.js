@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-describe('Extension:', function() {
+describe('Extension:', function () {
   const context = jasmine.getEnv().reactorContext;
   const reactor = context.reactor;
   const propertyId = 'PR123';
   const extensionId = 'EX123';
 
-  describe('createExtension', function() {
-    it('runs an http POST', async function() {
+  describe('createExtension', function () {
+    it('runs an http POST', async function () {
       const extension = {
         attributes: {
           enabled: true
@@ -33,8 +33,8 @@ describe('Extension:', function() {
     });
   });
 
-  describe('updateExtension', function() {
-    it('runs an http PATCH', async function() {
+  describe('updateExtension', function () {
+    it('runs an http PATCH', async function () {
       const patch = {
         id: extensionId,
         attributes: { enabled: false },
@@ -45,34 +45,34 @@ describe('Extension:', function() {
     });
   });
 
-  describe('reviseExtension', function() {
-    it('runs an http PATCH', async function() {
+  describe('reviseExtension', function () {
+    it('runs an http PATCH', async function () {
       const reviseBody = reactor.createReviseBody('extensions', extensionId);
       context.expectRequest('patch', `/extensions/${extensionId}`, reviseBody);
       await reactor.reviseExtension(extensionId);
     });
   });
 
-  describe('getExtension', function() {
-    it('runs an http GET', async function() {
+  describe('getExtension', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/extensions/${extensionId}`);
       await reactor.getExtension(extensionId);
     });
   });
 
-  describe('listRevisionsForExtension', function() {
-    it('runs an http GET', async function() {
+  describe('listRevisionsForExtension', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/extensions/${extensionId}/revisions`);
       await reactor.listRevisionsForExtension(extensionId);
     });
   });
 
-  describe('listExtensionsForProperty', function() {
-    it('runs an http GET', async function() {
+  describe('listExtensionsForProperty', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/properties/${propertyId}/extensions`);
       await reactor.listExtensionsForProperty(propertyId);
     });
-    it('runs an http GET with query parameters', async function() {
+    it('runs an http GET with query parameters', async function () {
       context.expectRequest(
         'get',
         `/properties/${propertyId}/extensions?filter%5Bname%5D=EQ+Delta%2CEQ+Bravo&sort=-name`
@@ -84,15 +84,15 @@ describe('Extension:', function() {
     });
   });
 
-  describe('deleteExtension', function() {
-    it('runs an http DELETE', async function() {
+  describe('deleteExtension', function () {
+    it('runs an http DELETE', async function () {
       context.expectRequest('delete', `/extensions/${extensionId}`);
       await reactor.deleteExtension(extensionId);
     });
   });
 
-  describe('createExtensionNote', function() {
-    it('runs an http POST', async function() {
+  describe('createExtensionNote', function () {
+    it('runs an http POST', async function () {
       const post = {
         type: 'notes',
         attributes: {

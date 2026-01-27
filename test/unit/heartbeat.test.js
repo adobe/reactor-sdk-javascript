@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-describe('Heartbeat:', function() {
+describe('Heartbeat:', function () {
   const context = jasmine.getEnv().reactorContext;
   const reactor = context.reactor;
 
-  it('runs an http GET', async function() {
+  it('runs an http GET', async function () {
     context.expectRequest('get', '/heartbeat');
     await reactor.heartbeat();
   });

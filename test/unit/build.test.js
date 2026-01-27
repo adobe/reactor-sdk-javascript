@@ -10,26 +10,26 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-describe('Build:', function() {
+describe('Build:', function () {
   const context = jasmine.getEnv().reactorContext;
   const reactor = context.reactor;
   const libraryId = 'LB00000000000000000000000000000000';
   const buildId = 'PR00000000000000000000000000000000';
 
-  describe('createBuild', function() {
-    it('runs an http POST', async function() {
+  describe('createBuild', function () {
+    it('runs an http POST', async function () {
       context.expectRequest('post', `/libraries/${libraryId}/builds`);
       await reactor.createBuild(libraryId);
     });
   });
 
-  describe('listBuilds', function() {
-    it('runs an http GET', async function() {
+  describe('listBuilds', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/libraries/${libraryId}/builds`);
       await reactor.listBuildsForLibrary(libraryId);
     });
 
-    it('runs an http GET with query parameters', async function() {
+    it('runs an http GET with query parameters', async function () {
       context.expectRequest(
         'get',
         `/libraries/${libraryId}/builds?filter%5Bname%5D=EQ+Delta%2CEQ+Bravo&sort=-name`
@@ -41,8 +41,8 @@ describe('Build:', function() {
     });
   });
 
-  describe('getBuild', function() {
-    it('runs an http GET', async function() {
+  describe('getBuild', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/builds/${buildId}`);
       await reactor.getBuild(buildId);
     });

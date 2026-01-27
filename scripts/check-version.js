@@ -11,8 +11,16 @@ governing permissions and limitations under the License.
 */
 
 // Enforce a hard requirement on the requested NodeJS version.
-let semver = require('semver');
-let pkg = require('../package');
+import semver from 'semver';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const pkg = JSON.parse(
+  readFileSync(join(__dirname, '../package.json'), 'utf8')
+);
 
 const version = pkg.engines && pkg.engines.node;
 if (!semver.satisfies(process.version, version)) {
@@ -22,4 +30,3 @@ which is not satisfied by your current version (${process.version}).`
   );
   process.exit(1);
 }
-

@@ -15,6 +15,8 @@ const globals = jasmine.getEnv().reactorIntegrationTestGlobals;
 const nameMatcherForTestProperties = RegExp(
   'An Awesome Property - \\d\\d\\d\\d-\\d\\d-\\d\\d' +
     '|' +
+    'Reactor SDK .+ \\(Integration Testing Property / \\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d' +
+    '|' +
     'Integration Testing \\w+ / \\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d'
 );
 
@@ -77,7 +79,7 @@ const helpers = {
     return await getAnalyticsExtensionRevision(property);
   },
 
-  async analyticsExtensionRevisionId(property) {
+  async analyticsExtensionRevisionId() {
     const revisedExtension = await getAnalyticsExtensionRevision();
     return revisedExtension.id;
   },
@@ -98,7 +100,7 @@ const helpers = {
   },
 
   async sleep(milliseconds) {
-    return new Promise(resolve => setTimeout(resolve, milliseconds));
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
   },
 
   reportError(error) {
@@ -155,14 +157,14 @@ const helpers = {
       library.id,
       [{ id: revId, type: 'extensions' }]
     );
-    const addedIds = addResponse.data.map(resource => resource.id);
+    const addedIds = addResponse.data.map((resource) => resource.id);
     expect(addedIds).toContain(revId);
 
     // Check whether they all show up when extensions are listed
     const listResponse = await reactor.listExtensionRelationshipsForLibrary(
       library.id
     );
-    const listedIds = listResponse.data.map(resource => resource.id);
+    const listedIds = listResponse.data.map((resource) => resource.id);
     expect(listedIds).toContain(revId);
 
     // property.coreExRevision is set by helpers.coreExtensionRevisionId
@@ -292,15 +294,15 @@ const helpers = {
       !propertyObj.id ||
       !helpers.idPR.test(propertyObj.id)
     ) {
-      var error = new Error(
+      var propertyError = new Error(
         '[createTestDataElement] property is not an object'
       );
-      error.args = { propertyObj: propertyObj, baseName: baseName };
-      throw error;
+      propertyError.args = { propertyObj: propertyObj, baseName: baseName };
+      throw propertyError;
     } else if (typeof baseName !== 'string') {
-      var error = new Error('[createTestDataElement] name is not a string');
-      error.args = { propertyObj: propertyObj, baseName: baseName };
-      throw error;
+      var nameError = new Error('[createTestDataElement] name is not a string');
+      nameError.args = { propertyObj: propertyObj, baseName: baseName };
+      throw nameError;
     }
     const coreExtensionId = await helpers.coreExtensionId(propertyObj);
     const name = makeNameForTestObject('DataElement', baseName);
@@ -390,6 +392,95 @@ const helpers = {
     //console.groupEnd(groupName);
   },
 
+  // Enhanced cleanup function that finds and deletes all Reactor SDK properties
+  async cleanUpReactorSDKProperties() {
+    try {
+      console.debug('🧹 Starting cleanup of Reactor SDK properties...');
+
+      const reactorSDKProperties = [];
+
+      // Find all properties with "Reactor SDK" prefix
+      await helpers.forEachEntityInList(
+        (paging) => reactor.listPropertiesForCompany(helpers.companyId, paging),
+        (property) => {
+          const propName = property.attributes.name;
+          if (propName.startsWith('Reactor SDK ')) {
+            reactorSDKProperties.push(property);
+            console.debug(
+              `Found Reactor SDK property: ${property.id} "${propName}"`
+            );
+          }
+        }
+      );
+
+      // Delete each found property
+      let deletedCount = 0;
+      for (const property of reactorSDKProperties) {
+        try {
+          console.debug(
+            `Deleting property: ${property.id} "${property.attributes.name}"`
+          );
+          await reactor.deleteProperty(property.id);
+          deletedCount++;
+        } catch (deleteError) {
+          console.warn(
+            `Failed to delete property ${property.id}: ${deleteError.message}`
+          );
+          // Continue with other deletions even if one fails
+        }
+      }
+
+      if (deletedCount > 0) {
+        console.debug(
+          `✅ Cleanup completed: deleted ${deletedCount} of ${reactorSDKProperties.length} Reactor SDK properties`
+        );
+      } else if (reactorSDKProperties.length === 0) {
+        console.debug('✅ No Reactor SDK properties found to clean up');
+      }
+    } catch (error) {
+      console.warn(`⚠️ Cleanup encountered error: ${error.message}`);
+      // Don't throw - cleanup should not fail tests
+    }
+  },
+
+  // Setup afterAll hook that runs cleanup even if tests fail
+  setupReactorSDKCleanup() {
+    // Global afterAll that runs after all tests in a suite complete
+    afterAll(async function () {
+      console.debug(
+        '🧹 Running afterAll cleanup for Reactor SDK properties...'
+      );
+      try {
+        await helpers.cleanUpReactorSDKProperties();
+      } catch (error) {
+        // Log but don't fail the test suite due to cleanup issues
+        console.warn('Cleanup failed in afterAll:', error.message);
+      }
+    });
+
+    // Also setup cleanup on process exit for emergency cases
+    process.on('SIGINT', async () => {
+      console.debug('\n🛑 Received SIGINT - running emergency cleanup...');
+      try {
+        await helpers.cleanUpReactorSDKProperties();
+        console.debug('Emergency cleanup completed');
+      } catch (error) {
+        console.warn('Emergency cleanup failed:', error.message);
+      }
+      process.exit(0);
+    });
+
+    process.on('uncaughtException', async (error) => {
+      console.error('Uncaught exception:', error.message);
+      console.debug('Running emergency cleanup before exit...');
+      try {
+        await helpers.cleanUpReactorSDKProperties();
+      } catch (cleanupError) {
+        console.warn('Emergency cleanup failed:', cleanupError.message);
+      }
+      process.exit(1);
+    });
+  },
   async deleteTestProperty(property) {
     expect(property.id).toMatch(helpers.idPR);
     const propName = property.attributes.name;
@@ -473,14 +564,14 @@ const helpers = {
   },
 
   describe(description, suiteDefinition) {
-    describe(description, function() {
+    describe(description, function () {
       beforeAll(() => console.groupCollapsed(description));
       afterAll(() => console.groupEnd(description));
       suiteDefinition.apply(this);
     });
   },
   fdescribe(description, suiteDefinition) {
-    fdescribe(description, function() {
+    fdescribe(description, function () {
       beforeAll(() => console.groupCollapsed(description));
       afterAll(() => console.groupEnd(description));
       suiteDefinition.apply(this);
@@ -496,7 +587,7 @@ const helpers = {
   it(description, testFn, timeout) {
     var spec = it(
       description,
-      async function() {
+      async function () {
         console.groupCollapsed(description);
         try {
           helpers.specName = spec.getFullName();
@@ -513,7 +604,7 @@ const helpers = {
   fit(description, testFn, timeout) {
     var spec = fit(
       description,
-      async function() {
+      async function () {
         console.group(description);
         try {
           helpers.specName = spec.getFullName();
@@ -534,7 +625,7 @@ const helpers = {
 
 // Like String.prototype.toISOString(), but shows local time rather than GMT.
 function toLocalISOString(date) {
-  function pad(num, width = 2) {
+  function pad(num) {
     var norm = Math.floor(Math.abs(num));
     return (norm < 10 ? '0' : '') + norm;
   }
@@ -568,19 +659,13 @@ function makeNameForTestObject(objectType, baseName) {
   // But keep the date, because sometimes it's helpful to know when an entity
   // was created.
   const date = toLocalISOString(new Date());
-  const rand = (Number.MAX_SAFE_INTEGER * Math.random()).toString(16);
-  return `${baseName} (Integration Testing ${objectType} / ${date}) ${rand}`;
-}
+  const rand = crypto.randomUUID().replace(/-/g, '_');
 
-const testingProperties = new Map();
-
-async function findOrMakeTestingProperty(entityKind) {
-  if (!testingProperties.has(entityKind)) {
-    const basename = `${entityKind}-Testing Base`;
-    const property = await helpers.createTestProperty(basename);
-    testingProperties.set(entityKind, property);
-  }
-  return testingProperties.get(entityKind);
+  // Examples:
+  // Reactor SDK AuditEvent-Testing Base (Integration Testing Property / 2025-10-09T14:23:17.456-07:00) 1a2b3c4d5e6f7890
+  // Diamond (Integration Testing Host / 2024-06-19T15:30:45) 1a2b3c4d5e6f7g8h
+  // ... etc.
+  return `${'Property' === objectType ? 'Reactor SDK: ' : ''}${baseName} (Integration Testing ${objectType} / ${date}) ${rand}`;
 }
 
 async function getExtensionPackageByName(epName, platform = 'web') {
@@ -594,7 +679,7 @@ async function getExtensionPackageByName(epName, platform = 'web') {
   const eps = response.data;
   expectWithContext(eps, ctx).toBeDefined();
   // Find the EP named `epName`
-  const ep = eps.find(ep => ep.attributes.name === epName);
+  const ep = eps.find((ep) => ep.attributes.name === epName);
   return ep;
 }
 
@@ -626,7 +711,7 @@ async function getCoreExtension(property) {
   // Find the extension whose extension package is 'core'.
   const coreEpId = await getCoreExtensionPackageId();
   const coreEx = exs.find(
-    ep => ep.relationships.extension_package.data.id === coreEpId
+    (ep) => ep.relationships.extension_package.data.id === coreEpId
   );
   expectWithContext(coreEx, ctx).toBeDefined();
   expectWithContext(coreEx.id, ctx).toMatch(helpers.idEX);
@@ -675,15 +760,17 @@ async function findAnalyticsExtension(property) {
   expectWithContext(property.type, ctx).toBe('properties');
 
   // Get the all extensions on `property` named "adobe-analytics".
-  const extensions = (await reactor.listExtensionsForProperty(property.id, {
-    'filter[platform]': 'EQ web',
-    'filter[name]': 'EQ adobe-analytics'
-  })).data;
+  const extensions = (
+    await reactor.listExtensionsForProperty(property.id, {
+      'filter[platform]': 'EQ web',
+      'filter[name]': 'EQ adobe-analytics'
+    })
+  ).data;
   if (extensions && extensions.length > 0) {
     // Find an extension whose extension package is also named "adobe-analytics".
     const analyticsEpId = (await getAnalyticsExtensionPackage()).id;
     analyticsEx = extensions.find(
-      ex => ex.relationships.extension_package.data.id === analyticsEpId
+      (ex) => ex.relationships.extension_package.data.id === analyticsEpId
     );
   }
   if (analyticsEx) {
@@ -776,7 +863,7 @@ async function makeTestRule(property, ruleBaseName, theLibrary = null) {
     theLibrary.id,
     [{ id: revisedRule.id, type: 'rules' }]
   );
-  const libRules = addResponse.data.map(rule => rule.id);
+  const libRules = addResponse.data.map((rule) => rule.id);
   expect(libRules).toContain(revisedRule.id);
   return revisedRule;
 }
@@ -836,7 +923,6 @@ async function makeTestRuleComponent(
 }
 
 function determineHostKind(hostId) {
-  const kind = hostId;
   if (hostId === null) return 'sftp';
   if (hostId.match(helpers.idEN)) return hostId;
   if (hostId.match(/\bakamai\b/i)) return 'akamai';

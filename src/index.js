@@ -10,24 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import fetch from 'node-fetch';
-
-import { version } from './version';
-import * as hosts from './hosts';
-import * as auditEvents from './audit-events';
-import * as builds from './builds';
-import * as callbacks from './callbacks';
-import * as companies from './companies';
-import * as dataElements from './data-elements';
-import * as environments from './environments';
-import * as extensionPackages from './extension-packages';
-import * as extensions from './extensions';
-import * as heartbeat from './heartbeat';
-import * as libraries from './libraries';
-import * as profiles from './profiles';
-import * as properties from './properties';
-import * as ruleComponents from './rule-components';
-import * as rules from './rules';
+import { version } from './version.js';
+import * as hosts from './hosts.js';
+import * as auditEvents from './audit-events.js';
+import * as builds from './builds.js';
+import * as callbacks from './callbacks.js';
+import * as companies from './companies.js';
+import * as dataElements from './data-elements.js';
+import * as environments from './environments.js';
+import * as extensionPackages from './extension-packages.js';
+import * as extensions from './extensions.js';
+import * as heartbeat from './heartbeat.js';
+import * as libraries from './libraries.js';
+import * as profiles from './profiles.js';
+import * as properties from './properties.js';
+import * as ruleComponents from './rule-components.js';
+import * as rules from './rules.js';
 
 const defaultReactorOptions = {
   reactorUrl: 'https://reactor.adobe.io',
@@ -65,7 +63,6 @@ export default class Reactor {
     return {
       Accept: 'application/vnd.api+json;revision=1',
       'Content-Type': 'application/vnd.api+json',
-      'Cache-control': 'no-cache',
       Authorization: `Bearer ${accessToken}`,
       'X-Api-Key': 'Activation-DTM',
       'User-Agent': `adobe/reactor-sdk/javascript/${version}`
@@ -90,8 +87,6 @@ export default class Reactor {
     const response = await fetch(url.toString(), requestInfo);
     const responseData = bodyIsJson(response) ? await response.json() : null;
 
-    const status = `${response.status} ${response.statusText}`;
-    const source = `${requestInfo.method} ${url.toString()}`;
     const traceData = {
       // convenient human-readable summaries
       status: `${response.status} ${response.statusText}`, // eg '404 not found'
@@ -157,9 +152,9 @@ export default class Reactor {
 function extractErrorDetails(traceData) {
   const errorList = traceData.responseBody.errors || [];
   const details = [traceData.response, ...errorList]
-    .map(x => x.detail)
-    .filter(x => typeof x !== 'undefined')
-    .map(x => `'${x}'`)
+    .map((x) => x.detail)
+    .filter((x) => typeof x !== 'undefined')
+    .map((x) => `'${x}'`)
     .join('; also, ');
   return details !== '' ? ` (${details})` : '';
 }
@@ -198,6 +193,9 @@ Object.assign(
   rules
 );
 
-if (typeof window !== 'undefined' && typeof window.document !== 'undefined') {
+// Add version property to the prototype
+Reactor.prototype.version = version;
+
+if (typeof window !== 'undefined') {
   window.Reactor = Reactor;
 }

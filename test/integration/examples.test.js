@@ -11,7 +11,8 @@ governing permissions and limitations under the License.
 */
 
 const globals = jasmine.getEnv().reactorIntegrationTestGlobals;
-describe('Reactor SDK Example', function() {
+const Reactor = globals.Reactor;
+describe('Reactor SDK Example', function () {
   if (!disableJasmineRandomStepOrder()) return;
   beforeAll(() => console.group('Awesome Example'));
   afterAll(() => console.groupEnd('Awesome Example'));
@@ -38,7 +39,7 @@ describe('Reactor SDK Example', function() {
 });
 
 function runStep(description, asyncFunctionImplementingTheNextStep) {
-  it(description, async function() {
+  it(description, async function () {
     console.groupCollapsed(description);
     try {
       await asyncFunctionImplementingTheNextStep();
@@ -102,6 +103,13 @@ function toLocalISOString(date) {
   );
 }
 
+// Generate consistent test object names that match the cleanup patterns
+function makeNameForTestObject(objectType, baseName) {
+  const date = toLocalISOString(new Date());
+  const rand = crypto.randomUUID().replace(/-/g, '_');
+  return `${'Property' === objectType ? 'Reactor SDK ' : ''}${baseName} (Integration Testing ${objectType} / ${date}) ${rand}`;
+}
+
 // The steps in this example build on each other, so they need to share a lot of
 // information. For example:
 //    - the reactor client object that provides the Reactor SDK
@@ -150,8 +158,7 @@ var buildBL; // set by makeBuildBL
 // Construct a Property to contain all the other objects created in this
 // example.
 async function makeNewAwesomePR() {
-  const dateString = toLocalISOString(new Date());
-  const propertyName = `An Awesome Property - ${dateString}`;
+  const propertyName = makeNameForTestObject('Property', 'An Awesome Property');
   const propertySpec = {
     attributes: { domains: ['adobe.com'], name: propertyName, platform: 'web' },
     type: 'properties'
@@ -184,7 +191,7 @@ async function getAllExtensionPackages() {
       'page[size]': 100
     });
     expect(typeof listResponse.data).not.toBeNull();
-    listResponse.data.forEach(p => {
+    listResponse.data.forEach((p) => {
       ls.push({ name: p.attributes.name, id: p.id });
     });
     pagination = listResponse.meta && listResponse.meta.pagination;
@@ -199,17 +206,19 @@ async function findThreeEP() {
   expect(eps.length).toBeGreaterThan(0);
 
   // Locate the three extension packages we'll be using.
-  const rc = eps.find(ep => ep.name === 'core');
-  const aa = eps.find(ep => ep.name === 'adobe-analytics');
-  const fb = eps.find(ep => ep.name === 'facebook-pixel');
+  const rc = eps.find((ep) => ep.name === 'core');
+  const aa = eps.find((ep) => ep.name === 'adobe-analytics');
+  const fb = eps.find(
+    (ep) => ep.name === 'facebook-pixel' || ep.name === 'meta-pixel'
+  );
 
   // Verify that we found what we needed.
   expect(rc).not.toBeNull();
   expect(aa).not.toBeNull();
   expect(fb).not.toBeNull();
-  expect(rc.name).toBe('core');
-  expect(aa.name).toBe('adobe-analytics');
   expect(fb.name).toBe('facebook-pixel');
+  expect(aa.name).toBe('adobe-analytics');
+  expect(['facebook-pixel', 'meta-pixel']).toContain(fb.name);
   expect(rc.id).toMatch(/^EP[0-9A-F]{32}$/i);
   expect(aa.id).toMatch(/^EP[0-9A-F]{32}$/i);
   expect(fb.id).toMatch(/^EP[0-9A-F]{32}$/i);
@@ -227,7 +236,7 @@ async function findCoreEX() {
   // Locate the core extension. It's the one whose Extension Package is
   // coreEP.
   const coreExtension = exts.find(
-    ep => ep.relationships.extension_package.data.id === coreEP
+    (ep) => ep.relationships.extension_package.data.id === coreEP
   );
   coreEX = coreExtension.id;
 
@@ -523,7 +532,9 @@ async function makeFacebookPixelEX() {
     /*eslint-disable camelcase*/
     attributes: {
       delegate_descriptor_id: 'facebook-pixel::extensionConfiguration::config',
-      settings: '{"pixelId": "123456789"}'
+      settings: JSON.stringify({
+        pixelId: 'test-pixel-id'
+      })
     },
     relationships: {
       extension_package: {
@@ -537,26 +548,29 @@ async function makeFacebookPixelEX() {
     /*eslint-enable camelcase*/
   };
 
-  // Create an Extension based on the Facebook Pixel Extension Package
+  // Create an Extension based on the Meta/Facebook Pixel Extension Package
   const response = await reactor.createExtension(awesomePR, data);
   const extension = response.data;
 
   facebookPixelEX = extension.id;
-
-  // Verify that we built what we expected.
   expect(facebookPixelEX).toMatch(/^EX[0-9A-F]{32}$/i);
-  expect(extension.attributes.name).toBe('facebook-pixel');
-  expect(extension.attributes.display_name).toBe('Facebook Pixel');
+  expect(['facebook-pixel', 'meta-pixel']).toContain(extension.attributes.name);
+  expect(['Facebook Pixel', 'Meta Pixel']).toContain(
+    extension.attributes.display_name
+  );
   expect(extension.relationships.extension_package.data.id).toBe(
     facebookPixelEP
   );
 }
 
 async function makeAddToCartRC() {
+  // Use appropriate delegate descriptor based on extension package name
+  const delegateDescriptor = 'facebook-pixel::actions::send-add-to-cart-event';
+
   const data = {
     /*eslint-disable camelcase*/
     attributes: {
-      delegate_descriptor_id: 'facebook-pixel::actions::send-add-to-cart-event',
+      delegate_descriptor_id: delegateDescriptor,
       name: 'facebook-event',
       order: 0,
       settings: '{"value":"%shopping_cart%","currency":"USD"}'
@@ -720,17 +734,23 @@ async function makeBibliotecaLB() {
   // shoppingCartDE, productIdDE, etc.
   const deOriginsExpected = [shoppingCartDE, productIdDE];
   const deResponse = await reactor.listDataElementsForLibrary(bibliotecaLB);
-  const deOrigins = deResponse.data.map(de => de.relationships.origin.data.id);
+  const deOrigins = deResponse.data.map(
+    (de) => de.relationships.origin.data.id
+  );
   expect(deOrigins.sort()).toEqual(deOriginsExpected.sort());
 
   const rlOriginsExpected = [clickEventRL];
   const rlResponse = await reactor.listRulesForLibrary(bibliotecaLB);
-  const rlOrigins = rlResponse.data.map(rl => rl.relationships.origin.data.id);
+  const rlOrigins = rlResponse.data.map(
+    (rl) => rl.relationships.origin.data.id
+  );
   expect(rlOrigins.sort()).toEqual(rlOriginsExpected.sort());
 
   const exOriginsExpected = [coreEX, adobeAnalyticsEX, facebookPixelEX];
   const exResponse = await reactor.listExtensionsForLibrary(bibliotecaLB);
-  const exOrigins = exResponse.data.map(ex => ex.relationships.origin.data.id);
+  const exOrigins = exResponse.data.map(
+    (ex) => ex.relationships.origin.data.id
+  );
   expect(exOrigins.sort()).toEqual(exOriginsExpected.sort());
 }
 

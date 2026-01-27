@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 import Reactor from '@adobe/reactor-sdk';
 
 const globals = jasmine.getEnv().reactorIntegrationTestGlobals;
-describe('Reactor SDK Example', function() {
+describe('Reactor SDK Example', function () {
   if (!disableJasmineRandomStepOrder()) return;
   beforeAll(() => console.group('Awesome Example'));
   afterAll(() => console.groupEnd('Awesome Example'));
@@ -40,7 +40,7 @@ describe('Reactor SDK Example', function() {
 });
 
 function runStep(description, asyncFunctionImplementingTheNextStep) {
-  it(description, async function() {
+  it(description, async function () {
     console.groupCollapsed(description);
     try {
       await asyncFunctionImplementingTheNextStep();
@@ -186,7 +186,7 @@ async function getAllExtensionPackages() {
       'page[size]': 100
     });
     expect(typeof listResponse.data).not.toBeNull();
-    listResponse.data.forEach(p => {
+    listResponse.data.forEach((p) => {
       ls.push({ name: p.attributes.name, id: p.id });
     });
     pagination = listResponse.meta && listResponse.meta.pagination;
@@ -201,9 +201,9 @@ async function findThreeEP() {
   expect(eps.length).toBeGreaterThan(0);
 
   // Locate the three extension packages we'll be using.
-  const rc = eps.find(ep => ep.name === 'core');
-  const aa = eps.find(ep => ep.name === 'adobe-analytics');
-  const fb = eps.find(ep => ep.name === 'facebook-pixel');
+  const rc = eps.find((ep) => ep.name === 'core');
+  const aa = eps.find((ep) => ep.name === 'adobe-analytics');
+  const fb = eps.find((ep) => ep.name === 'facebook-pixel');
 
   // Verify that we found what we needed.
   expect(rc).not.toBeNull();
@@ -229,7 +229,7 @@ async function findCoreEX() {
   // Locate the core extension. It's the one whose Extension Package is
   // coreEP.
   const coreExtension = exts.find(
-    ep => ep.relationships.extension_package.data.id === coreEP
+    (ep) => ep.relationships.extension_package.data.id === coreEP
   );
   coreEX = coreExtension.id;
 
@@ -722,17 +722,23 @@ async function makeBibliotecaLB() {
   // shoppingCartDE, productIdDE, etc.
   const deOriginsExpected = [shoppingCartDE, productIdDE];
   const deResponse = await reactor.listDataElementsForLibrary(bibliotecaLB);
-  const deOrigins = deResponse.data.map(de => de.relationships.origin.data.id);
+  const deOrigins = deResponse.data.map(
+    (de) => de.relationships.origin.data.id
+  );
   expect(deOrigins.sort()).toEqual(deOriginsExpected.sort());
 
   const rlOriginsExpected = [clickEventRL];
   const rlResponse = await reactor.listRulesForLibrary(bibliotecaLB);
-  const rlOrigins = rlResponse.data.map(rl => rl.relationships.origin.data.id);
+  const rlOrigins = rlResponse.data.map(
+    (rl) => rl.relationships.origin.data.id
+  );
   expect(rlOrigins.sort()).toEqual(rlOriginsExpected.sort());
 
   const exOriginsExpected = [coreEX, adobeAnalyticsEX, facebookPixelEX];
   const exResponse = await reactor.listExtensionsForLibrary(bibliotecaLB);
-  const exOrigins = exResponse.data.map(ex => ex.relationships.origin.data.id);
+  const exOrigins = exResponse.data.map(
+    (ex) => ex.relationships.origin.data.id
+  );
   expect(exOrigins.sort()).toEqual(exOriginsExpected.sort());
 }
 

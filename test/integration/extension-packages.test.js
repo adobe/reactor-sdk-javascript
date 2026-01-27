@@ -15,7 +15,7 @@ import helpers from './helpers';
 
 // ExtensionPackages
 // https://developer.adobelaunch.com/api/extension_packages:
-helpers.describe('ExtensionPackage API', function() {
+helpers.describe('ExtensionPackage API', function () {
   var theCachedCorePackage;
 
   async function makeOrGetCachedCorePackage() {
@@ -43,7 +43,7 @@ helpers.describe('ExtensionPackage API', function() {
   // Create an ExtensionPackage
   // https://developer.adobelaunch.com/api/extension_packages/create/
   helpers
-    .xit('creates a new ExtensionPackage', async function() {
+    .xit('creates a new ExtensionPackage', async function () {
       // TODO: test createExtensionPackage
       const hello = await createTestExtensionPackage(
         './package-hello-world-1.0.0.zip'
@@ -56,7 +56,7 @@ helpers.describe('ExtensionPackage API', function() {
 
   // Get an ExtensionPackage
   // https://developer.adobelaunch.com/api/extension_packages/fetch/
-  helpers.it('gets an ExtensionPackage', async function() {
+  helpers.it('gets an ExtensionPackage', async function () {
     const corePackage = await makeOrGetCachedCorePackage();
     const response = await reactor.getExtensionPackage(corePackage.id);
     expect(response.data.id).toBe(corePackage.id);
@@ -84,7 +84,7 @@ helpers.describe('ExtensionPackage API', function() {
 
   // List all the available ExtensionPackages
   // https://developer.adobelaunch.com/api/extension_packages/list/
-  helpers.it('lists all ExtensionPackages', async function() {
+  helpers.it('lists all ExtensionPackages', async function () {
     const corePackage = await makeOrGetCachedCorePackage();
     const allIds = await getAllExtensionPackageIds();
 
@@ -102,7 +102,7 @@ helpers.describe('ExtensionPackage API', function() {
   // PrivateRelease an ExtensionPackage
   // https://developer.adobelaunch.com/api/extension_packages/release_private/
   helpers
-    .xit('private releases an ExtensionPackage', async function() {
+    .xit('private releases an ExtensionPackage', async function () {
       //TODO: test privateReleaseExtensionPackage
       const hello = await createTestExtensionPackage(
         './package-hello-world-1.0.0.zip'
@@ -123,7 +123,7 @@ helpers.describe('ExtensionPackage API', function() {
   // Update an ExtensionPackage
   // https://developer.adobelaunch.com/api/extension_packages/update/
   helpers
-    .xit('updates an ExtensionPackage', async function() {
+    .xit('updates an ExtensionPackage', async function () {
       //TODO: test updateExtensionPackage
       const hello = await createTestExtensionPackage(
         './package-hello-world-1.0.0.zip'

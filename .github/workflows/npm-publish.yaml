@@ -4,21 +4,53 @@
 name: Node.js Package
 
 on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'The tag to publish to: latest | next'
+        required: true
+        default: 'latest'
   release:
     types: [created]
-  workflow_dispatch:
 
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
+    outputs:
+      npm_tag: ${{github.event.inputs.tag}}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - name: Check Tag Name
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag != 'latest' && github.event.inputs.tag != 'next' }}
+        run: |
+          echo 'Only the tags "latest" or "next" are supported. You entered "${{ github.event.inputs.tag }}"'
+          exit 1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '14.x'
+          node-version: 'lts/jod'
           registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm run build --if-present
-      - run: npm publish
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint code
+        run: npm run lint:check
+      - name: Build:Production and run unit tests
+        run: npm run test:unit
+      - name: Run PlayWright Smoke Tests
+        run: |
+          export RSDK_ACCESS_TOKEN=$(node test/integration/generate-access-token.cjs)
+          npm run integration:playwright:run
         env:
-          NODE_AUTH_TOKEN: ${{secrets.ADOBE_BOT_NPM_TOKEN}}
+          RSDK_ADOBE_CLIENT_ID: ${{ secrets.RSDK_ADOBE_CLIENT_ID  }}
+          RSDK_ADOBE_CLIENT_SECRET: ${{ secrets.RSDK_ADOBE_CLIENT_SECRET }}
+          RSDK_ADOBE_SCOPES: ${{ secrets.RSDK_ADOBE_SCOPES }}
+          RSDK_ADOBE_ORG_ID: ${{ secrets.RSDK_ADOBE_ORG_ID }}
+          RSDK_ADOBE_REACTOR_COMPANY_ID: ${{ secrets.RSDK_ADOBE_REACTOR_COMPANY_ID }}
+          RSDK_ADOBE_REACTOR_URL: ${{ secrets.RSDK_ADOBE_REACTOR_URL }}
+          RSDK_ADOBE_ENVIRONMENT: ${{ secrets.RSDK_ADOBE_ENVIRONMENT }}
+      - name: Clean Sensitive Files
+        if: always()
+        run: npm run clean:integration:setup
+      - uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
+          tag: ${{ github.event.inputs.tag || 'latest' }}

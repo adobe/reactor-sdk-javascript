@@ -1,5 +1,5 @@
 /*
-Copyright 2019 Adobe. All rights reserved.
+Copyright 2025 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,12 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/*
-This package exports nothing. However, loading it has the side effect of loading
-the Reactor class into `jasmine.getEnv().reactorIntegrationTestGlobals.Reactor`.
-*/
+// This must be imported to hoist it above the hoisted import of all-tests.js
+import './global-setup.js';
 
-import Reactor from '../../dist/reactor-sdk-bundled.min.js';
+// Import the actual test specifications
+import '../../all-tests.js';
 
-var globals = jasmine.getEnv().reactorIntegrationTestGlobals;
-globals.Reactor = Reactor;
+console.log('esmodule tests loaded');

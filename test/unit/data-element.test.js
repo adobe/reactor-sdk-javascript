@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-describe('DataElement:', function() {
+describe('DataElement:', function () {
   const context = jasmine.getEnv().reactorContext;
   const reactor = context.reactor;
   const propertyId = 'PR123';
   const dataElementId = 'DE123';
 
-  describe('createDataElement', function() {
-    it('runs an http POST', async function() {
+  describe('createDataElement', function () {
+    it('runs an http POST', async function () {
       const dataElement = {
         attributes: {
           name: `Data Element ${new Date().getTime()}`
@@ -33,8 +33,8 @@ describe('DataElement:', function() {
     });
   });
 
-  describe('updateElement', function() {
-    it('runs an http PATCH', async function() {
+  describe('updateElement', function () {
+    it('runs an http PATCH', async function () {
       const dataElementPatch = {
         id: dataElementId,
         attributes: {
@@ -51,8 +51,8 @@ describe('DataElement:', function() {
     });
   });
 
-  describe('reviseDataElement', function() {
-    it('runs an http PATCH', async function() {
+  describe('reviseDataElement', function () {
+    it('runs an http PATCH', async function () {
       const reviseBody = reactor.createReviseBody(
         'data_elements',
         dataElementId
@@ -66,26 +66,26 @@ describe('DataElement:', function() {
     });
   });
 
-  describe('getDataElement', function() {
-    it('runs an http GET', async function() {
+  describe('getDataElement', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/data_elements/${dataElementId}`);
       await reactor.getDataElement(dataElementId);
     });
   });
 
-  describe('listRevisionsForDataElement', function() {
-    it('runs an http GET', async function() {
+  describe('listRevisionsForDataElement', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/data_elements/${dataElementId}/revisions`);
       await reactor.listRevisionsForDataElement(dataElementId);
     });
   });
 
-  describe('listDataElementsForProperty', function() {
-    it('runs an http GET', async function() {
+  describe('listDataElementsForProperty', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/properties/${propertyId}/data_elements`);
       await reactor.listDataElementsForProperty(propertyId);
     });
-    it('runs an http GET with query parameters', async function() {
+    it('runs an http GET with query parameters', async function () {
       context.expectRequest(
         'get',
         `/properties/${propertyId}/data_elements?filter%5Bname%5D=EQ+Delta%2CEQ+Bravo&sort=-name`
@@ -97,15 +97,15 @@ describe('DataElement:', function() {
     });
   });
 
-  describe('deleteDataElement', function() {
-    it('runs an http DELETE', async function() {
+  describe('deleteDataElement', function () {
+    it('runs an http DELETE', async function () {
       context.expectRequest('delete', `/data_elements/${dataElementId}`);
       await reactor.deleteDataElement(dataElementId);
     });
   });
 
-  describe('createDataElementNote', function() {
-    it('runs an http POST', async function() {
+  describe('createDataElementNote', function () {
+    it('runs an http POST', async function () {
       const post = {
         type: 'notes',
         attributes: {

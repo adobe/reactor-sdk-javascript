@@ -15,10 +15,10 @@ import helpers from './helpers';
 
 // Callbacks
 // https://developer.adobelaunch.com/api/callbacks
-helpers.describe('Callback API', function() {
+helpers.describe('Callback API', function () {
   var theProperty;
 
-  beforeAll(async function() {
+  beforeAll(async function () {
     theProperty = await helpers.createTestProperty('Callback-Testing Base');
   });
 
@@ -30,12 +30,8 @@ helpers.describe('Callback API', function() {
     const response = await reactor.createCallback(theProperty.id, {
       attributes: { url: url, subscriptions: watch }
     });
-    expect(response)
-      .withContext('creating test callback')
-      .toBeDefined();
-    expect(response.data)
-      .withContext('creating test callback')
-      .toBeDefined();
+    expect(response).withContext('creating test callback').toBeDefined();
+    expect(response.data).withContext('creating test callback').toBeDefined();
     const theCallback = response.data;
     expect(theCallback.id).toMatch(helpers.idCB);
     expect(theCallback.attributes.url).toBe(url);
@@ -45,9 +41,9 @@ helpers.describe('Callback API', function() {
 
   // Create a Callback
   // https://developer.adobelaunch.com/api/callbacks/create/
-  helpers.it('creates a new Callback', async function() {
+  helpers.it('creates a new Callback', async function () {
     // all the expectations are in createTestCallback()
-    const theCallback = await createTestCallback('https://example.com', [
+    await createTestCallback('https://example.com', [
       'rule.created',
       'data_element.created'
     ]);
@@ -55,14 +51,14 @@ helpers.describe('Callback API', function() {
 
   // Delete a Callback
   // https://developer.adobelaunch.com/api/callbacks/delete/
-  helpers.it('deletes a Callback', async function() {
+  helpers.it('deletes a Callback', async function () {
     const theCallback = await createTestCallback('https://syzygy.com');
 
     const deleteResponse = await reactor.deleteCallback(theCallback.id);
     expect(deleteResponse).toBe(null);
 
     try {
-      const deadCB = await reactor.getCallback(theCallback.id);
+      await reactor.getCallback(theCallback.id);
       fail('getting a deleted callback should fail');
     } catch (error) {
       expect(error.status).toBe(404);
@@ -71,7 +67,7 @@ helpers.describe('Callback API', function() {
 
   // Get a Callback
   // https://developer.adobelaunch.com/api/callbacks/fetch/
-  helpers.it('gets a Callback', async function() {
+  helpers.it('gets a Callback', async function () {
     const myUrl = 'https://www.example.com/getter';
     const theCallback = await createTestCallback(myUrl);
 
@@ -81,7 +77,7 @@ helpers.describe('Callback API', function() {
 
   // Get the Property
   // https://developer.adobelaunch.com/api/callbacks/property/
-  helpers.it("gets a Callback's Property", async function() {
+  helpers.it("gets a Callback's Property", async function () {
     const theCallback = await createTestCallback();
     const response = await reactor.getPropertyForCallback(theCallback.id);
     expect(response.data.id).toBe(theProperty.id);
@@ -89,7 +85,7 @@ helpers.describe('Callback API', function() {
 
   // List Callbacks for a Property
   // https://developer.adobelaunch.com/api/callbacks/list/
-  helpers.it('lists all Callbacks', async function() {
+  helpers.it('lists all Callbacks', async function () {
     // Create four Callbacks
     const eleanor = await createTestCallback('https://eleanor.com/');
     const chidi = await createTestCallback('https://chidi.com/');
@@ -98,7 +94,7 @@ helpers.describe('Callback API', function() {
 
     // Make sure all four show up in the list of Callbacks on the company
     const listResponse = await reactor.listCallbacksForProperty(theProperty.id);
-    const allIds = listResponse.data.map(resource => resource.id);
+    const allIds = listResponse.data.map((resource) => resource.id);
     expect(allIds).toContain(eleanor.id);
     expect(allIds).toContain(chidi.id);
     expect(allIds).toContain(tahani.id);
@@ -110,7 +106,7 @@ helpers.describe('Callback API', function() {
 
   // Update a Callback
   // https://developer.adobelaunch.com/api/callbacks/update/
-  helpers.it('updates a Callback', async function() {
+  helpers.it('updates a Callback', async function () {
     const theCallback = await createTestCallback('https://michael.com', [
       'rule.created'
     ]);

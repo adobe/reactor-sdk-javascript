@@ -11,11 +11,21 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { default: Reactor } = require('../dist/reactor-sdk.min');
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import Reactor from '../lib/node/index.js';
 
-const datePattern = '\\d\\d\\d\\d-\\d\\d-\\d\\d';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load main .env (client id/secret etc)
+if (!process.env.CI && !process.env.GITHUB_ACTIONS) {
+  dotenv.config({ path: path.resolve(__dirname, '../.env'), quiet: true });
+}
+
 const integrationTestingPropertyNameMatcher = RegExp(
-  `(?:An Awesome Property|Integration Testing \\w+) . ${datePattern}`
+  `(?:An Awesome Property|Reactor SDK: .+ \\(Integration Testing Property.*)`
 );
 
 async function deleteIfTestProperty(reactor, property) {
@@ -65,15 +75,20 @@ function env(varName, exampleValue) {
   if (process.env[varName]) return process.env[varName];
   console.error(`${varName} must be defined`);
   console.info(`  for example: export ${varName}='${exampleValue}'`);
-  errors++;
 }
 
 async function main() {
   process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
   var errors = 0;
-  var companyId = env('COMPANY_ID', 'CO1234567890abcdef1234567890abcdef');
-  var accessToken = env('ACCESS_TOKEN', 'eyJiOi...(lots more here)....YiHkRLQ');
-  var reactorUrl = process.env.REACTOR_URL || 'https://reactor.adobe.io';
+  var companyId = env(
+    'RSDK_ADOBE_REACTOR_COMPANY_ID',
+    'CO1234567890abcdef1234567890abcdef'
+  );
+  var accessToken = env(
+    'RSDK_ACCESS_TOKEN',
+    'eyJiOi...(lots more here)....YiHkRLQ'
+  );
+  var reactorUrl = process.env.RSDK_ADOBE_REACTOR_URL;
   if (errors > 0) process.exit(1);
 
   var reactor = new Reactor(accessToken, { reactorUrl: reactorUrl });
@@ -85,10 +100,10 @@ async function main() {
 }
 
 main().then(
-  function(result) {
+  function (result) {
     console.log(`Deleted ${result[1]} of the ${result[0]} properties examined`);
   },
-  function(err) {
+  function (err) {
     console.log(err);
   }
 );

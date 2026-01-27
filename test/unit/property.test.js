@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-describe('Property:', function() {
+describe('Property:', function () {
   const context = jasmine.getEnv().reactorContext;
   const reactor = context.reactor;
   const companyId = 'CO123';
   const propertyId = 'PR123';
 
-  describe('createProperty', function() {
-    it('runs an http POST', async function() {
+  describe('createProperty', function () {
+    it('runs an http POST', async function () {
       const property = {
         attributes: {
           domains: ['adobe.com'],
@@ -36,12 +36,12 @@ describe('Property:', function() {
     });
   });
 
-  describe('listPropertiesForCompany', function() {
-    it('runs an http GET', async function() {
+  describe('listPropertiesForCompany', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/companies/${companyId}/properties`);
       await reactor.listPropertiesForCompany(companyId);
     });
-    it('runs an http GET with query parameters', async function() {
+    it('runs an http GET with query parameters', async function () {
       context.expectRequest(
         'get',
         `/companies/${companyId}/properties?filter%5Bname%5D=EQ+Delta%2CEQ+Bravo&sort=-name`
@@ -53,15 +53,15 @@ describe('Property:', function() {
     });
   });
 
-  describe('getProperty', function() {
-    it('runs an http GET', async function() {
+  describe('getProperty', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/properties/${propertyId}`);
       await reactor.getProperty(propertyId);
     });
   });
 
-  describe('updateProperty', function() {
-    it('runs an http PATCH', async function() {
+  describe('updateProperty', function () {
+    it('runs an http PATCH', async function () {
       const propertyPatch = {
         id: propertyId,
         attributes: { name: `Updated Property ${new Date().getTime()}` },
@@ -76,15 +76,15 @@ describe('Property:', function() {
     });
   });
 
-  describe('deleteProperty', function() {
-    it('runs an http DELETE', async function() {
+  describe('deleteProperty', function () {
+    it('runs an http DELETE', async function () {
       context.expectRequest('delete', `/properties/${propertyId}`);
       await reactor.deleteProperty(propertyId);
     });
   });
 
-  describe('createPropertyNote', function() {
-    it('runs an http POST', async function() {
+  describe('createPropertyNote', function () {
+    it('runs an http POST', async function () {
       const post = {
         type: 'notes',
         attributes: {

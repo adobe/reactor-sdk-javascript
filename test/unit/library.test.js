@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-describe('Library:', function() {
+describe('Library:', function () {
   const context = jasmine.getEnv().reactorContext;
   const reactor = context.reactor;
   const propertyId = 'PR00000000000000000000000000000000';
   const libraryId = 'LB12341234123412341234123412341234';
 
-  describe('createLibrary', function() {
-    it('runs an http POST', async function() {
+  describe('createLibrary', function () {
+    it('runs an http POST', async function () {
       const library = {
         attributes: {
           name: `Awesome Library ${new Date().getTime()}`
@@ -33,8 +33,8 @@ describe('Library:', function() {
     });
   });
 
-  describe('updateLibrary', function() {
-    it('runs an http PATCH', async function() {
+  describe('updateLibrary', function () {
+    it('runs an http PATCH', async function () {
       const libraryPatch = {
         id: libraryId,
         attributes: {
@@ -47,19 +47,19 @@ describe('Library:', function() {
     });
   });
 
-  describe('getLibrary', function() {
-    it('runs an http GET', async function() {
+  describe('getLibrary', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/libraries/${libraryId}`);
       await reactor.getLibrary(libraryId);
     });
   });
 
-  describe('listLibrariesForProperty', function() {
-    it('runs an http GET', async function() {
+  describe('listLibrariesForProperty', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/properties/${propertyId}/libraries`);
       await reactor.listLibrariesForProperty(propertyId);
     });
-    it('runs an http GET with query parameters', async function() {
+    it('runs an http GET with query parameters', async function () {
       context.expectRequest(
         'get',
         `/properties/${propertyId}/libraries?filter%5Bname%5D=EQ+Delta%2CEQ+Bravo&sort=-name`
@@ -71,14 +71,14 @@ describe('Library:', function() {
     });
   });
 
-  describe('addExtensionRelationshipsToLibrary', function() {
+  describe('addExtensionRelationshipsToLibrary', function () {
     const postBody = {
       data: [
         { id: 'EX1234567890123456789042', type: 'extensions' },
         { id: 'EX1234567890123456789077', type: 'extensions' }
       ]
     };
-    it('runs an http POST', async function() {
+    it('runs an http POST', async function () {
       context.expectRequest(
         'post',
         `/libraries/${libraryId}/relationships/extensions`
@@ -90,14 +90,14 @@ describe('Library:', function() {
     });
   });
 
-  describe('addRuleRelationshipsToLibrary', function() {
+  describe('addRuleRelationshipsToLibrary', function () {
     const postBody = {
       data: [
         { id: 'RL1234567890123456789042', type: 'rules' },
         { id: 'RL1234567890123456789077', type: 'rules' }
       ]
     };
-    it('runs an http POST', async function() {
+    it('runs an http POST', async function () {
       context.expectRequest(
         'post',
         `/libraries/${libraryId}/relationships/rules`
@@ -106,15 +106,15 @@ describe('Library:', function() {
     });
   });
 
-  describe('listExtensionRelationshipsForLibrary', function() {
-    it('runs an http GET', async function() {
+  describe('listExtensionRelationshipsForLibrary', function () {
+    it('runs an http GET', async function () {
       context.expectRequest(
         'get',
         `/libraries/${libraryId}/relationships/extensions`
       );
       await reactor.listExtensionRelationshipsForLibrary(libraryId);
     });
-    it('runs an http GET with query parameters', async function() {
+    it('runs an http GET with query parameters', async function () {
       context.expectRequest(
         'get',
         `/libraries/${libraryId}/relationships/extensions?filter%5Bname%5D=EQ+Dan`
@@ -125,12 +125,12 @@ describe('Library:', function() {
     });
   });
 
-  describe('listExtensionsForLibrary', function() {
-    it('runs an http GET', async function() {
+  describe('listExtensionsForLibrary', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/libraries/${libraryId}/extensions`);
       await reactor.listExtensionsForLibrary(libraryId);
     });
-    it('runs an http GET with query parameters', async function() {
+    it('runs an http GET with query parameters', async function () {
       context.expectRequest(
         'get',
         `/libraries/${libraryId}/extensions?filter%5Bname%5D=EQ+Fred&sort=name`
@@ -142,15 +142,15 @@ describe('Library:', function() {
     });
   });
 
-  describe('listRuleRelationshipsForLibrary', function() {
-    it('runs an http GET', async function() {
+  describe('listRuleRelationshipsForLibrary', function () {
+    it('runs an http GET', async function () {
       context.expectRequest(
         'get',
         `/libraries/${libraryId}/relationships/rules`
       );
       await reactor.listRuleRelationshipsForLibrary(libraryId);
     });
-    it('runs an http GET with query parameters', async function() {
+    it('runs an http GET with query parameters', async function () {
       context.expectRequest(
         'get',
         `/libraries/${libraryId}/relationships/rules?filter%5Bname%5D=EQ+Joe&sort=-name`
@@ -162,12 +162,12 @@ describe('Library:', function() {
     });
   });
 
-  describe('listRulesForLibrary', function() {
-    it('runs an http GET', async function() {
+  describe('listRulesForLibrary', function () {
+    it('runs an http GET', async function () {
       context.expectRequest('get', `/libraries/${libraryId}/rules`);
       await reactor.listRulesForLibrary(libraryId);
     });
-    it('runs an http GET with query parameters', async function() {
+    it('runs an http GET with query parameters', async function () {
       context.expectRequest(
         'get',
         `/libraries/${libraryId}/rules?filter%5Bname%5D=EQ+Gus&sort=-name`
@@ -179,14 +179,14 @@ describe('Library:', function() {
     });
   });
 
-  describe('replaceExtensionRelationshipsForLibrary', function() {
+  describe('replaceExtensionRelationshipsForLibrary', function () {
     const patchBody = {
       data: [
         { id: 'EX44444444555555556666666677777777', type: 'extensions' },
         { id: 'EX00000000111111111111111188888888', type: 'extensions' }
       ]
     };
-    it('runs an http PATCH', async function() {
+    it('runs an http PATCH', async function () {
       context.expectRequest(
         'patch',
         `/libraries/${libraryId}/relationships/extensions`,
@@ -199,14 +199,14 @@ describe('Library:', function() {
     });
   });
 
-  describe('replaceRuleRelationshipsForLibrary', function() {
+  describe('replaceRuleRelationshipsForLibrary', function () {
     const patchBody = {
       data: [
         { id: 'RL44444444555555556666666677777777', type: 'rules' },
         { id: 'RL00000000111111111111111188888888', type: 'rules' }
       ]
     };
-    it('runs an http PATCH', async function() {
+    it('runs an http PATCH', async function () {
       context.expectRequest(
         'patch',
         `/libraries/${libraryId}/relationships/rules`,
@@ -219,14 +219,14 @@ describe('Library:', function() {
     });
   });
 
-  describe('removeExtensionRelationshipsFromLibrary', function() {
+  describe('removeExtensionRelationshipsFromLibrary', function () {
     const deleteBody = {
       data: [
         { id: 'EX123', type: 'extensions' },
         { id: 'EX456', type: 'extensions' }
       ]
     };
-    it('runs an http DELETE', async function() {
+    it('runs an http DELETE', async function () {
       context.expectRequest(
         'delete',
         `/libraries/${libraryId}/relationships/extensions`,
@@ -239,14 +239,14 @@ describe('Library:', function() {
     });
   });
 
-  describe('removeRuleRelationshipsFromLibrary', function() {
+  describe('removeRuleRelationshipsFromLibrary', function () {
     const deleteBody = {
       data: [
         { id: 'RL99999999444444444444444412345657', type: 'rules' },
         { id: 'RL55555555111111111111111188888888', type: 'rules' }
       ]
     };
-    it('runs an http DELETE', async function() {
+    it('runs an http DELETE', async function () {
       context.expectRequest(
         'delete',
         `/libraries/${libraryId}/relationships/rules`,
@@ -259,15 +259,15 @@ describe('Library:', function() {
     });
   });
 
-  describe('deleteLibrary', function() {
-    it('runs an http DELETE', async function() {
+  describe('deleteLibrary', function () {
+    it('runs an http DELETE', async function () {
       context.expectRequest('delete', `/libraries/${libraryId}`);
       await reactor.deleteLibrary(libraryId);
     });
   });
 
-  describe('transitionLibrary', function() {
-    it('runs an http PATCH', async function() {
+  describe('transitionLibrary', function () {
+    it('runs an http PATCH', async function () {
       const action = 'submit';
       const expectedBody = {
         data: {
@@ -283,8 +283,8 @@ describe('Library:', function() {
     });
   });
 
-  describe('setEnvironmentRelationshipForLibrary', function() {
-    it('runs an http PATCH', async function() {
+  describe('setEnvironmentRelationshipForLibrary', function () {
+    it('runs an http PATCH', async function () {
       const environmentId = 'EN00000000000000000000000000000000';
       const expectedBody = {
         data: {
@@ -305,8 +305,8 @@ describe('Library:', function() {
     });
   });
 
-  describe('deleteLibraryEnvironmentRelationship', function() {
-    it('runs an http DELETE', async function() {
+  describe('deleteLibraryEnvironmentRelationship', function () {
+    it('runs an http DELETE', async function () {
       const environmentId = 'EN00000000000000000000000000000000';
       const expectedBody = {
         data: {
@@ -327,8 +327,8 @@ describe('Library:', function() {
     });
   });
 
-  describe('createLibraryNote', function() {
-    it('runs an http POST', async function() {
+  describe('createLibraryNote', function () {
+    it('runs an http POST', async function () {
       const post = {
         type: 'notes',
         attributes: {

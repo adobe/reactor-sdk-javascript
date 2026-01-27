@@ -10,60 +10,58 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-import reactor from './reactor';
 import helpers from './helpers';
 
 //TODO: test the build endpoints once Library tests have been written
 
 // Builds
 // https://developer.adobelaunch.com/api/builds
-helpers.describe('Build API', function() {
+helpers.describe('Build API', function () {
   // Create a Build
   // https://developer.adobelaunch.com/api/builds/create/
-  helpers.xit('creates a new Build', async function() {
-    const theProperty = await helpers.findOrMakeTestingProperty('Build');
+  helpers.xit('creates a new Build', async function () {
     //TODO: test createBuild
   });
 
   // Get a Build
   // https://developer.adobelaunch.com/api/builds/fetch/
-  helpers.xit('gets a Build', async function() {
+  helpers.xit('gets a Build', async function () {
     //TODO: test getBuild
   });
 
   // Get the Environment
   // https://developer.adobelaunch.com/api/builds/environment/
-  helpers.xit("gets a Build's Environment", async function() {
+  helpers.xit("gets a Build's Environment", async function () {
     //TODO: test getEnvironmentForBuild
   });
 
   // Get the Library
   // https://developer.adobelaunch.com/api/builds/library/
-  helpers.xit("gets a Build's Library", async function() {
+  helpers.xit("gets a Build's Library", async function () {
     //TODO: test getLibraryForBuild
   });
 
   // List Builds
   // https://developer.adobelaunch.com/api/builds/list/
-  helpers.xit('lists Builds for a Property', async function() {
+  helpers.xit('lists Builds for a Property', async function () {
     //TODO: test listBuildsForProperty
   });
 
   // List DataElements
   // https://developer.adobelaunch.com/api/builds/data_elements/
-  helpers.xit("lists a Build's DataElements", async function() {
+  helpers.xit("lists a Build's DataElements", async function () {
     //TODO: test listDataElementsForBuild
   });
 
   // List Extensions
   // https://developer.adobelaunch.com/api/builds/extensions/
-  helpers.xit("lists a Build's Extensions", async function() {
+  helpers.xit("lists a Build's Extensions", async function () {
     //TODO: test listExtensionsForBuild
   });
 
   // List Rules
   // https://developer.adobelaunch.com/api/builds/rules/
-  helpers.xit("lists a Build's Rules", async function() {
+  helpers.xit("lists a Build's Rules", async function () {
     //TODO: test listRulesForBuild
   });
 });
