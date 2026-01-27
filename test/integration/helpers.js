@@ -110,43 +110,32 @@ const helpers = {
 
   async createTestProperty(baseName) {
     const ctx = `while creating "${baseName}" test Property:`;
-    try {
-      const response = await reactor.createProperty(helpers.companyId, {
-        attributes: {
-          domains: ['testing.reactor.adobe.com'],
-          name: makeNameForTestObject('Property', baseName),
-          platform: 'web'
-        },
-        type: 'properties'
-      });
-      expectWithContext(response.data.id, ctx).toMatch(helpers.idPR);
-      return response.data;
-    } catch (error) {
-      helpers.specName = ctx;
-      helpers.reportError(error);
-      return false;
-    }
+    const response = await reactor.createProperty(helpers.companyId, {
+      attributes: {
+        domains: ['testing.reactor.adobe.com'],
+        name: makeNameForTestObject('Property', baseName),
+        platform: 'web'
+      },
+      type: 'properties'
+    });
+    expectWithContext(response.data.id, ctx).toMatch(helpers.idPR);
+    return response.data;
   },
 
   async createTestLibrary(propertyId, baseName) {
     const ctx = `while creating "${baseName}" test Library:`;
-    try {
-      if (!propertyId)
-        propertyId = await helpers.createTestProperty(baseName).id;
-      if (!propertyId) return false;
-      const response = await reactor.createLibrary(propertyId, {
-        attributes: {
-          name: makeNameForTestObject('Library', baseName)
-        },
-        type: 'libraries'
-      });
-      expectWithContext(response.data.id, ctx).toMatch(helpers.idLB);
-      return response.data;
-    } catch (error) {
-      helpers.specName = ctx;
-      helpers.reportError(error);
-      return false;
+    if (!propertyId) {
+      const property = await helpers.createTestProperty(baseName);
+      propertyId = property.id;
     }
+    const response = await reactor.createLibrary(propertyId, {
+      attributes: {
+        name: makeNameForTestObject('Library', baseName)
+      },
+      type: 'libraries'
+    });
+    expectWithContext(response.data.id, ctx).toMatch(helpers.idLB);
+    return response.data;
   },
 
   async addCoreToLibrary(property, library) {
@@ -174,64 +163,52 @@ const helpers = {
 
   async createTestSftpHost(propertyId, baseName) {
     const ctx = `while creating "${baseName}" test Host:`;
-    try {
-      /*eslint-disable camelcase*/
-      const response = await reactor.createHost(propertyId, {
-        attributes: {
-          name: makeNameForTestObject('Host', baseName),
-          type_of: 'sftp',
-          username: 'John Doe',
-          encrypted_private_key:
-            '-----BEGIN PGP MESSAGE-----\n\n' +
-            'this+is+a+bogus+private+key+nnnnaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n' +
-            'rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n' +
-            'KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh\n' +
-            'OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO++++++++++++++++++++++++++++++++\n' +
-            'SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN\n' +
-            'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB77777777777777777777777777777777\n' +
-            'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG\n' +
-            'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW00000000000000000000000000000000\n' +
-            'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD\n' +
-            'jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\n' +
-            '8888888888888888888888888888888811111111111111111111111111111111\n' +
-            'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTssssssssssssssssssssssssssssssss\n' +
-            'LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL//////////==\n=oRpa\n' +
-            '-----END PGP MESSAGE-----\n',
-          server: 'example.com',
-          path: 'assets',
-          port: 22
-        },
-        type: 'hosts'
-      });
-      /*eslint-enable camelcase*/
-      expectWithContext(response.data.id, ctx).toMatch(helpers.idHT);
-      return response.data;
-    } catch (error) {
-      helpers.specName = ctx;
-      helpers.reportError(error);
-      return false;
-    }
+    /*eslint-disable camelcase*/
+    const response = await reactor.createHost(propertyId, {
+      attributes: {
+        name: makeNameForTestObject('Host', baseName),
+        type_of: 'sftp',
+        username: 'John Doe',
+        encrypted_private_key:
+          '-----BEGIN PGP MESSAGE-----\n\n' +
+          'this+is+a+bogus+private+key+nnnnaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n' +
+          'rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n' +
+          'KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh\n' +
+          'OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO++++++++++++++++++++++++++++++++\n' +
+          'SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN\n' +
+          'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB77777777777777777777777777777777\n' +
+          'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG\n' +
+          'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW00000000000000000000000000000000\n' +
+          'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD\n' +
+          'jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\n' +
+          '8888888888888888888888888888888811111111111111111111111111111111\n' +
+          'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTssssssssssssssssssssssssssssssss\n' +
+          'LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL//////////==\n=oRpa\n' +
+          '-----END PGP MESSAGE-----\n',
+        server: 'example.com',
+        path: 'assets',
+        port: 22
+      },
+      type: 'hosts'
+    });
+    /*eslint-enable camelcase*/
+    expectWithContext(response.data.id, ctx).toMatch(helpers.idHT);
+    return response.data;
   },
 
   async createTestAkamaiHost(propertyId, baseName) {
     const ctx = `while creating "${baseName}" test Host:`;
-    try {
-      /*eslint-disable camelcase*/
-      const response = await reactor.createHost(propertyId, {
-        attributes: {
-          name: makeNameForTestObject('Host', baseName),
-          type_of: 'akamai'
-        },
-        type: 'hosts'
-      });
-      /*eslint-enable camelcase*/
-      expectWithContext(response.data.id, ctx).toMatch(helpers.idHT);
-      return response.data;
-    } catch (error) {
-      helpers.specName = ctx;
-      helpers.reportError(error);
-      return false;
-    }
+    /*eslint-disable camelcase*/
+    const response = await reactor.createHost(propertyId, {
+      attributes: {
+        name: makeNameForTestObject('Host', baseName),
+        type_of: 'akamai'
+      },
+      type: 'hosts'
+    });
+    /*eslint-enable camelcase*/
+    expectWithContext(response.data.id, ctx).toMatch(helpers.idHT);
+    return response.data;
   },
 
   // Create an Environment using the identified Host.
@@ -251,37 +228,31 @@ const helpers = {
   async createTestEnvironment(propertyId, baseName, hostId = null) {
     let ctx = `while creating "${baseName}" test Environment`;
     ctx += ` on ${propertyId} ${hostId}:`;
-    try {
-      const kind = determineHostKind(hostId);
-      if (kind === 'sftp') {
-        const host = await helpers.createTestSftpHost(propertyId, baseName);
-        hostId = host.id;
-      } else if (kind === 'akamai') {
-        const host = await helpers.createTestAkamaiHost(propertyId, baseName);
-        hostId = host.id;
-      }
-      const attributes = {
-        name: makeNameForTestObject('Environment', baseName),
-        stage: determineEnvironmentStage(baseName)
-      };
-      if (kind !== 'akamai') {
-        attributes.path = 'https://example.com/';
-      }
-      const response = await reactor.createEnvironment(propertyId, {
-        type: 'environments',
-        attributes: attributes,
-        relationships: {
-          host: { data: { type: 'hosts', id: hostId } }
-        }
-      });
-      expectWithContext(response.data.id, ctx).toMatch(helpers.idEN);
-      response.data.associatedHostId = hostId;
-      return response.data;
-    } catch (error) {
-      helpers.specName = ctx;
-      helpers.reportError(error);
-      return false;
+    const kind = determineHostKind(hostId);
+    if (kind === 'sftp') {
+      const host = await helpers.createTestSftpHost(propertyId, baseName);
+      hostId = host.id;
+    } else if (kind === 'akamai') {
+      const host = await helpers.createTestAkamaiHost(propertyId, baseName);
+      hostId = host.id;
     }
+    const attributes = {
+      name: makeNameForTestObject('Environment', baseName),
+      stage: determineEnvironmentStage(baseName)
+    };
+    if (kind !== 'akamai') {
+      attributes.path = 'https://example.com/';
+    }
+    const response = await reactor.createEnvironment(propertyId, {
+      type: 'environments',
+      attributes: attributes,
+      relationships: {
+        host: { data: { type: 'hosts', id: hostId } }
+      }
+    });
+    expectWithContext(response.data.id, ctx).toMatch(helpers.idEN);
+    response.data.associatedHostId = hostId;
+    return response.data;
   },
 
   // Caches core extension in propertyObj.coreEx
