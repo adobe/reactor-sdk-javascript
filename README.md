@@ -60,6 +60,13 @@ would go something like this:
 
 ### Node.js Usage
 
+The SDK requires Node.js 22.23.4+, 24.22.1+, or 26.12.1+ within those major
+versions. These minimums include the fix for
+[CVE-2026-111497](https://www.cve.org/CVERecord?id=CVE-2026-111497) in Node.js's
+Brotli decoder. Upgrading the SDK does not upgrade Node.js. Update the runtime
+in your deployments, CI, and containers, and run `node --version` in each
+environment to verify the version in use.
+
 The example below is a nodejs script that lists the ID's and names of all your
 Company's properties.
 
