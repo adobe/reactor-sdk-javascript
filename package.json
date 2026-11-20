@@ -99,7 +99,7 @@
     "@babel/cli": "^7.24.8",
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.4",
-    "@playwright/test": "^1.56.1",
+    "@playwright/test": "^1.61.1",
     "dotenv": "^17.2.3",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
